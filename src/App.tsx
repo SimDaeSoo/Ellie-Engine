@@ -4,7 +4,7 @@ import Stats from 'stats.js';
 async function preload(): Promise<void> {
   const srcs: Array<string> = [];
 
-  srcs.push('./build/bunny.png');
+  srcs.push('./bunny.png');
 
   return new Promise((resolve) => {
     for (const src of srcs) {
@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   app.stage.addChild(container);
 
   // Create a new texture
-  const texture: PIXI.Texture = PIXI.Texture.from('./build/bunny.png');
+  const texture: PIXI.Texture = PIXI.Texture.from('./bunny.png');
 
   // Create a 5x5 grid of bunnies
   for (let i = 0; i < 25; i++) {
