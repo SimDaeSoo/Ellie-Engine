@@ -2,6 +2,7 @@
   "name": "engine",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://simdaesoo.github.io/Engine/build",
   "dependencies": {
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
