@@ -145,7 +145,7 @@ const ViewPort = () => {
       const graphics = new PIXI.Graphics();
 
       graphics.clear();
-      graphics.beginFill(0x333333);
+      graphics.beginFill(0x666666);
       for (
         let y = Math.floor(tilemapViewport.y / 8);
         y < Math.ceil((tilemapViewport.y + tilemapViewport.height) / 8);
@@ -157,7 +157,7 @@ const ViewPort = () => {
           x++
         ) {
           if (peakBufferBit(buffer, x, y, width)) {
-            graphics.beginFill(0x333333);
+            graphics.beginFill(0x666666);
             graphics.drawRect(x * 8, y * 8, 8, 8);
           }
         }
@@ -246,7 +246,7 @@ const ViewPort = () => {
 
           // Re Draw Tilemap
           graphics.clear();
-          graphics.beginFill(0x333333);
+          graphics.beginFill(0x666666);
           for (
             let y = Math.floor(tilemapViewport.y / 8);
             y < Math.ceil((tilemapViewport.y + tilemapViewport.height) / 8);
@@ -258,7 +258,7 @@ const ViewPort = () => {
               x++
             ) {
               if (peakBufferBit(buffer, x, y, width)) {
-                graphics.beginFill(0x333333);
+                graphics.beginFill(0x666666);
                 graphics.drawRect(x * 8, y * 8, 8, 8);
               }
             }

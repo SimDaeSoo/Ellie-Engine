@@ -43,7 +43,7 @@ const TilemapWithBuffer = () => {
       const app: PIXI.Application = await setRenderer();
       const graphics = new PIXI.Graphics();
 
-      graphics.beginFill(0x333333);
+      graphics.beginFill(0x666666);
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           if (peakBufferBit(buffer, x, y, width)) {
