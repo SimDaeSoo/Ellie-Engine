@@ -4,12 +4,21 @@ import Stats from 'stats.js';
 let updater: () => void;
 let app: PIXI.Application;
 
-async function preload(srcs: Array<string>): Promise<void> {
+async function preload(): Promise<void> {
   const BASE_URL: string =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000/Engine/build'
       : 'https://simdaesoo.github.io/Engine/build';
   const assets: Array<[string, string]> = [];
+  const srcs: Array<string> = [];
+
+  for (let i = 1; i <= 61; i++) {
+    srcs.push(`tiles/Tile_${i.toString().padStart(2, '0')}.png`);
+  }
+
+  for (let i = 0; i <= 36; i++) {
+    srcs.push(`waters/${i.toString().padStart(2, '0')}.png`);
+  }
 
   for (const src of srcs) {
     assets.push([src, `${BASE_URL}/${src}`]);
@@ -62,7 +71,7 @@ async function setRenderer(): Promise<PIXI.Application> {
   dom.appendChild(stats.dom);
 
   try {
-    await preload(['bunny.png']);
+    await preload();
   } catch (e) {
     console.log(e);
   }
