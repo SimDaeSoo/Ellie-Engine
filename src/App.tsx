@@ -64,125 +64,109 @@ const App = () => {
 
                 <Nav.Item
                   icon={<Icon icon='th2' />}
-                  onSelect={() => history.push('/Engine/build')}
-                  eventKey='/Engine/build'
+                  onSelect={() => history.push('/')}
+                  eventKey='/'
                 >
                   Tilemap With Buffer
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='th2' />}
-                  onSelect={() => history.push('/Engine/build/cave-generate')}
-                  eventKey='/Engine/build/cave-generate'
+                  onSelect={() => history.push('/cave-generate')}
+                  eventKey='/cave-generate'
                 >
                   Cave Generate
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='square-o' />}
-                  onSelect={() => history.push('/Engine/build/viewport')}
-                  eventKey='/Engine/build/viewport'
+                  onSelect={() => history.push('/viewport')}
+                  eventKey='/viewport'
                 >
                   Viewport
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='tint' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/liquid-simulation')
-                  }
-                  eventKey='/Engine/build/liquid-simulation'
+                  onSelect={() => history.push('/liquid-simulation')}
+                  eventKey='/liquid-simulation'
                   disabled
                 >
                   Liquid Simulation
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='tint' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/liquid-simulation-2')
-                  }
-                  eventKey='/Engine/build/liquid-simulation-2'
+                  onSelect={() => history.push('/liquid-simulation-2')}
+                  eventKey='/liquid-simulation-2'
                   disabled
                 >
                   Liquid Simulation 2
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='tint' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/liquid-stress-test')
-                  }
-                  eventKey='/Engine/build/liquid-stress-test'
+                  onSelect={() => history.push('/liquid-stress-test')}
+                  eventKey='/liquid-stress-test'
                   disabled
                 >
                   Liquid Stress Test
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='close' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/line-intersection')
-                  }
-                  eventKey='/Engine/build/line-intersection'
+                  onSelect={() => history.push('/line-intersection')}
+                  eventKey='/line-intersection'
                   disabled
                 >
                   Line Intersection
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='lightbulb-o' />}
-                  onSelect={() => history.push('/Engine/build/lighting-area')}
-                  eventKey='/Engine/build/lighting-area'
+                  onSelect={() => history.push('/lighting-area')}
+                  eventKey='/lighting-area'
                   disabled
                 >
                   Lighting Area
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='lightbulb-o' />}
-                  onSelect={() => history.push('/Engine/build/lighting-area-2')}
-                  eventKey='/Engine/build/lighting-area-2'
+                  onSelect={() => history.push('/lighting-area-2')}
+                  eventKey='/lighting-area-2'
                   disabled
                 >
                   Lighting Area 2
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='lightbulb-o' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/lighting-stress-test')
-                  }
-                  eventKey='/Engine/build/lighting-stress-test'
+                  onSelect={() => history.push('/lighting-stress-test')}
+                  eventKey='/lighting-stress-test'
                   disabled
                 >
                   Lighting Stress Test
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='lightbulb-o' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/lighting-with-viewport')
-                  }
-                  eventKey='/Engine/build/lighting-with-viewport'
+                  onSelect={() => history.push('/lighting-with-viewport')}
+                  eventKey='/lighting-with-viewport'
                   disabled
                 >
                   Lighting With Viewport
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='object-ungroup' />}
-                  onSelect={() => history.push('/Engine/build/aabb-collision')}
-                  eventKey='/Engine/build/aabb-collision'
+                  onSelect={() => history.push('/aabb-collision')}
+                  eventKey='/aabb-collision'
                   disabled
                 >
                   AABB Collision
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='object-ungroup' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/aabb-collision-2')
-                  }
-                  eventKey='/Engine/build/aabb-collision-2'
+                  onSelect={() => history.push('/aabb-collision-2')}
+                  eventKey='/aabb-collision-2'
                   disabled
                 >
                   AABB Collision 2
                 </Nav.Item>
                 <Nav.Item
                   icon={<Icon icon='object-ungroup' />}
-                  onSelect={() =>
-                    history.push('/Engine/build/aabb-stress-test')
-                  }
-                  eventKey='/Engine/build/aabb-stress-test'
+                  onSelect={() => history.push('/aabb-stress-test')}
+                  eventKey='/aabb-stress-test'
                   disabled
                 >
                   AABB Stress Test
@@ -190,8 +174,8 @@ const App = () => {
 
                 <Nav.Item
                   icon={<Icon icon='globe' />}
-                  onSelect={() => history.push('/Engine/build/sample-world')}
-                  eventKey='/Engine/build/sample-world'
+                  onSelect={() => history.push('/sample-world')}
+                  eventKey='/sample-world'
                   disabled
                 >
                   Sample World 1
@@ -202,13 +186,9 @@ const App = () => {
         </Sidebar>
 
         <Container id='content'>
-          <Route exact path='/Engine/build' component={TilemapWithBuffer} />
-          <Route
-            exact
-            path='/Engine/build/cave-generate'
-            component={CaveGenerate}
-          />
-          <Route exact path='/Engine/build/viewport' component={Viewport} />
+          <Route exact path='/' component={TilemapWithBuffer} />
+          <Route exact path='/cave-generate' component={CaveGenerate} />
+          <Route exact path='/viewport' component={Viewport} />
           <div
             style={{
               position: 'absolute',
