@@ -17,6 +17,7 @@ const SideNavigation = () => {
         height: '100%',
         overflow: 'auto',
         backgroundColor: '#1a1d24',
+        zIndex: 1,
       }}
     >
       <Sidenav>
@@ -25,34 +26,26 @@ const SideNavigation = () => {
             position: 'fixed',
             top: 0,
             height: '50px',
-            width: toggle ? 50 : 250,
+            width: toggle ? 56 : 250,
             zIndex: 2,
           }}
         >
           <Nav>
             <Nav.Item
-              icon={<Icon icon={toggle ? 'angle-right' : 'angle-left'} />}
+              icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
               onClick={(e: any) => {
                 e.stopPropagation();
                 setToggle(!toggle);
               }}
               style={{ backgroundColor: '#0f131a' }}
             >
-              Toggle
+              {!toggle ? 'Ellie Engine v0.0.1' : '-'}
             </Nav.Item>
           </Nav>
         </Sidenav.Header>
 
         <Sidenav.Body style={{ height: 'calc(100%-50px)', marginTop: '50px' }}>
           <Nav activeKey={pathname}>
-            <Nav.Item
-              icon={<Icon icon='gears2' />}
-              disabled
-              style={{ backgroundColor: '#0f131a' }}
-            >
-              Ellie Engine v0.0.1
-            </Nav.Item>
-
             <Nav.Item
               icon={<Icon icon='th2' />}
               onSelect={() => history.push('/')}
@@ -72,15 +65,7 @@ const SideNavigation = () => {
               onSelect={() => history.push('/cave-generate-texture')}
               eventKey='/cave-generate-texture'
             >
-              Cave Generate Texture
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='square-o' />}
-              onSelect={() => history.push('/viewport')}
-              eventKey='/viewport'
-              disabled
-            >
-              Viewport
+              Cave With Texture
             </Nav.Item>
             <Nav.Item
               icon={<Icon icon='tint' />}
@@ -110,6 +95,14 @@ const SideNavigation = () => {
               disabled
             >
               Line Intersection
+            </Nav.Item>
+            <Nav.Item
+              icon={<Icon icon='square-o' />}
+              onSelect={() => history.push('/viewport')}
+              eventKey='/viewport'
+              disabled
+            >
+              Viewport
             </Nav.Item>
             <Nav.Item
               icon={<Icon icon='lightbulb-o' />}

@@ -4,7 +4,9 @@ import Stats from 'stats.js';
 let updater: () => void;
 let app: PIXI.Application;
 
-async function preload(): Promise<void> {
+async function preload(
+  callback: (percentage: number, assetName: string) => void
+): Promise<void> {
   const BASE_URL: string =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000/Engine/build'
@@ -24,18 +26,21 @@ async function preload(): Promise<void> {
     assets.push([src, `${BASE_URL}/${src}`]);
   }
 
-  return new Promise((resolve) => {
-    for (const asset of assets) {
-      PIXI.Loader.shared.add(...asset);
-    }
-
-    PIXI.Loader.shared.load(() => {
-      resolve();
-    });
-  });
+  let loaded = 0;
+  for (const asset of assets) {
+    try {
+      await new Promise<void>((resolve) => {
+        PIXI.Loader.shared.add(...asset).load(() => {
+          resolve();
+        });
+      });
+    } catch (_e) {}
+    loaded++;
+    callback(loaded / assets.length, asset[0]);
+  }
 }
 
-async function setRenderer(): Promise<PIXI.Application> {
+function setRenderer(): PIXI.Application {
   if (app) {
     app.stage.removeAllListeners();
     app.stage.removeChildren();
@@ -70,12 +75,6 @@ async function setRenderer(): Promise<PIXI.Application> {
   dom.appendChild(app.view);
   dom.appendChild(stats.dom);
 
-  try {
-    await preload();
-  } catch (e) {
-    console.log(e);
-  }
-
   const render = () => {
     if (updater) updater();
     stats.update();
@@ -91,4 +90,4 @@ function setUpdater(callback: () => void): void {
   updater = callback;
 }
 
-export { setRenderer, setUpdater };
+export { setRenderer, setUpdater, preload };

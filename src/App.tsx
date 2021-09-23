@@ -8,6 +8,7 @@ import CaveGenerateWithTexture from './pages/CaveGenerateWithTexture';
 import LiquidSimulation from './pages/LiquidSimulation';
 import LiquidSimulation2 from './pages/LiquidSimulation2';
 import LiquidStressTest from './pages/LiquidStressTest';
+import LineIntersection from './pages/LineIntersection';
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
             path='/liquid-stress-test'
             component={LiquidStressTest}
           />
+          <Route exact path='/line-intersection' component={LineIntersection} />
           <CreatorTag />
         </Container>
       </Container>

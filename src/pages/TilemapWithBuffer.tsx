@@ -18,7 +18,7 @@ const TilemapWithBuffer = () => {
         Map.merge(arrayBufferGrid);
 
       // Rendering
-      const app: PIXI.Application = await setRenderer();
+      const app: PIXI.Application = setRenderer();
       const graphics = new PIXI.Graphics();
 
       graphics.clear();

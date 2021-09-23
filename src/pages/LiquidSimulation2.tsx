@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
-import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { useState, useEffect } from 'react';
+import { Progress } from 'rsuite';
+import { preload, setRenderer, setUpdater } from '../utils';
 import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
@@ -26,6 +27,10 @@ const spreadWater = (x: number, y: number): void => {
 };
 
 const LiquidSimulation2 = () => {
+  const [percentage, setPercentage] = useState(0);
+  const [asset, setAsset] = useState('');
+  const [hide, setHide] = useState(false);
+
   useEffect(() => {
     (async () => {
       // Buffer Tile Map Generate
@@ -76,7 +81,12 @@ const LiquidSimulation2 = () => {
       };
 
       // Rendering
-      const app: PIXI.Application = await setRenderer();
+      const app: PIXI.Application = setRenderer();
+      await preload((percentage: number, assetName: string) => {
+        setPercentage(Math.floor(percentage * 100));
+        setAsset(assetName);
+      });
+      setHide(true);
       const label: PIXI.Container = createLabel('Click to create water');
       label.x = Math.round(window.innerWidth / 2 - label.width / 2);
       label.y = 60;
@@ -167,7 +177,33 @@ const LiquidSimulation2 = () => {
     })();
   }, []);
 
-  return <></>;
+  return (
+    <>
+      {
+        <div
+          style={{
+            width: '100%',
+            position: 'absolute',
+            bottom: '20px',
+            opacity: hide ? 0 : 1,
+            transitionProperty: 'opacity',
+            transitionDuration: '1s',
+          }}
+        >
+          <div
+            style={{ width: '100%', textAlign: 'center' }}
+            className='noselect'
+          >
+            Loading Asset : {asset}
+          </div>
+          <Progress.Line
+            percent={percentage}
+            status={percentage === 100 ? 'success' : 'active'}
+          />
+        </div>
+      }
+    </>
+  );
 };
 
 export default LiquidSimulation2;
