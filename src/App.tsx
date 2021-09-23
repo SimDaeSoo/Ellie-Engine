@@ -14,7 +14,6 @@ const App = () => {
   return (
     <>
       <Container style={{ height: '100%' }}>
-        <SideNavigation />
         <Container id='content'>
           <Route exact path='/' component={TilemapWithBuffer} />
           <Route exact path='/cave-generate' component={CaveGenerate} />
@@ -37,6 +36,7 @@ const App = () => {
           <Route exact path='/line-intersection' component={LineIntersection} />
           <CreatorTag />
         </Container>
+        <SideNavigation />
       </Container>
     </>
   );

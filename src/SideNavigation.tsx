@@ -17,7 +17,6 @@ const SideNavigation = () => {
         height: '100%',
         overflow: 'auto',
         backgroundColor: '#1a1d24',
-        zIndex: 1,
       }}
     >
       <Sidenav>
