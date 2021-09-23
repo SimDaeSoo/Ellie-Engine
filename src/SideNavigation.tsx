@@ -93,7 +93,6 @@ const SideNavigation = () => {
               icon={<Icon icon='tint' />}
               onSelect={() => history.push('/liquid-simulation-2')}
               eventKey='/liquid-simulation-2'
-              disabled
             >
               Liquid Simulation 2
             </Nav.Item>
@@ -101,7 +100,6 @@ const SideNavigation = () => {
               icon={<Icon icon='tint' />}
               onSelect={() => history.push('/liquid-stress-test')}
               eventKey='/liquid-stress-test'
-              disabled
             >
               Liquid Stress Test
             </Nav.Item>

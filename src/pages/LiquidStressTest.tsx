@@ -1,12 +1,30 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
 import { setRenderer, setUpdater } from '../utils';
+import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
-import * as CaveGenerator from '../utils/CaveGenerator';
 import * as LiquidSimulator from '../utils/LiquidSimulator';
 import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
 
-const LiquidSimulation = () => {
+const onTouch = (e: any) => {
+  const [x, y] = [
+    Math.floor(e.targetTouches[0].clientX / 8),
+    Math.floor(e.targetTouches[0].clientY / 8),
+  ];
+  spreadWater(x, y);
+};
+
+const onClick = (e: any) => {
+  const [x, y] = [Math.floor(e.clientX / 8), Math.floor(e.clientY / 8)];
+  spreadWater(x, y);
+};
+
+let callback: (x: number, y: number) => void;
+const spreadWater = (x: number, y: number): void => {
+  if (callback) callback(x, y);
+};
+
+const LiquidStressTest = () => {
   useEffect(() => {
     (async () => {
       // Buffer Tile Map Generate
@@ -18,25 +36,41 @@ const LiquidSimulation = () => {
         {
           splitSize: 0,
           density: {
-            block: 0.5,
-            liquid: 0.5,
+            block: 0,
+            liquid: 1,
           },
         }
       );
       const grid: Array<Array<[Uint8Array, Float64Array]>> =
         Map.merge(arrayBufferGrid);
 
-      for (let i = 0; i < 10; i++) {
-        CaveGenerator.nextStep(
-          grid,
-          i < 4
-            ? { deathLimit: 3, birthLimit: 5 }
-            : { deathLimit: 4, birthLimit: 4 }
-        );
-      }
+      // Event Listener
+      window.removeEventListener('touchstart', onTouch);
+      window.removeEventListener('click', onClick);
+      window.addEventListener('touchstart', onTouch);
+      window.addEventListener('click', onClick);
+      callback = (x, y) => {
+        for (let offsetY = -3; offsetY <= 3; offsetY++) {
+          for (let offsetX = -3; offsetX <= 3; offsetX++) {
+            if (
+              x + offsetX >= 0 &&
+              x + offsetX < width &&
+              y + offsetY >= 0 &&
+              y + offsetY < height &&
+              !grid[y + offsetY][x + offsetX][0][0]
+            ) {
+              grid[y + offsetY][x + offsetX][1][0] += 1;
+            }
+          }
+        }
+      };
 
       // Rendering
       const app: PIXI.Application = await setRenderer();
+      const label: PIXI.Container = createLabel('Click to create water');
+      label.x = Math.round(window.innerWidth / 2 - label.width / 2);
+      label.y = 60;
+
       const backgroundContainer = new PIXI.Container();
       const tileContainer = new PIXI.Container();
       const waterContainer = new PIXI.Container();
@@ -91,6 +125,7 @@ const LiquidSimulation = () => {
       app.stage.addChild(backgroundContainer);
       app.stage.addChild(tileContainer);
       app.stage.addChild(waterContainer);
+      app.stage.addChild(label);
 
       backgroundContainer.cacheAsBitmap = true;
       tileContainer.cacheAsBitmap = true;
@@ -125,4 +160,4 @@ const LiquidSimulation = () => {
   return <></>;
 };
 
-export default LiquidSimulation;
+export default LiquidStressTest;
