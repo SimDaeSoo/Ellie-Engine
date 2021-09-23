@@ -1,4 +1,7 @@
-body {
+html,
+body,
+#root {
   margin: 0;
-  background-color: #202020;
+  height: 100%;
+  width: 100%;
 }

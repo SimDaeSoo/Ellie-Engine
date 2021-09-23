@@ -1,5 +1,5 @@
 {
-  "name": "engine",
+  "name": "Engine",
   "version": "0.0.0",
   "private": true,
   "homepage": "https://simdaesoo.github.io/Engine/build",
@@ -7,11 +7,16 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.3.0",
+    "@types/seedrandom": "^3.0.1",
     "@types/stats.js": "^0.17.0",
     "pixi.js": "^6.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
+    "rsuite": "^4.10.3",
+    "seedrandom": "^3.0.5",
     "stats.js": "^0.17.0",
     "typescript": "^4.1.2"
   },
