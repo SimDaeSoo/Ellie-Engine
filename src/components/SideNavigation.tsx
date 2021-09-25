@@ -21,6 +21,9 @@ const SideNavigation = () => {
       onClick={(e: any) => {
         e.stopPropagation();
       }}
+      onTouchStart={(e: any) => {
+        e.stopPropagation();
+      }}
     >
       <Sidenav>
         <Sidenav.Header
