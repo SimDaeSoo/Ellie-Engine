@@ -49,8 +49,8 @@ const LiquidStressTest = () => {
     window.addEventListener('touchstart', onTouch);
     window.addEventListener('click', onClick);
     callback = (x, y) => {
-      for (let offsetY = -3; offsetY <= 3; offsetY++) {
-        for (let offsetX = -3; offsetX <= 3; offsetX++) {
+      for (let offsetY = -5; offsetY <= 5; offsetY++) {
+        for (let offsetX = -5; offsetX <= 5; offsetX++) {
           if (
             x + offsetX >= 0 &&
             x + offsetX < width &&

@@ -257,12 +257,13 @@ function getWaterTileNumber(
   ) {
     if (grid[y - 1][x - 1][1][0] && grid[y - 1][x + 1][1][0]) {
       return 36;
-    } else if (grid[y - 1][x - 1][1][0]) {
+    } else if (grid[y - 1][x - 1][1][0] && !grid[y][x + 1][1][0]) {
       return 35;
-    } else if (grid[y - 1][x + 1][1][0]) {
+    } else if (grid[y - 1][x + 1][1][0] && !grid[y][x - 1][1][0]) {
       return 34;
     }
-  } else if (
+  }
+  if (
     waterLevel <= 1 &&
     (y === 0 || (!grid[y - 1][x][0][0] && !grid[y - 1][x][1][0]))
   ) {
@@ -272,8 +273,6 @@ function getWaterTileNumber(
   } else {
     return waterLevel;
   }
-
-  return -1;
 }
 
 export { getTileNumber, getWaterTileNumber };

@@ -1,9 +1,9 @@
 const MIN_LIQUID_VALUE = 0.005;
 const MAX_LIQUID_VALUE = 1.0;
-const MAX_COMPRESSION = 0.25;
+const MAX_COMPRESSION = 0.125;
 const MIN_FLOW = 0.005;
 const MAX_FLOW = 4;
-const FLOW_SPEED = 1;
+const FLOW_SPEED = 0.5;
 
 function calculateVerticalFlowValue(
   remainingLiquid: number,
@@ -30,31 +30,31 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
     .map(() =>
       new Array(grid[0].length)
         .fill(true)
-        .map(() => ({ diff: 0, settled: false, settleCount: 0 }))
+        .map(() => ({ diff: 0, isStable: false, stableLevel: 0 }))
     );
 
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
-      const cell = grid[y][x];
+      const tile = grid[y][x];
 
-      if (cell[0][0]) {
-        cell[1][0] = 0;
+      if (tile[0][0]) {
+        tile[1][0] = 0;
         continue;
       }
-      if (cell[1][0] === 0) continue;
-      if (tileDatas[y][x].settled) continue;
-      if (cell[1][0] < MIN_LIQUID_VALUE) {
-        cell[1][0] = 0;
+      if (tile[1][0] === 0) continue;
+      if (tileDatas[y][x].isStable) continue;
+      if (tile[1][0] < MIN_LIQUID_VALUE) {
+        tile[1][0] = 0;
         continue;
       }
 
-      let startValue = cell[1][0];
-      let remainingValue = cell[1][0];
+      const startValue = tile[1][0];
+      let remainingValue = tile[1][0];
       flow = 0;
 
       if (y < grid.length - 1 && !grid[y + 1][x][0][0]) {
         flow =
-          calculateVerticalFlowValue(cell[1][0], grid[y + 1][x]) -
+          calculateVerticalFlowValue(tile[1][0], grid[y + 1][x]) -
           grid[y + 1][x][1][0];
 
         if (grid[y + 1][x][1][0] > 0 && flow > MIN_FLOW) {
@@ -62,14 +62,14 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
         }
 
         flow = Math.max(flow, 0);
-        if (flow > Math.min(MAX_FLOW, cell[1][0])) {
-          flow = Math.min(MAX_FLOW, cell[1][0]);
+        if (flow > Math.min(MAX_FLOW, tile[1][0])) {
+          flow = Math.min(MAX_FLOW, tile[1][0]);
         }
         if (flow !== 0) {
           remainingValue -= flow;
           tileDatas[y][x].diff -= flow;
           tileDatas[y + 1][x].diff += flow;
-          tileDatas[y + 1][x].settled = false;
+          tileDatas[y + 1][x].isStable = false;
         }
       }
 
@@ -94,7 +94,7 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
           remainingValue -= flow;
           tileDatas[y][x].diff -= flow;
           tileDatas[y][x - 1].diff += flow;
-          tileDatas[y][x - 1].settled = false;
+          tileDatas[y][x - 1].isStable = false;
         }
       }
 
@@ -118,7 +118,7 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
           remainingValue -= flow;
           tileDatas[y][x].diff -= flow;
           tileDatas[y][x + 1].diff += flow;
-          tileDatas[y][x + 1].settled = false;
+          tileDatas[y][x + 1].isStable = false;
         }
       }
 
@@ -144,7 +144,7 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
           remainingValue -= flow;
           tileDatas[y][x].diff -= flow;
           tileDatas[y - 1][x].diff += flow;
-          tileDatas[y - 1][x].settled = false;
+          tileDatas[y - 1][x].isStable = false;
         }
       }
 
@@ -154,17 +154,17 @@ function nextStep(grid: Array<Array<[Uint8Array, Float64Array]>>): void {
       }
 
       if (startValue === remainingValue) {
-        tileDatas[y][x].settleCount++;
-        if (tileDatas[y][x].settleCount >= 10) {
-          tileDatas[y][x].settled = true;
+        tileDatas[y][x].stableLevel++;
+        if (tileDatas[y][x].stableLevel >= 10) {
+          tileDatas[y][x].isStable = true;
         }
       } else {
-        if (y > 0 && grid[y - 1][x]) tileDatas[y - 1][x].settled = false;
+        if (y > 0 && grid[y - 1][x]) tileDatas[y - 1][x].isStable = false;
         if (y < grid.length - 1 && grid[y + 1][x])
-          tileDatas[y + 1][x].settled = false;
-        if (x > 0 && grid[y][x - 1]) tileDatas[y][x - 1].settled = false;
+          tileDatas[y + 1][x].isStable = false;
+        if (x > 0 && grid[y][x - 1]) tileDatas[y][x - 1].isStable = false;
         if (x < grid[0].length - 1 && grid[y][x + 1])
-          tileDatas[y][x + 1].settled = false;
+          tileDatas[y][x + 1].isStable = false;
       }
     }
   }
