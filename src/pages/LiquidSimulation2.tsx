@@ -5,7 +5,12 @@ import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import * as LiquidSimulator from '../utils/LiquidSimulator';
-import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
+import {
+  getTileNumber,
+  getTileTextures,
+  getWaterTextures,
+  getWaterTileNumber,
+} from '../utils/Tile';
 import { TileProperties } from '../interfaces';
 import { TILE_SIZE } from '../constants';
 
@@ -80,8 +85,16 @@ const LiquidSimulation2 = ({
     labelContainer.x = Math.round(clientWidth / 2 - labelContainer.width / 2);
     labelContainer.y = 60;
 
-    const tileContainer = new PIXI.Container();
-    const waterContainer = new PIXI.Container();
+    // const tileContainer = new PIXI.Container();
+    const tileContainer = new PIXI.ParticleContainer(width * height, {
+      uvs: true,
+    });
+    const waterContainer = new PIXI.ParticleContainer(width * height, {
+      uvs: true,
+      alpha: true,
+    });
+    const tileParticleTextures = getTileTextures();
+    const waterParticleTextures = getWaterTextures();
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
       .fill(true)
       .map(() => new Array(width));
@@ -96,11 +109,7 @@ const LiquidSimulation2 = ({
       for (let x = 0; x < width; x++) {
         if (tileGrid[y][x][0][0]) {
           const sprite = new PIXI.Sprite(
-            PIXI.Texture.from(
-              `tiles/Tile_${getTileNumber(x, y, tileGrid)
-                .toString()
-                .padStart(2, '0')}.png`
-            )
+            tileParticleTextures[getTileNumber(x, y, tileGrid)]
           );
           sprite.width = TILE_SIZE;
           sprite.height = TILE_SIZE;
@@ -108,15 +117,11 @@ const LiquidSimulation2 = ({
           sprite.y = y * TILE_SIZE;
           tileContainer.addChild(sprite);
         } else {
-          const waterTileNumber = getWaterTileNumber(x, y, tileGrid);
+          const waterTileNumber = tileGrid[y][x][1][0]
+            ? getWaterTileNumber(x, y, tileGrid)
+            : 37;
           const waterSprite = new PIXI.Sprite(
-            waterTileNumber >= 0
-              ? PIXI.Texture.from(
-                  `waters/Water_${waterTileNumber
-                    .toString()
-                    .padStart(2, '0')}.png`
-                )
-              : PIXI.Texture.EMPTY
+            waterParticleTextures[waterTileNumber]
           );
           waterSprite.width = TILE_SIZE;
           waterSprite.height = TILE_SIZE;
@@ -128,10 +133,8 @@ const LiquidSimulation2 = ({
           if (tileGrid[y][x][0][1]) {
             const sprite = new PIXI.Sprite(
               tileGrid[y][x][0][1] === 1
-                ? PIXI.Texture.from(`tiles/Tile_61.png`)
-                : tileGrid[y][x][0][1] === 2
-                ? PIXI.Texture.from(`tiles/Tile_62.png`)
-                : PIXI.Texture.EMPTY
+                ? tileParticleTextures[60]
+                : tileParticleTextures[61]
             );
             sprite.width = TILE_SIZE;
             sprite.height = TILE_SIZE;
@@ -146,8 +149,7 @@ const LiquidSimulation2 = ({
     stage.addChild(tileContainer);
     stage.addChild(waterContainer);
     stage.addChild(labelContainer);
-
-    tileContainer.cacheAsBitmap = true;
+    // tileContainer.cacheAsBitmap = true;
 
     // Update Logic
     const step = LiquidSimulator.stepGenerator(tileGrid, tileGridProperties);
@@ -157,21 +159,16 @@ const LiquidSimulation2 = ({
 
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-          if (!tileGrid[y][x][0][0]) {
-            const waterTileNumber = getWaterTileNumber(x, y, tileGrid);
-            tileSprites[y][x].texture =
-              tileGrid[y][x][1][0] && waterTileNumber >= 0
-                ? PIXI.Texture.from(
-                    `waters/Water_${waterTileNumber
-                      .toString()
-                      .padStart(2, '0')}.png`
-                  )
-                : PIXI.Texture.EMPTY;
-            tileSprites[y][x].alpha = Math.min(
-              0.4 + tileGrid[y][x][1][0] * 0.1,
-              0.8
-            );
-          }
+          if (tileGrid[y][x][0][0]) continue;
+
+          const waterTileNumber = tileGrid[y][x][1][0]
+            ? getWaterTileNumber(x, y, tileGrid)
+            : 37;
+          tileSprites[y][x].texture = waterParticleTextures[waterTileNumber];
+          tileSprites[y][x].alpha = Math.min(
+            0.4 + tileGrid[y][x][1][0] * 0.1,
+            0.8
+          );
         }
       }
     });

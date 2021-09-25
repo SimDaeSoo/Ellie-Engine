@@ -4,7 +4,7 @@ import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { drawTiles } from '../utils/Graphics';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
-import { getTileNumber } from '../utils/Tile';
+import { getTileNumber, getTileTextures } from '../utils/Tile';
 import { TILE_SIZE } from '../constants';
 
 const CaveGenerateWithSky = ({
@@ -45,7 +45,7 @@ const CaveGenerateWithSky = ({
     background.cacheAsBitmap = true;
 
     graphics.clear();
-    drawTiles(graphics, tileGrid);
+    drawTiles(graphics, tileGrid, TILE_SIZE);
 
     stage.addChild(graphics);
 
@@ -72,7 +72,7 @@ const CaveGenerateWithSky = ({
         );
 
         graphics.clear();
-        drawTiles(graphics, tileGrid);
+        drawTiles(graphics, tileGrid, TILE_SIZE);
 
         stepCount++;
         frames = 0;
@@ -81,37 +81,40 @@ const CaveGenerateWithSky = ({
           stage.removeChild(graphics);
           stage.addChild(background);
 
-          const tileContainer = new PIXI.Container();
-          const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
-            .fill(true)
-            .map(() => new Array(width));
+          // const tileContainer = new PIXI.Container();
+          const tileContainer = new PIXI.ParticleContainer(width * height, {
+            uvs: true,
+          });
+          const tileParticleTextures = getTileTextures();
 
           for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-              const sprite = new PIXI.Sprite(
-                tileGrid[y][x][0][0]
-                  ? PIXI.Texture.from(
-                      `tiles/Tile_${getTileNumber(x, y, tileGrid)
-                        .toString()
-                        .padStart(2, '0')}.png`
-                    )
-                  : tileGrid[y][x][0][1] === 1
-                  ? PIXI.Texture.from(`tiles/Tile_61.png`)
-                  : tileGrid[y][x][0][1] === 2
-                  ? PIXI.Texture.from(`tiles/Tile_62.png`)
-                  : PIXI.Texture.EMPTY
-              );
-              sprite.width = TILE_SIZE;
-              sprite.height = TILE_SIZE;
-              sprite.x = x * TILE_SIZE;
-              sprite.y = y * TILE_SIZE;
-              tileSprites[y][x] = sprite;
-              tileContainer.addChild(sprite);
+              if (tileGrid[y][x][0][0]) {
+                const sprite = new PIXI.Sprite(
+                  tileParticleTextures[getTileNumber(x, y, tileGrid)]
+                );
+                sprite.width = TILE_SIZE;
+                sprite.height = TILE_SIZE;
+                sprite.x = x * TILE_SIZE;
+                sprite.y = y * TILE_SIZE;
+                tileContainer.addChild(sprite);
+              } else if (tileGrid[y][x][0][1]) {
+                const sprite = new PIXI.Sprite(
+                  tileGrid[y][x][0][1] === 1
+                    ? tileParticleTextures[60]
+                    : tileParticleTextures[61]
+                );
+                sprite.width = TILE_SIZE;
+                sprite.height = TILE_SIZE;
+                sprite.x = x * TILE_SIZE;
+                sprite.y = y * TILE_SIZE;
+                tileContainer.addChild(sprite);
+              }
             }
           }
 
           stage.addChild(tileContainer);
-          tileContainer.cacheAsBitmap = true;
+          // tileContainer.cacheAsBitmap = true;
         }
       }
     });

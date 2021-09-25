@@ -16,19 +16,8 @@ async function preload(
   const assets: Array<[string, string]> = [];
   const srcs: Array<string> = [];
 
-  for (let i = 1; i <= 62; i++) {
-    srcs.push(`tiles/Tile_${i.toString().padStart(2, '0')}.png`);
-  }
-
-  for (let i = 0; i <= 36; i++) {
-    srcs.push(`waters/Water_${i.toString().padStart(2, '0')}.png`);
-  }
-
-  for (let i = 0; i <= 0; i++) {
-    srcs.push(`backgrounds/${i.toString().padStart(2, '0')}.png`);
-  }
-
-  srcs.push(`characters/ellie/idle.png`);
+  srcs.push(`tiles.png`);
+  srcs.push(`waters.png`);
 
   for (const src of srcs) {
     assets.push([src, `${BASE_URL}/${src}`]);
@@ -80,6 +69,7 @@ function setRenderer(
   PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
   PIXI.settings.MIPMAP_TEXTURES = PIXI.MIPMAP_MODES.OFF;
   PIXI.settings.STRICT_TEXTURE_CACHE = true;
+  PIXI.settings.SPRITE_MAX_TEXTURES = 200;
 
   const stats: Stats = new Stats();
   const app = new PIXI.Application({
@@ -148,12 +138,13 @@ function setUpdater(callback: () => void): void {
 }
 
 function getClientSize(): [number, number] {
-  const ratio = window.innerWidth / window.innerHeight;
+  // const ratio = window.innerWidth / window.innerHeight;
 
-  return [
-    Math.min(1920, window.innerWidth),
-    Math.ceil(Math.min(1920, window.innerWidth) / ratio),
-  ];
+  // return [
+  //   Math.min(1920, window.innerWidth),
+  //   Math.ceil(Math.min(1920, window.innerWidth) / ratio),
+  // ];
+  return [window.innerWidth, window.innerHeight];
 }
 
 export { setRenderer, setUpdater, preload, getClientSize };

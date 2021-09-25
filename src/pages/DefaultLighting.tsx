@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { getClientSize, setRenderer } from '../utils';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
-import { getTileNumber } from '../utils/Tile';
+import { getTileNumber, getTileTextures } from '../utils/Tile';
 import { getDefaultLightings } from '../utils/Lighting';
 import { TILE_SIZE } from '../constants';
 
@@ -56,7 +56,11 @@ const DefaultLighting = ({
 
     // Rendering
     const { stage, lightContainer } = setRenderer({ defaultLighting: false });
-    const tileContainer = new PIXI.Container();
+    // const tileContainer = new PIXI.Container();
+    const tileContainer = new PIXI.ParticleContainer(width * height, {
+      uvs: true,
+    });
+    const tileParticleTextures = getTileTextures();
     const background = new PIXI.Sprite(PIXI.Texture.WHITE);
     const defaultLightingGraphic = new PIXI.Graphics();
     background.tint = 0x87ceeb;
@@ -83,11 +87,7 @@ const DefaultLighting = ({
       for (let x = 0; x < width; x++) {
         if (tileGrid[y][x][0][0]) {
           const sprite = new PIXI.Sprite(
-            PIXI.Texture.from(
-              `tiles/Tile_${getTileNumber(x, y, tileGrid)
-                .toString()
-                .padStart(2, '0')}.png`
-            )
+            tileParticleTextures[getTileNumber(x, y, tileGrid)]
           );
           sprite.width = TILE_SIZE;
           sprite.height = TILE_SIZE;
@@ -97,10 +97,8 @@ const DefaultLighting = ({
         } else if (tileGrid[y][x][0][1]) {
           const sprite = new PIXI.Sprite(
             tileGrid[y][x][0][1] === 1
-              ? PIXI.Texture.from(`tiles/Tile_61.png`)
-              : tileGrid[y][x][0][1] === 2
-              ? PIXI.Texture.from(`tiles/Tile_62.png`)
-              : PIXI.Texture.EMPTY
+              ? tileParticleTextures[60]
+              : tileParticleTextures[61]
           );
           sprite.width = TILE_SIZE;
           sprite.height = TILE_SIZE;
@@ -115,7 +113,7 @@ const DefaultLighting = ({
     stage.addChild(tileContainer);
     lightContainer.addChild(defaultLightingGraphic);
 
-    tileContainer.cacheAsBitmap = true;
+    // tileContainer.cacheAsBitmap = true;
     defaultLightingGraphic.cacheAsBitmap = true;
   }, [setCallback]);
 
