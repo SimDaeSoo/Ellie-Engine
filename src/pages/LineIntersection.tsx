@@ -37,7 +37,7 @@ const LineIntersection = () => {
     }
 
     graphics.clear();
-    drawLines(graphics, [lineA, lineB], 1, 0x009900);
+    drawLines(graphics, [lineA, lineB], { width: 1, color: 0x009900 });
     drawPoints(graphics, points, 2);
 
     // Line Intersection
@@ -46,7 +46,7 @@ const LineIntersection = () => {
       lineA[0][0] + (lineA[1][0] - lineA[0][0]) * collisionDt,
       lineA[0][1] + (lineA[1][1] - lineA[0][1]) * collisionDt,
     ];
-    drawPoints(graphics, [collisionPoint], 4, 0x5500ff);
+    drawPoints(graphics, [collisionPoint], 4, 0xffaa66);
 
     const { container: pointContainer } = createLabel(
       `Intersection at (${collisionPoint[0].toFixed(

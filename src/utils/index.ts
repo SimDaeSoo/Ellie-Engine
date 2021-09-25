@@ -23,6 +23,7 @@ async function preload(
   }
 
   srcs.push(`characters/ellie/idle.png`);
+  srcs.push(`sample.jpeg`);
 
   for (const src of srcs) {
     assets.push([src, `${BASE_URL}/${src}`]);

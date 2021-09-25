@@ -9,8 +9,8 @@ The goal of this project is to create engine for 2D platform game like terraria.
 - [Liquid Simulation](https://simdaesoo.github.io/Engine/build/#/liquid-simulation)
 - [Liquid Simulation 2](https://simdaesoo.github.io/Engine/build/#/liquid-simulation-2)
 - [Liquid Stress Test](https://simdaesoo.github.io/Engine/build/#/liquid-stress-test)
-- Line Intersection
-- Line Intersection 2
+- [Line Intersection](https://simdaesoo.github.io/Engine/build/#/line-intersection)
+- [Line Intersection 2](https://simdaesoo.github.io/Engine/build/#/line-intersection-2)
 - Lighting Area
 - Lighting Area 2
 - Lighting Stress Test

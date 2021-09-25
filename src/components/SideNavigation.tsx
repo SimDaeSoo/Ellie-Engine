@@ -98,7 +98,6 @@ const SideNavigation = () => {
               icon={<Icon icon='close' />}
               onSelect={() => history.push('/line-intersection-2')}
               eventKey='/line-intersection-2'
-              disabled
             >
               Line Intersection 2
             </Nav.Item>

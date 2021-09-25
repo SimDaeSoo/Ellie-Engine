@@ -36,10 +36,9 @@ function drawPoints(
 function drawLines(
   graphics: PIXI.Graphics,
   lines: Array<Line>,
-  width: number = 1,
-  color: number = 0x00ff00
+  options: PIXI.ILineStyleOptions = { width: 1, color: 0x00ff00 }
 ) {
-  graphics.lineStyle({ width, color });
+  graphics.lineStyle(options);
 
   for (const [begin, end] of lines) {
     graphics.moveTo(...begin);
