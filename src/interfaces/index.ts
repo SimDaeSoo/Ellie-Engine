@@ -3,3 +3,5 @@ export type TileProperties = {
   isStable: boolean;
   stableLevel: number;
 };
+
+export type Line = [[number, number], [number, number]];
