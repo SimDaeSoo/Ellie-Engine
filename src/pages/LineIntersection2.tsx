@@ -68,6 +68,7 @@ const LineIntersection2 = () => {
       dirty = true;
     };
 
+    const collisionPointContainers: Array<PIXI.Container> = [];
     setUpdater(() => {
       if (!dirty) return;
       const collisionPoints: Array<[number, number]> = [];
@@ -95,8 +96,23 @@ const LineIntersection2 = () => {
         width: 1,
         color: 0x009900,
       });
-      drawPoints(graphics, movableLine, 1, 0xff0000);
-      drawPoints(graphics, collisionPoints, 3, 0xffaa66);
+      drawPoints(graphics, movableLine, 2, 0xff0000);
+      drawPoints(graphics, collisionPoints, 4, 0xffaa66);
+
+      for (const collisionPointContainer of collisionPointContainers) {
+        app.stage.removeChild(collisionPointContainer);
+      }
+
+      for (const collisionPoint of collisionPoints) {
+        const { container: pointContainer } = createLabel(
+          `Intersect at (${Math.round(collisionPoint[0])},${Math.round(
+            collisionPoint[1]
+          )})`
+        );
+        pointContainer.position.set(...collisionPoint);
+        app.stage.addChild(pointContainer);
+        collisionPointContainers.push(pointContainer);
+      }
 
       beginContainer.position.set(...movableLine[0]);
       endContainer.position.set(...movableLine[1]);

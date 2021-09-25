@@ -49,7 +49,7 @@ const LineIntersection = () => {
     drawPoints(graphics, [collisionPoint], 4, 0xffaa66);
 
     const { container: pointContainer } = createLabel(
-      `Intersection at (${collisionPoint[0].toFixed(
+      `Intersect at (${collisionPoint[0].toFixed(
         2
       )},${collisionPoint[1].toFixed(2)})`
     );
