@@ -115,6 +115,13 @@ const SideNavigation = () => {
             </Nav.Item>
             <Nav.Item
               icon={<Icon icon='lightbulb-o' />}
+              onSelect={() => history.push('/default-lighting')}
+              eventKey='/default-lighting'
+            >
+              Default Lighting
+            </Nav.Item>
+            <Nav.Item
+              icon={<Icon icon='lightbulb-o' />}
               onSelect={() => history.push('/lighting-area')}
               eventKey='/lighting-area'
               disabled

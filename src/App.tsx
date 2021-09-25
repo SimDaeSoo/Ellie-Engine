@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Route } from 'react-router';
 import { Container } from 'rsuite';
-import { preload, setRenderer } from './utils';
+import { getClientSize, preload, setRenderer } from './utils';
 import CreatorTag from './components/CreatorTag';
 import SideNavigation from './components/SideNavigation';
 import ProgressBar from './components/ProgressBar';
@@ -14,6 +14,7 @@ import LiquidSimulation2 from './pages/LiquidSimulation2';
 import LiquidStressTest from './pages/LiquidStressTest';
 import LineIntersection from './pages/LineIntersection';
 import LineIntersection2 from './pages/LineIntersection2';
+import DefaultLighting from './pages/DefaultLighting';
 
 let callback: (x: number, y: number) => void;
 
@@ -26,11 +27,19 @@ const App = () => {
     (async () => {
       // Event Listener
       const onTouch = (e: any) => {
-        const [x, y] = [e.targetTouches[0].clientX, e.targetTouches[0].clientY];
+        const [clientWidth, clientHeight] = getClientSize();
+        const [x, y] = [
+          (e.targetTouches[0].clientX / window.innerWidth) * clientWidth,
+          (e.targetTouches[0].clientY / window.innerHeight) * clientHeight,
+        ];
         if (callback) callback(x, y);
       };
       const onClick = (e: any) => {
-        const [x, y] = [e.clientX, e.clientY];
+        const [clientWidth, clientHeight] = getClientSize();
+        const [x, y] = [
+          (e.clientX / window.innerWidth) * clientWidth,
+          (e.clientY / window.innerHeight) * clientHeight,
+        ];
         if (callback) callback(x, y);
       };
       window.removeEventListener('touchstart', onTouch);
@@ -132,6 +141,15 @@ const App = () => {
               path='/line-intersection-2'
               render={() => (
                 <LineIntersection2 setCallback={(cb) => (callback = cb)} />
+              )}
+            />
+          )}
+          {hide && (
+            <Route
+              exact
+              path='/default-lighting'
+              render={() => (
+                <DefaultLighting setCallback={(cb) => (callback = cb)} />
               )}
             />
           )}

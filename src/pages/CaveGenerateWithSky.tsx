@@ -1,10 +1,11 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { drawTiles } from '../utils/Graphics';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import { getTileNumber } from '../utils/Tile';
+import { TILE_SIZE } from '../constants';
 
 const CaveGenerateWithSky = ({
   setCallback,
@@ -16,8 +17,9 @@ const CaveGenerateWithSky = ({
     setCallback((_x: number, _y: number) => {});
 
     // Buffer Tile Map Generate
-    const width = Math.ceil(window.innerWidth / 8);
-    const height = Math.ceil(window.innerHeight / 8);
+    const [clientWidth, clientHeight] = getClientSize();
+    const width = Math.ceil(clientWidth / TILE_SIZE);
+    const height = Math.ceil(clientHeight / TILE_SIZE);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height,
@@ -34,18 +36,18 @@ const CaveGenerateWithSky = ({
       Map.merge(tileBufferGrids);
 
     // Rendering
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const graphics = new PIXI.Graphics();
     const background = new PIXI.Sprite(PIXI.Texture.WHITE);
     background.tint = 0x87ceeb;
-    background.width = window.innerWidth;
-    background.height = window.innerHeight;
+    background.width = clientWidth;
+    background.height = clientHeight;
     background.cacheAsBitmap = true;
 
     graphics.clear();
     drawTiles(graphics, tileGrid);
 
-    app.stage.addChild(graphics);
+    stage.addChild(graphics);
 
     // Update Logic
     let frames = 0;
@@ -59,13 +61,13 @@ const CaveGenerateWithSky = ({
                 deathLimit: 3,
                 birthLimit: 5,
                 clearSky: true,
-                margin: Math.round(height / 8),
+                margin: Math.round(height / 6),
               }
             : {
                 deathLimit: 4,
                 birthLimit: 4,
                 clearSky: true,
-                margin: Math.round(height / 8),
+                margin: Math.round(height / 6),
               }
         );
 
@@ -76,8 +78,8 @@ const CaveGenerateWithSky = ({
         frames = 0;
 
         if (stepCount === 10) {
-          app.stage.removeChild(graphics);
-          app.stage.addChild(background);
+          stage.removeChild(graphics);
+          stage.addChild(background);
 
           const tileContainer = new PIXI.Container();
           const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
@@ -99,16 +101,16 @@ const CaveGenerateWithSky = ({
                   ? PIXI.Texture.from(`tiles/Tile_62.png`)
                   : PIXI.Texture.EMPTY
               );
-              sprite.width = 8;
-              sprite.height = 8;
-              sprite.x = x * 8;
-              sprite.y = y * 8;
+              sprite.width = TILE_SIZE;
+              sprite.height = TILE_SIZE;
+              sprite.x = x * TILE_SIZE;
+              sprite.y = y * TILE_SIZE;
               tileSprites[y][x] = sprite;
               tileContainer.addChild(sprite);
             }
           }
 
-          app.stage.addChild(tileContainer);
+          stage.addChild(tileContainer);
           tileContainer.cacheAsBitmap = true;
         }
       }

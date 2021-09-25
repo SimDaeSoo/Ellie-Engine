@@ -1,12 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import * as LiquidSimulator from '../utils/LiquidSimulator';
 import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
 import { TileProperties } from '../interfaces';
+import { TILE_SIZE } from '../constants';
 
 const LiquidSimulation2 = ({
   setCallback,
@@ -15,8 +16,9 @@ const LiquidSimulation2 = ({
 }) => {
   useEffect(() => {
     // Buffer Tile Map Generate
-    const width = Math.ceil(window.innerWidth / 8);
-    const height = Math.ceil(window.innerHeight / 8);
+    const [clientWidth, clientHeight] = getClientSize();
+    const width = Math.ceil(clientWidth / TILE_SIZE);
+    const height = Math.ceil(clientHeight / TILE_SIZE);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height,
@@ -42,20 +44,20 @@ const LiquidSimulation2 = ({
               deathLimit: 3,
               birthLimit: 5,
               clearSky: true,
-              margin: Math.round(height / 8),
+              margin: Math.round(height / 6),
             }
           : {
               deathLimit: 4,
               birthLimit: 4,
               clearSky: true,
-              margin: Math.round(height / 8),
+              margin: Math.round(height / 6),
             }
       );
     }
 
     // Set Click Callback
     setCallback((_x: number, _y: number) => {
-      const [x, y] = [Math.floor(_x / 8), Math.floor(_y / 8)];
+      const [x, y] = [Math.floor(_x / TILE_SIZE), Math.floor(_y / TILE_SIZE)];
 
       for (let offsetY = -3; offsetY <= 3; offsetY++) {
         for (let offsetX = -3; offsetX <= 3; offsetX++) {
@@ -73,14 +75,11 @@ const LiquidSimulation2 = ({
     });
 
     // Rendering
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const { container: labelContainer } = createLabel('Click to create water');
-    labelContainer.x = Math.round(
-      window.innerWidth / 2 - labelContainer.width / 2
-    );
+    labelContainer.x = Math.round(clientWidth / 2 - labelContainer.width / 2);
     labelContainer.y = 60;
 
-    const backgroundContainer = new PIXI.Container();
     const tileContainer = new PIXI.Container();
     const waterContainer = new PIXI.Container();
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
@@ -88,10 +87,10 @@ const LiquidSimulation2 = ({
       .map(() => new Array(width));
     const background = new PIXI.Sprite(PIXI.Texture.WHITE);
     background.tint = 0x87ceeb;
-    background.width = window.innerWidth;
-    background.height = window.innerHeight;
+    background.width = clientWidth;
+    background.height = clientHeight;
     background.cacheAsBitmap = true;
-    app.stage.addChild(background);
+    stage.addChild(background);
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -103,25 +102,26 @@ const LiquidSimulation2 = ({
                 .padStart(2, '0')}.png`
             )
           );
-          sprite.width = 8;
-          sprite.height = 8;
-          sprite.x = x * 8;
-          sprite.y = y * 8;
-          tileSprites[y][x] = sprite;
+          sprite.width = TILE_SIZE;
+          sprite.height = TILE_SIZE;
+          sprite.x = x * TILE_SIZE;
+          sprite.y = y * TILE_SIZE;
           tileContainer.addChild(sprite);
         } else {
           const waterTileNumber = getWaterTileNumber(x, y, tileGrid);
           const waterSprite = new PIXI.Sprite(
             waterTileNumber >= 0
               ? PIXI.Texture.from(
-                  `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
+                  `waters/Water_${waterTileNumber
+                    .toString()
+                    .padStart(2, '0')}.png`
                 )
               : PIXI.Texture.EMPTY
           );
-          waterSprite.width = 8;
-          waterSprite.height = 8;
-          waterSprite.x = x * 8;
-          waterSprite.y = y * 8;
+          waterSprite.width = TILE_SIZE;
+          waterSprite.height = TILE_SIZE;
+          waterSprite.x = x * TILE_SIZE;
+          waterSprite.y = y * TILE_SIZE;
           tileSprites[y][x] = waterSprite;
           waterContainer.addChild(waterSprite);
 
@@ -133,22 +133,20 @@ const LiquidSimulation2 = ({
                 ? PIXI.Texture.from(`tiles/Tile_62.png`)
                 : PIXI.Texture.EMPTY
             );
-            sprite.width = 8;
-            sprite.height = 8;
-            sprite.x = x * 8;
-            sprite.y = y * 8;
-            backgroundContainer.addChild(sprite);
+            sprite.width = TILE_SIZE;
+            sprite.height = TILE_SIZE;
+            sprite.x = x * TILE_SIZE;
+            sprite.y = y * TILE_SIZE;
+            tileContainer.addChild(sprite);
           }
         }
       }
     }
 
-    app.stage.addChild(backgroundContainer);
-    app.stage.addChild(tileContainer);
-    app.stage.addChild(waterContainer);
-    app.stage.addChild(labelContainer);
+    stage.addChild(tileContainer);
+    stage.addChild(waterContainer);
+    stage.addChild(labelContainer);
 
-    backgroundContainer.cacheAsBitmap = true;
     tileContainer.cacheAsBitmap = true;
 
     // Update Logic
@@ -164,7 +162,9 @@ const LiquidSimulation2 = ({
             tileSprites[y][x].texture =
               tileGrid[y][x][1][0] && waterTileNumber >= 0
                 ? PIXI.Texture.from(
-                    `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
+                    `waters/Water_${waterTileNumber
+                      .toString()
+                      .padStart(2, '0')}.png`
                   )
                 : PIXI.Texture.EMPTY;
             tileSprites[y][x].alpha = Math.min(

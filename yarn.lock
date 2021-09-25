@@ -1460,35 +1460,199 @@
   resolved "https://registry.npmjs.org/@pixi/extract/-/extract-6.1.3.tgz"
   integrity sha512-yZOsXc9Lh+U59ayl+DoWDPmndrOJj5ft2nzENMAvz2rVEOHQjWxH73qCSP6Wa5VsoINyJLMmV4MTbI+U0SH7GA==
 
+"@pixi/filter-adjustment@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-adjustment/-/filter-adjustment-4.1.3.tgz#61e34b4dd9766ccf40463f0538201bf68f78df66"
+  integrity sha512-W+NhPiZRYKoRToa5+tkU95eOw8gnS5dfIp3ZP+pLv2mdER9RI+4xHxp1uLHMqUYZViTaMdZIIoVOuCgHFPYCbQ==
+
+"@pixi/filter-advanced-bloom@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-advanced-bloom/-/filter-advanced-bloom-4.1.3.tgz#32377501631d7199714ebb9638a22c95960f1c79"
+  integrity sha512-q90BeF8EhFwpuc9E617cCmtWTZjE3Yj99k1kHTkS5cZ2aJkQnV+psYW8gRxJ4tHZ/PLi96uhk6TocSccVj/vmg==
+  dependencies:
+    "@pixi/filter-kawase-blur" "4.1.3"
+
 "@pixi/filter-alpha@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-alpha/-/filter-alpha-6.1.3.tgz"
   integrity sha512-eubgEO/qlxQbuPXgwxTZxTBTWjA0EQbrs7TyPqyBK2Wj0eEvimaVQ8u4eiqfMFJCZLnuWDCAPJpP9bMHxBXXpQ==
+
+"@pixi/filter-ascii@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-ascii/-/filter-ascii-4.1.3.tgz#7fb749b67e5f9457d1d1b9a7136e026c3d6bf683"
+  integrity sha512-NeOTUkqS8hfHXsRlVhaluuO2BZFVRXzBClWubcLae4s8Mw9eddl8jXU0BeAHQ4ZE6ZRXswTkc4c1x6aPOvZMlw==
+
+"@pixi/filter-bevel@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-bevel/-/filter-bevel-4.1.3.tgz#626465591acb99697eefc80ff178a7d759eca6e9"
+  integrity sha512-Wagrk0AFFgzSTUtvIShzTwIOE3ZxBD9pMUDZMsNE7gExxuusLUc7j6agTZVR/48c/9S5Anq7anrqLbI1iA1xNQ==
+
+"@pixi/filter-bloom@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-bloom/-/filter-bloom-4.1.3.tgz#26ca0057e9ee0a57638740ec59b28e8eeed69953"
+  integrity sha512-FHrFLxH3csWopZdWbrA/NgI1p8U9OD1Ji8wbfAOwJljn8z27vzBKJL9i1Mo5VLbuXSmqh0B61G0Y+WOUkRGpNA==
 
 "@pixi/filter-blur@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-blur/-/filter-blur-6.1.3.tgz"
   integrity sha512-uo8FHpV+qm4SuXcDnWqZWrznHmLJ3b8ibgLAgi/e8VmwrFiC+EqGa4n4V8J+xtR5P/iA3lT5pRgWw09/xHN3dQ==
 
+"@pixi/filter-bulge-pinch@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-bulge-pinch/-/filter-bulge-pinch-4.1.3.tgz#5a667ee0cf99d76fce3200b06e496d8d1db769ce"
+  integrity sha512-ScSC1d8sQHB+Xh7GPIIUUoxHpx6akvrF/aTXUtRFZa1OER0cQdVAEzfuH3Mk5CGwnnl64s2esWg6hiNhkaPbgQ==
+
+"@pixi/filter-color-map@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-color-map/-/filter-color-map-4.1.3.tgz#7aa27a5335af1d2e5165f7e29b2eb6cdf77b6963"
+  integrity sha512-yg9RylNo+oUnlxc/5i7jtgklh28SnePmYLm4eAQbR3DWFRFawj3JEZKLaoDGXsuYjvFIAgoY6ChTG/Hb2sK/UQ==
+
 "@pixi/filter-color-matrix@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-color-matrix/-/filter-color-matrix-6.1.3.tgz"
   integrity sha512-d1pyxmVrGDOrO5pINe+fTspj1NNxiIp2IZ+FGgT7e17xnxjXTvtk4n4KqXAZFS1NCoStImDAV5j+b8Lysdg5jQ==
+
+"@pixi/filter-color-overlay@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-color-overlay/-/filter-color-overlay-4.1.3.tgz#8a18b18228bf3eef0565cf15a949e9844f6337d6"
+  integrity sha512-/wCKbDedfwsiqEPNEIoocdLBS2K1TjHB5ReMmKmBGPjTj6mO4eETG6juDNTj/VyIBfIv+KxUmsHLsAdGQJtS1w==
+
+"@pixi/filter-color-replace@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-color-replace/-/filter-color-replace-4.1.3.tgz#907783d56e48f8cb0db6901f5c5d7303afb5472e"
+  integrity sha512-Q0J9RKSMBh1XJAFauVgM8WITDp3ejFuUJbnyiUi4wIz9jWEYA9MvcAV9Y04LD4u4k0mKou3UX0rBhJeOIx4HEA==
+
+"@pixi/filter-convolution@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-convolution/-/filter-convolution-4.1.3.tgz#b03d165b4b57208d3bd10c7e4bf99c7e521ac964"
+  integrity sha512-d4Y89S9/Y72KPZYS3n84jgwzExkoDK2W99qmyH8VjDIz0Nj14RTLXz1NHwTQC7nl1inFYQWLfudmRX8QmrC4ww==
+
+"@pixi/filter-cross-hatch@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-cross-hatch/-/filter-cross-hatch-4.1.3.tgz#d5eb38d7e9f4c532755fe82c2de343275bf86f4b"
+  integrity sha512-tnRwOR0POApJMTP3dggj9UQszikIZOU8Z9jjzB4pyKHSCNGFuALkN2CkjMyOojA0Cxtia0HbmU5v+CzSahOwVQ==
+
+"@pixi/filter-crt@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-crt/-/filter-crt-4.1.3.tgz#17cf7ed4c89be8de7c3486e6aa3c219713b3066d"
+  integrity sha512-LQPbMj9pQgJnfjwHUQOprn1Yt+m0gMg4R+1a2qpW/8DvEw/jx5byO4t+hIXrhauiOhS1JzHXg2bWaVzkjLLzGw==
 
 "@pixi/filter-displacement@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-displacement/-/filter-displacement-6.1.3.tgz"
   integrity sha512-tIXK8vXzb2unMxGmu4gjdlOwddnkHA0IJXFTOF25a5h36v/AHqWwWG4h5G775oPu37UuhuYjeD/j229t0Q9QNQ==
 
+"@pixi/filter-dot@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-dot/-/filter-dot-4.1.3.tgz#c92b5cacb9694de9e30d14df615bc7eae4e369f3"
+  integrity sha512-BPp6OvXgF7mFXAy85hg7IcvXp41H7V0ninQp2WSt/DKAuZw8xG7yZv7yzf2GK+By469dfm5hmegNATqndo4hBw==
+
+"@pixi/filter-drop-shadow@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-drop-shadow/-/filter-drop-shadow-4.1.3.tgz#31f9f6815c4c7f58a308f617e75fff0b71299bac"
+  integrity sha512-H6oGNmfg6fT/6yOgg8qe8LhAviqPquJmyQ9GIEItaY27rQ3virgIRjNzptlTXbH+mCHrRl5VNA9+4pLJbUMsuA==
+  dependencies:
+    "@pixi/filter-kawase-blur" "4.1.3"
+
+"@pixi/filter-emboss@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-emboss/-/filter-emboss-4.1.3.tgz#6c7b58498d50257772ac207f4a56f4475c03809f"
+  integrity sha512-MUcjcJZv7qVrkEwpO/xsxai3gutMoCYLIHZyz0XM0LHHa5i0SjWSbck9lRpCRlWrKMIoQP1f7aQEMcnnumvg/Q==
+
 "@pixi/filter-fxaa@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-fxaa/-/filter-fxaa-6.1.3.tgz"
   integrity sha512-yhKVxX5vFKQz3lxfqAGg4XoajFyIRR8XzWqEHgAsPMFRnIIQIbF25bMRygZj12P61z3vxwqAM/2bn7S46Ii1zQ==
 
+"@pixi/filter-glitch@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-glitch/-/filter-glitch-4.1.3.tgz#efb370f174d2fb839e5e3e86357432604773f238"
+  integrity sha512-lPxpQOE5EY/06lTdy1xAGvLcjK07zB41NuendVXXOzvezvecI+CwqRAG8LKF1s+o0Cwf/p6XHV3WOvC+tM1CSw==
+
+"@pixi/filter-glow@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-glow/-/filter-glow-4.1.3.tgz#bae99517dcc99b7d754783da10a67993a0954efc"
+  integrity sha512-vf89rjY2a/GPfdTV9r06TGkVrcexiCXgUOxfMVpYGQnjd4i74q7D8nMXgmij+0VN5ee78/rb29fGzQmHW5Lsdg==
+
+"@pixi/filter-godray@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-godray/-/filter-godray-4.1.3.tgz#f1d828c701075981f4d973738ccf429d3d13831c"
+  integrity sha512-EeGW4lL85TJjn1elpE5YtuM3BNoLT7BFiT3PFEvl6rCNwTz6ZN0c/nWD4MkzhcO/yYOrFrMlDwTT994YOBm09A==
+
+"@pixi/filter-kawase-blur@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-kawase-blur/-/filter-kawase-blur-4.1.3.tgz#4d2bf0cbcc3250f06f25dc8e3579255a6fc1b4fa"
+  integrity sha512-T5nypyWjEwjLIqR9MrOYXduxuMaXr8zRBvwSDeSmhZpp4oPDE+ChxiIWKoruZ8pTDDqdIhHJ5ZeXMTFEOlOlgA==
+
+"@pixi/filter-motion-blur@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-motion-blur/-/filter-motion-blur-4.1.3.tgz#44e77972d83a2a12723764043d21a30ca80e1903"
+  integrity sha512-x4Mwa9SxfZkHC3wX1JmprVhpJp501+UVba3phZFPaBySGrxbXZekTf27VM7wbLvBQvsnDQQWr3gSe0J42sjtig==
+
+"@pixi/filter-multi-color-replace@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-multi-color-replace/-/filter-multi-color-replace-4.1.3.tgz#369badda0c2ca9eff1a1e2db548f877fcfe1a63a"
+  integrity sha512-NYJghGEBDDRySLypF+KPuY8SaPK5p0Yu1GE+HrhvSh/jBGHYyU8SZJuRUXIRkfcbnLnqMRPOXMrqXsjZncDlsw==
+
 "@pixi/filter-noise@6.1.3":
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/filter-noise/-/filter-noise-6.1.3.tgz"
   integrity sha512-oVRtcJwbN6VnAnvXZuLEZ0c12JUzporao5AziXgRAUjTMA3bFVE0/7Dx193Kx/l6UAasmzhWQctuv6NMxy5Efw==
+
+"@pixi/filter-old-film@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-old-film/-/filter-old-film-4.1.3.tgz#989d5728faf85fc8f7942924caf1b28cc0cee71b"
+  integrity sha512-2pACBVgKVtU8vDM2OVu9BmdAlYxfBUJljQbvW3JyR4NCn/bkv2hv8ObJxfESpya48B9i336V5gmXmaIv2rp0ZA==
+
+"@pixi/filter-outline@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-outline/-/filter-outline-4.1.3.tgz#fce744a3d1ca86fa8d6a1cb4ec0a44ae5b43d237"
+  integrity sha512-GduzlDySHsq2omPR0CRvWlzsnXqKX+uZt0T/Aetk+FOK36j19oxTQqR1l776ruOjftgfvbnCpN+o6NyuvBKf5g==
+
+"@pixi/filter-pixelate@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-pixelate/-/filter-pixelate-4.1.3.tgz#8200ccf4e47803a5b2f86ab3a755d438769b0e37"
+  integrity sha512-1YEc46GO08C2nc54P/9yxWH7TaVTNoJe+EEvuXKiSITVadr4fEizkm607m+VAt6Ngv6bYpCAxO36HoRTFf3mAw==
+
+"@pixi/filter-radial-blur@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-radial-blur/-/filter-radial-blur-4.1.3.tgz#66b184ad9c0606b190b850da0c0ff8c9e6cca030"
+  integrity sha512-VGy2372pgP1Wh182gx6b41+UcH/21QdLPD4fKCQkHxQUlFgsLNoEmtDpcghxe8uBjdZxAzbaGaZONsR+Q1ueOQ==
+
+"@pixi/filter-reflection@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-reflection/-/filter-reflection-4.1.3.tgz#03ae8500ba6c40178015877b318e89b55e8b8ab5"
+  integrity sha512-3C1i/9fzKplaACmjEs5bqSqCs3MwVq0yGGZFQb2kcEH9gYI2NZv3Rxu6xyzDq5cd8ZS59Cw1qLAJIlgEEBgDMQ==
+
+"@pixi/filter-rgb-split@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-rgb-split/-/filter-rgb-split-4.1.3.tgz#dfe68d36cf344b2644ceee9fd50f1bd970639b12"
+  integrity sha512-oPbDz5PlpDqJh8+Z87k9l3mZQCcyZTU1/45hd5Y9H+CoTWsBGcRE7jJFUVW4TjDPlTjVCkBXkOgbz1fVzPPhFg==
+
+"@pixi/filter-shockwave@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-shockwave/-/filter-shockwave-4.1.3.tgz#6d23a629ec2338676a3823eebb426ba7285e0a5e"
+  integrity sha512-A64f8DxUgqu/Uph8dpEw74xoVt9yaBE3lh6GcmLUMaaLicIvFvMSLyOpGI0CbBvYMPZDyWcnki7FtWH6gTBxcA==
+
+"@pixi/filter-simple-lightmap@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-simple-lightmap/-/filter-simple-lightmap-4.1.3.tgz#f563abc9a8f3804986acf2caef577f087963af20"
+  integrity sha512-8+zJMU5OHA3NzTiuW8UB80TclDp2N5TxMe56oEB6AzzPecZ7dp7qg0hshVINity97fhb0QEkGAlFtk33MPoo9A==
+
+"@pixi/filter-tilt-shift@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-tilt-shift/-/filter-tilt-shift-4.1.3.tgz#e0523adbcadfd1eaba2c270f19162248d3e88a78"
+  integrity sha512-MVRVpFZzN5CSAdI40kUWoZiDID99ZSwSON14l1dZU6zCORaMky5yJEmvkxNWFxFJlolagwzu2Hz4vQHq6Gql7g==
+
+"@pixi/filter-twist@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-twist/-/filter-twist-4.1.3.tgz#3eb83ae0694007b96e643621685b720abd0a5ef5"
+  integrity sha512-Mp4b7ybr5m8VjCebva6o1ef88QvbK0VZtXbgxoi2sWo3l9zvQoKwrNsDny3eLNMba3ha1eOmCd/WcB+KwZYnzw==
+
+"@pixi/filter-zoom-blur@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-zoom-blur/-/filter-zoom-blur-4.1.3.tgz#a65a548d208584c332acad7c8dedefbe856f9522"
+  integrity sha512-fXdexlzfmZxLAcCq86fOUyPI+Fb7nwyn2FzBYVQ1GALAASEBEzCVJup4gYpZkMUn1c3sjrSAkE33EVf9cuis6A==
 
 "@pixi/graphics@6.1.3":
   version "6.1.3"
@@ -1499,6 +1663,11 @@
   version "6.1.3"
   resolved "https://registry.npmjs.org/@pixi/interaction/-/interaction-6.1.3.tgz"
   integrity sha512-ju3fE/KnO6KZChnZzZAdY6bfjlSh7/igZcVcd/MZRkAdNozx4QoN5sYmwrcvTvA5llMYaThSIRWgIHQiSlbOfQ==
+
+"@pixi/layers@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@pixi/layers/-/layers-1.0.8.tgz#7336d1eab0ad9d7b530102ab286901db637f074b"
+  integrity sha512-eFGMmMxUJqyzsnaArR5zKCJJknSGwA1zHlOR1WOs1bpEvok2cUTnU+PWfSCeiRIDuOpcOJGmz+uWrPEERPCvEw==
 
 "@pixi/loaders@6.1.3":
   version "6.1.3"
@@ -8182,6 +8351,44 @@ pirates@^4.0.1:
   integrity sha512-WuNqLTbMI3tmfef2TKxlQmAiLHKtFhlsCZnPIpuv2Ow0RDVO8lfy1Opf4NUzlMXLjPl+Men7AuVdX6TA+s+uGA==
   dependencies:
     node-modules-regexp "^1.0.0"
+
+pixi-filters@^4.1.4:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/pixi-filters/-/pixi-filters-4.1.4.tgz#68841570bc699262ccfa9aaeac1acf0de7e64d71"
+  integrity sha512-1g7+XXuBKK1j8kxXa44qogLGS6Lx+xhHVdQuOHFr9NLC+iI9UwHNWcnKumoWPpWs+f5aYJlLvOIM3DKf5EKjRA==
+  dependencies:
+    "@pixi/filter-adjustment" "4.1.3"
+    "@pixi/filter-advanced-bloom" "4.1.3"
+    "@pixi/filter-ascii" "4.1.3"
+    "@pixi/filter-bevel" "4.1.3"
+    "@pixi/filter-bloom" "4.1.3"
+    "@pixi/filter-bulge-pinch" "4.1.3"
+    "@pixi/filter-color-map" "4.1.3"
+    "@pixi/filter-color-overlay" "4.1.3"
+    "@pixi/filter-color-replace" "4.1.3"
+    "@pixi/filter-convolution" "4.1.3"
+    "@pixi/filter-cross-hatch" "4.1.3"
+    "@pixi/filter-crt" "4.1.3"
+    "@pixi/filter-dot" "4.1.3"
+    "@pixi/filter-drop-shadow" "4.1.3"
+    "@pixi/filter-emboss" "4.1.3"
+    "@pixi/filter-glitch" "4.1.3"
+    "@pixi/filter-glow" "4.1.3"
+    "@pixi/filter-godray" "4.1.3"
+    "@pixi/filter-kawase-blur" "4.1.3"
+    "@pixi/filter-motion-blur" "4.1.3"
+    "@pixi/filter-multi-color-replace" "4.1.3"
+    "@pixi/filter-old-film" "4.1.3"
+    "@pixi/filter-outline" "4.1.3"
+    "@pixi/filter-pixelate" "4.1.3"
+    "@pixi/filter-radial-blur" "4.1.3"
+    "@pixi/filter-reflection" "4.1.3"
+    "@pixi/filter-rgb-split" "4.1.3"
+    "@pixi/filter-shockwave" "4.1.3"
+    "@pixi/filter-simple-lightmap" "4.1.3"
+    "@pixi/filter-tilt-shift" "4.1.3"
+    "@pixi/filter-twist" "4.1.3"
+    "@pixi/filter-zoom-blur" "4.1.3"
 
 pixi.js@^6.1.3:
   version "6.1.3"

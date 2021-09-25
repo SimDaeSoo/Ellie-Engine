@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { drawTiles } from '../utils/Graphics';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
+import { TILE_SIZE } from '../constants';
 
 const CaveGenerate = ({
   setCallback,
@@ -15,8 +16,9 @@ const CaveGenerate = ({
     setCallback((_x: number, _y: number) => {});
 
     // Buffer Tile Map Generate
-    const width = Math.ceil(window.innerWidth / 8);
-    const height = Math.ceil(window.innerHeight / 8);
+    const [clientWidth, clientHeight] = getClientSize();
+    const width = Math.ceil(clientWidth / TILE_SIZE);
+    const height = Math.ceil(clientHeight / TILE_SIZE);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height
@@ -25,13 +27,13 @@ const CaveGenerate = ({
       Map.merge(tileBufferGrids);
 
     // Rendering
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const graphics = new PIXI.Graphics();
 
     graphics.clear();
-    drawTiles(graphics, tileGrid);
+    drawTiles(graphics, tileGrid, TILE_SIZE);
 
-    app.stage.addChild(graphics);
+    stage.addChild(graphics);
 
     // Update Logic
     let frames = 0;
@@ -46,7 +48,7 @@ const CaveGenerate = ({
         );
 
         graphics.clear();
-        drawTiles(graphics, tileGrid);
+        drawTiles(graphics, tileGrid, TILE_SIZE);
 
         stepCount++;
         frames = 0;

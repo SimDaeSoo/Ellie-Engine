@@ -14,6 +14,7 @@ the goal of this project is to create **efficient engine for huge tile platform 
 - [Liquid Stress Test](https://simdaesoo.github.io/Ellie/build/#/liquid-stress-test)
 - [Line Intersection](https://simdaesoo.github.io/Ellie/build/#/line-intersection)
 - [Line Intersection 2](https://simdaesoo.github.io/Ellie/build/#/line-intersection-2)
+- [Default Lighting](https://simdaesoo.github.io/Ellie/build/#/default-lighting)
 - Lighting Area
 - Lighting Area 2
 - Lighting Stress Test

@@ -1,11 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
 import * as LiquidSimulator from '../utils/LiquidSimulator';
 import { getWaterTileNumber } from '../utils/Tile';
 import { TileProperties } from '../interfaces';
+import { TILE_SIZE } from '../constants';
 
 const LiquidStressTest = ({
   setCallback,
@@ -14,8 +15,9 @@ const LiquidStressTest = ({
 }) => {
   useEffect(() => {
     // Buffer Tile Map Generate
-    const width = Math.ceil(window.innerWidth / 8);
-    const height = Math.ceil(window.innerHeight / 8);
+    const [clientWidth, clientHeight] = getClientSize();
+    const width = Math.ceil(clientWidth / TILE_SIZE);
+    const height = Math.ceil(clientHeight / TILE_SIZE);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height,
@@ -35,7 +37,7 @@ const LiquidStressTest = ({
 
     // Set Click Callback
     setCallback((_x: number, _y: number) => {
-      const [x, y] = [Math.floor(_x / 8), Math.floor(_y / 8)];
+      const [x, y] = [Math.floor(_x / TILE_SIZE), Math.floor(_y / TILE_SIZE)];
 
       for (let offsetY = -5; offsetY <= 5; offsetY++) {
         for (let offsetX = -5; offsetX <= 5; offsetX++) {
@@ -53,18 +55,16 @@ const LiquidStressTest = ({
     });
 
     // Rendering
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const { container: tileLabelContainer } = createLabel(
       `${width * height} sprites`
     );
     const { container: labelContainer } = createLabel('Click to create water');
     tileLabelContainer.x = Math.round(
-      window.innerWidth / 2 - tileLabelContainer.width / 2
+      clientWidth / 2 - tileLabelContainer.width / 2
     );
     tileLabelContainer.y = 60;
-    labelContainer.x = Math.round(
-      window.innerWidth / 2 - labelContainer.width / 2
-    );
+    labelContainer.x = Math.round(clientWidth / 2 - labelContainer.width / 2);
     labelContainer.y = 80;
 
     const waterContainer = new PIXI.Container();
@@ -78,22 +78,24 @@ const LiquidStressTest = ({
         const waterSprite = new PIXI.Sprite(
           waterTileNumber >= 0
             ? PIXI.Texture.from(
-                `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
+                `waters/Water_${waterTileNumber
+                  .toString()
+                  .padStart(2, '0')}.png`
               )
             : PIXI.Texture.EMPTY
         );
-        waterSprite.width = 8;
-        waterSprite.height = 8;
-        waterSprite.x = x * 8;
-        waterSprite.y = y * 8;
+        waterSprite.width = TILE_SIZE;
+        waterSprite.height = TILE_SIZE;
+        waterSprite.x = x * TILE_SIZE;
+        waterSprite.y = y * TILE_SIZE;
         tileSprites[y][x] = waterSprite;
         waterContainer.addChild(waterSprite);
       }
     }
 
-    app.stage.addChild(waterContainer);
-    app.stage.addChild(labelContainer);
-    app.stage.addChild(tileLabelContainer);
+    stage.addChild(waterContainer);
+    stage.addChild(labelContainer);
+    stage.addChild(tileLabelContainer);
 
     // Update Logic
     const step = LiquidSimulator.stepGenerator(tileGrid, tileGridProperties);
@@ -108,7 +110,9 @@ const LiquidStressTest = ({
             tileSprites[y][x].texture =
               tileGrid[y][x][1][0] && waterTileNumber >= 0
                 ? PIXI.Texture.from(
-                    `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
+                    `waters/Water_${waterTileNumber
+                      .toString()
+                      .padStart(2, '0')}.png`
                   )
                 : PIXI.Texture.EMPTY;
             tileSprites[y][x].alpha = Math.min(

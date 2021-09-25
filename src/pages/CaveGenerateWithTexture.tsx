@@ -1,10 +1,11 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { drawTiles } from '../utils/Graphics';
 import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import { getTileNumber } from '../utils/Tile';
+import { TILE_SIZE } from '../constants';
 
 const CaveGenerateWithTexture = ({
   setCallback,
@@ -16,8 +17,9 @@ const CaveGenerateWithTexture = ({
     setCallback((_x: number, _y: number) => {});
 
     // Buffer Tile Map Generate
-    const width = Math.ceil(window.innerWidth / 8);
-    const height = Math.ceil(window.innerHeight / 8);
+    const [clientWidth, clientHeight] = getClientSize();
+    const width = Math.ceil(clientWidth / TILE_SIZE);
+    const height = Math.ceil(clientHeight / TILE_SIZE);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height
@@ -26,13 +28,13 @@ const CaveGenerateWithTexture = ({
       Map.merge(tileBufferGrids);
 
     // Rendering
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const graphics = new PIXI.Graphics();
 
     graphics.clear();
-    drawTiles(graphics, tileGrid);
+    drawTiles(graphics, tileGrid, TILE_SIZE);
 
-    app.stage.addChild(graphics);
+    stage.addChild(graphics);
 
     // Update Logic
     let frames = 0;
@@ -47,13 +49,13 @@ const CaveGenerateWithTexture = ({
         );
 
         graphics.clear();
-        drawTiles(graphics, tileGrid);
+        drawTiles(graphics, tileGrid, TILE_SIZE);
 
         stepCount++;
         frames = 0;
 
         if (stepCount === 10) {
-          app.stage.removeChild(graphics);
+          stage.removeChild(graphics);
 
           const tileContainer = new PIXI.Container();
           const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
@@ -75,16 +77,16 @@ const CaveGenerateWithTexture = ({
                   ? PIXI.Texture.from(`tiles/Tile_62.png`)
                   : PIXI.Texture.EMPTY
               );
-              sprite.width = 8;
-              sprite.height = 8;
-              sprite.x = x * 8;
-              sprite.y = y * 8;
+              sprite.width = TILE_SIZE;
+              sprite.height = TILE_SIZE;
+              sprite.x = x * TILE_SIZE;
+              sprite.y = y * TILE_SIZE;
               tileSprites[y][x] = sprite;
               tileContainer.addChild(sprite);
             }
           }
 
-          app.stage.addChild(tileContainer);
+          stage.addChild(tileContainer);
           tileContainer.cacheAsBitmap = true;
         }
       }

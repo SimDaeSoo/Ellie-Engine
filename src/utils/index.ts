@@ -1,8 +1,10 @@
 import * as PIXI from 'pixi.js';
+import * as PIXI_LAYERS from '@pixi/layers';
 import Stats from 'stats.js';
 
 let updater: () => void;
-let app: PIXI.Application;
+let stage: PIXI.Container;
+let lightContainer: PIXI.Container;
 
 async function preload(
   callback: (percentage: number, assetName: string) => void
@@ -19,7 +21,7 @@ async function preload(
   }
 
   for (let i = 0; i <= 36; i++) {
-    srcs.push(`waters/${i.toString().padStart(2, '0')}.png`);
+    srcs.push(`waters/Water_${i.toString().padStart(2, '0')}.png`);
   }
 
   for (let i = 0; i <= 0; i++) {
@@ -50,11 +52,29 @@ async function preload(
   });
 }
 
-function setRenderer(): PIXI.Application {
-  if (app) {
-    app.stage.removeChildren();
-    app.stage.removeAllListeners();
-    return app;
+function setRenderer(
+  options: { defaultLighting: boolean } = { defaultLighting: true }
+): {
+  stage: PIXI.Container;
+  lightContainer: PIXI.Container;
+} {
+  const [clientWidth, clientHeight] = getClientSize();
+  if (stage) {
+    stage.removeChildren();
+    stage.removeAllListeners();
+    lightContainer.removeChildren();
+    lightContainer.removeAllListeners();
+
+    if (options.defaultLighting) {
+      const defaultLightingArea = new PIXI.Graphics();
+      defaultLightingArea.beginFill(0xffffff);
+      defaultLightingArea.drawRect(0, 0, clientWidth, clientHeight);
+      defaultLightingArea.endFill();
+      lightContainer.addChild(defaultLightingArea);
+      defaultLightingArea.cacheAsBitmap = true;
+    }
+
+    return { stage, lightContainer };
   }
   const resolution: number = window.devicePixelRatio || 1;
   PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -62,19 +82,19 @@ function setRenderer(): PIXI.Application {
   PIXI.settings.STRICT_TEXTURE_CACHE = true;
 
   const stats: Stats = new Stats();
-  app = new PIXI.Application({
-    width: window.innerWidth,
-    height: window.innerHeight,
+  const app = new PIXI.Application({
+    width: clientWidth,
+    height: clientHeight,
     sharedLoader: true,
     powerPreference: 'high-performance',
     backgroundColor: 0x202020,
-    backgroundAlpha: 0,
     autoStart: false,
     antialias: false,
     forceCanvas: false,
     preserveDrawingBuffer: false,
     resolution,
   });
+  app.stage = new PIXI_LAYERS.Stage();
   app.view.className = 'renderer';
   app.view.style.width = '100%';
   app.view.style.height = '100%';
@@ -85,6 +105,33 @@ function setRenderer(): PIXI.Application {
   dom.appendChild(app.view);
   dom.appendChild(stats.dom);
 
+  const lightingStage = new PIXI_LAYERS.Stage();
+  const lightingLayer = new PIXI_LAYERS.Layer();
+  lightingLayer.useRenderTexture = true;
+  lightingLayer.clearColor = [0.075, 0.075, 0.075, 1];
+
+  stage = new PIXI.Container();
+  lightContainer = new PIXI.Container();
+  lightContainer.parentLayer = lightingLayer;
+
+  const lightingSprite = new PIXI.Sprite(lightingLayer.getRenderTexture());
+  lightingSprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+
+  lightingStage.addChild(stage);
+  lightingStage.addChild(lightContainer);
+  lightingStage.addChild(lightingLayer);
+  lightingStage.addChild(lightingSprite);
+  app.stage.addChild(lightingStage);
+
+  if (options.defaultLighting) {
+    const defaultLightingArea = new PIXI.Graphics();
+    defaultLightingArea.beginFill(0xffffff);
+    defaultLightingArea.drawRect(0, 0, clientWidth, clientHeight);
+    defaultLightingArea.endFill();
+    lightContainer.addChild(defaultLightingArea);
+    defaultLightingArea.cacheAsBitmap = true;
+  }
+
   const render = () => {
     if (updater) updater();
     stats.update();
@@ -93,11 +140,20 @@ function setRenderer(): PIXI.Application {
   };
   window.requestAnimationFrame(render);
 
-  return app;
+  return { stage, lightContainer };
 }
 
 function setUpdater(callback: () => void): void {
   updater = callback;
 }
 
-export { setRenderer, setUpdater, preload };
+function getClientSize(): [number, number] {
+  const ratio = window.innerWidth / window.innerHeight;
+
+  return [
+    Math.min(1920, window.innerWidth),
+    Math.ceil(Math.min(1920, window.innerWidth) / ratio),
+  ];
+}
+
+export { setRenderer, setUpdater, preload, getClientSize };

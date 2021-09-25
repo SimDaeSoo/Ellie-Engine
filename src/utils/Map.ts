@@ -32,7 +32,7 @@ function create(
       properties[0] = tileType; // tileType
       properties[1] = 0; // backgroundType
       properties[2] = 0; // liquidType
-      properties[3] = 0; // lightingLevel
+      properties[3] = 0; // something...
       liquid[0] = tileType === 0 && Math.random() < density.liquid ? 1 : 0; // liquid
     }
 
@@ -63,7 +63,7 @@ function create(
           properties[0] = tileType; // tileType
           properties[1] = 0; // backgroundType
           properties[2] = 0; // liquidType
-          properties[3] = 0; // lightingLevel
+          properties[3] = 0; // something...
           liquid[0] = tileType === 0 && Math.random() < density.liquid ? 1 : 0; // liquid
         }
 

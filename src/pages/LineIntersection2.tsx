@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
 import { SAMPLE_POLYGON } from '../constants';
 import { Line } from '../interfaces';
-import { setRenderer, setUpdater } from '../utils';
+import { getClientSize, setRenderer, setUpdater } from '../utils';
 import { drawLines, drawPoints } from '../utils/Graphics';
 import { createLabel } from '../utils/Label';
 import * as Collision from '../utils/Collision';
@@ -15,7 +15,7 @@ const LineIntersection2 = ({
   useEffect(() => {
     // Sample Polygon
     let dirty = true;
-    const [width, height] = [window.innerWidth, window.innerHeight];
+    const [width, height] = getClientSize();
     const scale = width < height ? height : width;
     const polygonLines: Array<Line> = [];
     const polygon: Array<[number, number]> = SAMPLE_POLYGON.map(([x, y]) => [
@@ -28,15 +28,13 @@ const LineIntersection2 = ({
     }
 
     // Render
-    const app: PIXI.Application = setRenderer();
+    const { stage } = setRenderer();
     const graphics = new PIXI.Graphics();
     const { container: labelContainer } = createLabel('Click to move line');
-    labelContainer.x = Math.round(
-      window.innerWidth / 2 - labelContainer.width / 2
-    );
+    labelContainer.x = Math.round(width / 2 - labelContainer.width / 2);
     labelContainer.y = 60;
 
-    app.stage.addChild(graphics);
+    stage.addChild(graphics);
 
     // movable line
     const movableLine: Line = [
@@ -44,13 +42,16 @@ const LineIntersection2 = ({
       [width, Math.round(height / 2)],
     ];
     const { container: beginContainer } = createLabel(`(${movableLine[0]})`);
-    const { container: endContainer } = createLabel(`(${movableLine[1]})`);
-    app.stage.addChild(beginContainer);
-    app.stage.addChild(endContainer);
-    app.stage.addChild(labelContainer);
+    const { container: endContainer, label: endLabel } = createLabel(
+      `(${movableLine[1]})`
+    );
+    stage.addChild(beginContainer);
+    stage.addChild(endContainer);
+    stage.addChild(labelContainer);
 
     // Set Click Callback
     setCallback((x: number, y: number) => {
+      endLabel.text = `(${Math.round(x)},${Math.round(y)})`;
       movableLine[1][0] = x;
       movableLine[1][1] = y;
       dirty = true;
@@ -88,7 +89,7 @@ const LineIntersection2 = ({
       drawPoints(graphics, collisionPoints, 4, 0xffaa66);
 
       for (const collisionPointContainer of collisionPointContainers) {
-        app.stage.removeChild(collisionPointContainer);
+        stage.removeChild(collisionPointContainer);
       }
 
       for (const collisionPoint of collisionPoints) {
@@ -98,7 +99,7 @@ const LineIntersection2 = ({
           )})`
         );
         pointContainer.position.set(...collisionPoint);
-        app.stage.addChild(pointContainer);
+        stage.addChild(pointContainer);
         collisionPointContainers.push(pointContainer);
       }
 

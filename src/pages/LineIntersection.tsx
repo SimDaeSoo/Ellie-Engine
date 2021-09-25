@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { useEffect } from 'react';
 import { Line } from '../interfaces';
-import { setRenderer } from '../utils';
+import { getClientSize, setRenderer } from '../utils';
 import { drawLines, drawPoints } from '../utils/Graphics';
 import { createLabel } from '../utils/Label';
 import * as Collision from '../utils/Collision';
@@ -16,11 +16,12 @@ const LineIntersection = ({
     setCallback((_x: number, _y: number) => {});
 
     // Render
-    const app: PIXI.Application = setRenderer();
+    const [clientWidth, clientHeight] = getClientSize();
+    const { stage } = setRenderer();
     const graphics = new PIXI.Graphics();
     const [quarterWidth, quarterHeight] = [
-      Math.floor(window.innerWidth / 4),
-      Math.floor(window.innerHeight / 4),
+      Math.floor(clientWidth / 4),
+      Math.floor(clientHeight / 4),
     ];
 
     // Lines
@@ -35,12 +36,12 @@ const LineIntersection = ({
 
     // Draw Points
     const points = [...lineA, ...lineB];
-    app.stage.addChild(graphics);
+    stage.addChild(graphics);
 
     for (const point of points) {
       const { container: pointContainer } = createLabel(`(${point})`);
       pointContainer.position.set(...point);
-      app.stage.addChild(pointContainer);
+      stage.addChild(pointContainer);
     }
 
     graphics.clear();
@@ -61,7 +62,7 @@ const LineIntersection = ({
       )},${collisionPoint[1].toFixed(2)})`
     );
     pointContainer.position.set(...collisionPoint);
-    app.stage.addChild(pointContainer);
+    stage.addChild(pointContainer);
   }, [setCallback]);
 
   return <></>;
