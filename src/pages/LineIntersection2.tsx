@@ -7,19 +7,11 @@ import { drawLines, drawPoints } from '../utils/Graphics';
 import { createLabel } from '../utils/Label';
 import * as Collision from '../utils/Collision';
 
-const onTouch = (e: any) => {
-  const [x, y] = [e.targetTouches[0].clientX, e.targetTouches[0].clientY];
-  callback(x, y);
-};
-
-const onClick = (e: any) => {
-  const [x, y] = [e.clientX, e.clientY];
-  callback(x, y);
-};
-
-let callback: (x: number, y: number) => void;
-
-const LineIntersection2 = () => {
+const LineIntersection2 = ({
+  setCallback,
+}: {
+  setCallback: (callback: (x: number, y: number) => void) => void;
+}) => {
   useEffect(() => {
     // Sample Polygon
     let dirty = true;
@@ -57,16 +49,12 @@ const LineIntersection2 = () => {
     app.stage.addChild(endContainer);
     app.stage.addChild(labelContainer);
 
-    // Event Listener
-    window.removeEventListener('touchstart', onTouch);
-    window.removeEventListener('click', onClick);
-    window.addEventListener('touchstart', onTouch);
-    window.addEventListener('click', onClick);
-    callback = (x, y) => {
+    // Set Click Callback
+    setCallback((x: number, y: number) => {
       movableLine[1][0] = x;
       movableLine[1][1] = y;
       dirty = true;
-    };
+    });
 
     const collisionPointContainers: Array<PIXI.Container> = [];
     setUpdater(() => {
@@ -119,7 +107,7 @@ const LineIntersection2 = () => {
 
       dirty = false;
     });
-  }, []);
+  }, [setCallback]);
 
   return <></>;
 };

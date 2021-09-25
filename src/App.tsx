@@ -14,6 +14,8 @@ import LiquidStressTest from './pages/LiquidStressTest';
 import LineIntersection from './pages/LineIntersection';
 import LineIntersection2 from './pages/LineIntersection2';
 
+let callback: (x: number, y: number) => void;
+
 const App = () => {
   const [percentage, setPercentage] = useState(0);
   const [asset, setAsset] = useState('');
@@ -21,6 +23,20 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
+      // Event Listener
+      const onTouch = (e: any) => {
+        const [x, y] = [e.targetTouches[0].clientX, e.targetTouches[0].clientY];
+        if (callback) callback(x, y);
+      };
+      const onClick = (e: any) => {
+        const [x, y] = [e.clientX, e.clientY];
+        if (callback) callback(x, y);
+      };
+      window.removeEventListener('touchstart', onTouch);
+      window.removeEventListener('click', onClick);
+      window.addEventListener('touchstart', onTouch);
+      window.addEventListener('click', onClick);
+
       setHide(false);
       setRenderer();
       await preload((percentage: number, assetName: string) => {
@@ -35,50 +51,78 @@ const App = () => {
     <>
       <Container style={{ height: '100%' }}>
         <Container id='content'>
-          {hide && <Route exact path='/' component={TilemapWithBuffer} />}
           {hide && (
-            <Route exact path='/cave-generate' component={CaveGenerate} />
+            <Route
+              exact
+              path='/'
+              render={() => (
+                <TilemapWithBuffer setCallback={(cb) => (callback = cb)} />
+              )}
+            />
+          )}
+          {hide && (
+            <Route
+              exact
+              path='/cave-generate'
+              render={() => (
+                <CaveGenerate setCallback={(cb) => (callback = cb)} />
+              )}
+            />
           )}
           {hide && (
             <Route
               exact
               path='/cave-generate-texture'
-              component={CaveGenerateWithTexture}
+              render={() => (
+                <CaveGenerateWithTexture
+                  setCallback={(cb) => (callback = cb)}
+                />
+              )}
             />
           )}
           {hide && (
             <Route
               exact
               path='/liquid-simulation'
-              component={LiquidSimulation}
+              render={() => (
+                <LiquidSimulation setCallback={(cb) => (callback = cb)} />
+              )}
             />
           )}
           {hide && (
             <Route
               exact
               path='/liquid-simulation-2'
-              component={LiquidSimulation2}
+              render={() => (
+                <LiquidSimulation2 setCallback={(cb) => (callback = cb)} />
+              )}
             />
           )}
           {hide && (
             <Route
               exact
               path='/liquid-stress-test'
-              component={LiquidStressTest}
+              render={() => (
+                <LiquidStressTest setCallback={(cb) => (callback = cb)} />
+              )}
             />
           )}
           {hide && (
             <Route
               exact
               path='/line-intersection'
-              component={LineIntersection}
+              render={() => (
+                <LineIntersection setCallback={(cb) => (callback = cb)} />
+              )}
             />
           )}
           {hide && (
             <Route
               exact
               path='/line-intersection-2'
-              component={LineIntersection2}
+              render={() => (
+                <LineIntersection2 setCallback={(cb) => (callback = cb)} />
+              )}
             />
           )}
           <CreatorTag />

@@ -6,8 +6,15 @@ import { drawLines, drawPoints } from '../utils/Graphics';
 import { createLabel } from '../utils/Label';
 import * as Collision from '../utils/Collision';
 
-const LineIntersection = () => {
+const LineIntersection = ({
+  setCallback,
+}: {
+  setCallback: (callback: (x: number, y: number) => void) => void;
+}) => {
   useEffect(() => {
+    // Set Click Callback
+    setCallback((_x: number, _y: number) => {});
+
     // Render
     const app: PIXI.Application = setRenderer();
     const graphics = new PIXI.Graphics();
@@ -55,7 +62,7 @@ const LineIntersection = () => {
     );
     pointContainer.position.set(...collisionPoint);
     app.stage.addChild(pointContainer);
-  }, []);
+  }, [setCallback]);
 
   return <></>;
 };

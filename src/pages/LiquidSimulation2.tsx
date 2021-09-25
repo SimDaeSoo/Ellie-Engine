@@ -8,25 +8,11 @@ import * as LiquidSimulator from '../utils/LiquidSimulator';
 import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
 import { TileProperties } from '../interfaces';
 
-const onTouch = (e: any) => {
-  const [x, y] = [
-    Math.floor(e.targetTouches[0].clientX / 8),
-    Math.floor(e.targetTouches[0].clientY / 8),
-  ];
-  spreadWater(x, y);
-};
-
-const onClick = (e: any) => {
-  const [x, y] = [Math.floor(e.clientX / 8), Math.floor(e.clientY / 8)];
-  spreadWater(x, y);
-};
-
-let callback: (x: number, y: number) => void;
-const spreadWater = (x: number, y: number): void => {
-  if (callback) callback(x, y);
-};
-
-const LiquidSimulation2 = () => {
+const LiquidSimulation2 = ({
+  setCallback,
+}: {
+  setCallback: (callback: (x: number, y: number) => void) => void;
+}) => {
   useEffect(() => {
     // Buffer Tile Map Generate
     const width = Math.ceil(window.innerWidth / 8);
@@ -56,12 +42,10 @@ const LiquidSimulation2 = () => {
       );
     }
 
-    // Event Listener
-    window.removeEventListener('touchstart', onTouch);
-    window.removeEventListener('click', onClick);
-    window.addEventListener('touchstart', onTouch);
-    window.addEventListener('click', onClick);
-    callback = (x, y) => {
+    // Set Click Callback
+    setCallback((_x: number, _y: number) => {
+      const [x, y] = [Math.floor(_x / 8), Math.floor(_y / 8)];
+
       for (let offsetY = -3; offsetY <= 3; offsetY++) {
         for (let offsetX = -3; offsetX <= 3; offsetX++) {
           if (
@@ -75,7 +59,7 @@ const LiquidSimulation2 = () => {
           }
         }
       }
-    };
+    });
 
     // Rendering
     const app: PIXI.Application = setRenderer();
@@ -168,7 +152,7 @@ const LiquidSimulation2 = () => {
         }
       }
     });
-  }, []);
+  }, [setCallback]);
 
   return <></>;
 };

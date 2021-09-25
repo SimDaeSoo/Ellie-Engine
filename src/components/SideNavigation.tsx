@@ -18,6 +18,9 @@ const SideNavigation = () => {
         overflow: 'auto',
         backgroundColor: '#1a1d24',
       }}
+      onClick={(e: any) => {
+        e.stopPropagation();
+      }}
     >
       <Sidenav>
         <Sidenav.Header
@@ -33,7 +36,6 @@ const SideNavigation = () => {
             <Nav.Item
               icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
               onClick={(e: any) => {
-                e.stopPropagation();
                 setToggle(!toggle);
               }}
               style={{ backgroundColor: '#0f131a' }}

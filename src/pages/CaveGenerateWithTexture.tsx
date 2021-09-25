@@ -6,8 +6,15 @@ import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import { getTileNumber } from '../utils/Tile';
 
-const CaveGenerateWithTexture = () => {
+const CaveGenerateWithTexture = ({
+  setCallback,
+}: {
+  setCallback: (callback: (x: number, y: number) => void) => void;
+}) => {
   useEffect(() => {
+    // Set Click Callback
+    setCallback((_x: number, _y: number) => {});
+
     // Buffer Tile Map Generate
     const width = Math.ceil(window.innerWidth / 8);
     const height = Math.ceil(window.innerHeight / 8);
@@ -78,7 +85,7 @@ const CaveGenerateWithTexture = () => {
         }
       }
     });
-  }, []);
+  }, [setCallback]);
 
   return <></>;
 };

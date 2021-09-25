@@ -49,8 +49,8 @@ async function preload(
 
 function setRenderer(): PIXI.Application {
   if (app) {
-    app.stage.removeAllListeners();
     app.stage.removeChildren();
+    app.stage.removeAllListeners();
     return app;
   }
   const resolution: number = window.devicePixelRatio || 1;

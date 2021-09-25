@@ -7,8 +7,15 @@ import * as LiquidSimulator from '../utils/LiquidSimulator';
 import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
 import { TileProperties } from '../interfaces';
 
-const LiquidSimulation = () => {
+const LiquidSimulation = ({
+  setCallback,
+}: {
+  setCallback: (callback: (x: number, y: number) => void) => void;
+}) => {
   useEffect(() => {
+    // Set Click Callback
+    setCallback((_x: number, _y: number) => {});
+
     // Buffer Tile Map Generate
     const width = Math.ceil(window.innerWidth / 8);
     const height = Math.ceil(window.innerHeight / 8);
@@ -121,7 +128,7 @@ const LiquidSimulation = () => {
         }
       }
     });
-  }, []);
+  }, [setCallback]);
 
   return <></>;
 };
