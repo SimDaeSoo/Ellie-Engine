@@ -1,6 +1,6 @@
-# Engine - 2d platform game engine
+# Engine - javascript 2d platform game engine
 ![screenshot](./images/screenshot.png)  
-Open Source 2D Game Engine Using `typescript (javascript)`   
+2D Game Engine Using `typescript (javascript)`   
 the goal of this project is to create **efficient engine for huge tile platform 2D game** like terraria.  
 
 ### Demos with pixi.js ###
