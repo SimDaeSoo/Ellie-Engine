@@ -1,9 +1,9 @@
 {
-  "name": "Engine",
+  "name": "ellie",
   "version": "0.0.0",
   "private": false,
   "license": "MIT",
-  "homepage": "https://simdaesoo.github.io/Engine/build",
+  "homepage": "https://simdaesoo.github.io/Ellie/build",
   "keywords": [
     "game",
     "platform",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SimDaeSoo/Engine.git"
+    "url": "https://github.com/SimDaeSoo/Ellie.git"
   },
   "description": "2D Game Engine Using Typescript (Javascript) the goal of this project is to create efficient engine for huge tile platform 2D game like terraria.",
   "dependencies": {

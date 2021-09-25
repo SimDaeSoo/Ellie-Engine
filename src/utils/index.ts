@@ -9,8 +9,8 @@ async function preload(
 ): Promise<void> {
   const BASE_URL: string =
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000/Engine/build'
-      : 'https://simdaesoo.github.io/Engine/build';
+      ? 'http://localhost:3000/Ellie/build'
+      : 'https://simdaesoo.github.io/Ellie/build';
   const assets: Array<[string, string]> = [];
   const srcs: Array<string> = [];
 
