@@ -1,7 +1,9 @@
-# Engine
-The goal of this project is to create engine for 2D platform game like terraria.  
+# Engine - 2d platform game engine
+![screenshot](./images/screenshot.png)  
+Open Source 2D Game Engine Using `typescript (javascript)`   
+the goal of this project is to create **efficient engine for huge tile platform 2D game** like terraria.  
 
-### Demos ###
+### Demos with pixi.js ###
 
 - [Tilemap With buffer](https://simdaesoo.github.io/Engine/build/#/)
 - [Cave Generate](https://simdaesoo.github.io/Engine/build/#/cave-generate)
