@@ -4,11 +4,11 @@ The goal of this project is to create engine for 2D platform game like terraria.
 ### Demos ###
 
 - [Tilemap With buffer](https://simdaesoo.github.io/Engine/build/#/)
-- [Cave Generate](http://work.goodboydigital.com/runpixierun/)
-- [Cave With Texture](http://flashvhtml.com)
-- [Liquid Simulation](http://www.goodboydigital.com/pixijs/bunnymark)
-- [Liquid Simulation 2](http://www.goodboydigital.com/pixijs/storm)
-- [Liquid Stress Test](http://www.goodboydigital.com/pixijs/examples/11)
+- [Cave Generate](https://simdaesoo.github.io/Engine/build/#/cave-generate)
+- [Cave With Texture](https://simdaesoo.github.io/Engine/build/#/cave-generate-texture)
+- [Liquid Simulation](https://simdaesoo.github.io/Engine/build/#/liquid-simulation)
+- [Liquid Simulation 2](https://simdaesoo.github.io/Engine/build/#/liquid-simulation-2)
+- [Liquid Stress Test](https://simdaesoo.github.io/Engine/build/#/liquid-stress-test)
 - Line Intersection
 - Line Intersection 2
 - Lighting Area
