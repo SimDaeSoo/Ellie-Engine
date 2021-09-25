@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-const LineIntersection = () => {
+const LineIntersection2 = () => {
   useEffect(() => {}, []);
 
   return <></>;
 };
 
-export default LineIntersection;
+export default LineIntersection2;

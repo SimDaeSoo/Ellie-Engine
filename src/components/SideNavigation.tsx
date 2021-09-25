@@ -96,12 +96,12 @@ const SideNavigation = () => {
               Line Intersection
             </Nav.Item>
             <Nav.Item
-              icon={<Icon icon='square-o' />}
-              onSelect={() => history.push('/viewport')}
-              eventKey='/viewport'
+              icon={<Icon icon='close' />}
+              onSelect={() => history.push('/line-intersection-2')}
+              eventKey='/line-intersection-2'
               disabled
             >
-              Viewport
+              Line Intersection 2
             </Nav.Item>
             <Nav.Item
               icon={<Icon icon='lightbulb-o' />}
@@ -126,14 +126,6 @@ const SideNavigation = () => {
               disabled
             >
               Lighting Stress Test
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-with-viewport')}
-              eventKey='/lighting-with-viewport'
-              disabled
-            >
-              Lighting With Viewport
             </Nav.Item>
             <Nav.Item
               icon={<Icon icon='object-ungroup' />}
@@ -166,7 +158,7 @@ const SideNavigation = () => {
               eventKey='/sample-world'
               disabled
             >
-              Sample World 1
+              Sample World
             </Nav.Item>
           </Nav>
         </Sidenav.Body>

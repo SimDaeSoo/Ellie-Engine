@@ -27,17 +27,21 @@ async function preload(
   }
 
   let loaded = 0;
-  for (const asset of assets) {
-    try {
-      await new Promise<void>((resolve) => {
-        PIXI.Loader.shared.add(...asset).load(() => {
-          resolve();
-        });
-      });
-    } catch (_e) {}
-    loaded++;
-    callback(loaded / assets.length, asset[0]);
-  }
+
+  PIXI.Loader.shared.onLoad.add((...args: any) => {
+    const resource = args[1];
+    callback(++loaded / assets.length, resource.name);
+  });
+
+  return new Promise((resolve) => {
+    for (const asset of assets) {
+      PIXI.Loader.shared.add(...asset);
+    }
+
+    PIXI.Loader.shared.load(() => {
+      resolve();
+    });
+  });
 }
 
 function setRenderer(): PIXI.Application {
