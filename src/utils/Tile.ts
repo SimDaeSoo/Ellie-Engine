@@ -257,7 +257,12 @@ function getWaterTileNumber(
         tileGrid[y - 1][x + 1][1][0] < 1 &&
         tileGrid[y + 1][x - 1][1][0] < 1))
   ) {
-    if (tileGrid[y - 1][x - 1][1][0] && tileGrid[y - 1][x + 1][1][0]) {
+    if (
+      tileGrid[y - 1][x - 1][1][0] &&
+      tileGrid[y - 1][x + 1][1][0] &&
+      (!tileGrid[y][x + 1][1][0] || tileGrid[y][x + 1][0][0]) &&
+      (!tileGrid[y][x - 1][1][0] || tileGrid[y][x - 1][0][0])
+    ) {
       return 36;
     } else if (tileGrid[y - 1][x - 1][1][0] && !tileGrid[y][x + 1][1][0]) {
       return 35;
@@ -270,7 +275,7 @@ function getWaterTileNumber(
     (y === 0 || (!tileGrid[y - 1][x][0][0] && !tileGrid[y - 1][x][1][0]))
   ) {
     return 2;
-  } else if (y > 0 && tileGrid[y - 1][x][1][0]) {
+  } else if (y > 0 && tileGrid[y - 1][x][1][0] && !tileGrid[y - 1][x][0][0]) {
     return 0;
   } else {
     return waterLevel;
