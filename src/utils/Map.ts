@@ -1,3 +1,5 @@
+import { TileProperties } from '../interfaces';
+
 const TILE_BYTES = 8;
 
 function create(
@@ -43,8 +45,8 @@ function create(
       .fill(true)
       .map(() => new Array(width / splitSize));
 
-    for (let gridY = 0; gridY < height / splitSize; gridY++) {
-      for (let gridX = 0; gridX < width / splitSize; gridX++) {
+    for (let tileGridY = 0; tileGridY < height / splitSize; tileGridY++) {
+      for (let tileGridX = 0; tileGridX < width / splitSize; tileGridX++) {
         const arrayBuffer = new ArrayBuffer(splitSize ** 2 * TILE_BYTES + 16);
 
         for (let i = 0; i < splitSize ** 2; i++) {
@@ -67,7 +69,7 @@ function create(
         size[0] = splitSize; // height
         size[1] = splitSize; // width
 
-        arrayBufferGrid[gridY][gridX] = arrayBuffer;
+        arrayBufferGrid[tileGridY][tileGridX] = arrayBuffer;
       }
     }
 
@@ -85,16 +87,16 @@ function merge(
   );
   const height = size[0];
   const width = size[1];
-  const grid = new Array(height * arrayBufferGrid.length)
+  const tileGrid = new Array(height * arrayBufferGrid.length)
     .fill(true)
     .map(() => new Array(width * arrayBufferGrid[0].length));
 
-  for (let y = 0; y < grid.length; y++) {
+  for (let y = 0; y < tileGrid.length; y++) {
     const [baseY, offsetY] = [Math.floor(y / height), y % height];
-    for (let x = 0; x < grid[y].length; x++) {
+    for (let x = 0; x < tileGrid[y].length; x++) {
       const [baseX, offsetX] = [Math.floor(x / width), x % width];
 
-      grid[y][x] = [
+      tileGrid[y][x] = [
         new Uint8Array(
           arrayBufferGrid[baseY][baseX],
           (offsetY * width + offsetX) * TILE_BYTES,
@@ -109,7 +111,22 @@ function merge(
     }
   }
 
-  return grid;
+  return tileGrid;
 }
 
-export { create, merge };
+function createTileGridProperties(
+  width: number,
+  height: number
+): Array<Array<TileProperties>> {
+  const tileGridProperties: Array<Array<TileProperties>> = new Array(height)
+    .fill(true)
+    .map(() =>
+      new Array(width)
+        .fill(true)
+        .map(() => ({ diff: 0, isStable: false, stableLevel: 0 }))
+    );
+
+  return tileGridProperties;
+}
+
+export { create, merge, createTileGridProperties };

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const TILE_BYTES = 8;
 
-function create(width, height, options = {}) {
+function create(width, height, options: { splitSize?: number } = {}) {
   const { splitSize = 0 } = options;
 
   if (splitSize === 0) {
@@ -24,9 +24,13 @@ function create(width, height, options = {}) {
 
     return [[arrayBuffer]];
   } else if (width % splitSize !== 0 || height % splitSize !== 0) {
-    throw new Error('width and height must be perfectly was divided by split size');
+    throw new Error(
+      'width and height must be perfectly was divided by split size'
+    );
   } else {
-    const arrayBufferGrid = new Array(height / splitSize).fill(true).map(() => new Array(width / splitSize));
+    const arrayBufferGrid = new Array(height / splitSize)
+      .fill(true)
+      .map(() => new Array(width / splitSize));
 
     for (let gridY = 0; gridY < height / splitSize; gridY++) {
       for (let gridX = 0; gridX < width / splitSize; gridX++) {
@@ -43,7 +47,11 @@ function create(width, height, options = {}) {
           liquid[0] = 0;
         }
 
-        const size = new Float64Array(arrayBuffer, arrayBuffer.byteLength - 16, 2);
+        const size = new Float64Array(
+          arrayBuffer,
+          arrayBuffer.byteLength - 16,
+          2
+        );
         size[0] = splitSize; // height
         size[1] = splitSize; // width
 
@@ -56,10 +64,16 @@ function create(width, height, options = {}) {
 }
 
 function merge(arrayBufferGrid) {
-  const size = new Float64Array(arrayBufferGrid[0][0], arrayBufferGrid[0][0].byteLength - 16, 2);
+  const size = new Float64Array(
+    arrayBufferGrid[0][0],
+    arrayBufferGrid[0][0].byteLength - 16,
+    2
+  );
   const height = size[0];
   const width = size[1];
-  const grid = new Array(height * arrayBufferGrid.length).fill(true).map(() => new Array(width * arrayBufferGrid[0].length));
+  const grid = new Array(height * arrayBufferGrid.length)
+    .fill(true)
+    .map(() => new Array(width * arrayBufferGrid[0].length));
 
   for (let y = 0; y < grid.length; y++) {
     const [baseY, offsetY] = [Math.floor(y / height), y % height];
@@ -67,8 +81,16 @@ function merge(arrayBufferGrid) {
       const [baseX, offsetX] = [Math.floor(x / width), x % width];
 
       grid[y][x] = [
-        new Uint8Array(arrayBufferGrid[baseY][baseX], (offsetY * width + offsetX) * TILE_BYTES, 4),
-        new Float32Array(arrayBufferGrid[baseY][baseX], (offsetY * width + offsetX) * TILE_BYTES + 4, 1)
+        new Uint8Array(
+          arrayBufferGrid[baseY][baseX],
+          (offsetY * width + offsetX) * TILE_BYTES,
+          4
+        ),
+        new Float32Array(
+          arrayBufferGrid[baseY][baseX],
+          (offsetY * width + offsetX) * TILE_BYTES + 4,
+          1
+        ),
       ];
     }
   }
@@ -98,14 +120,16 @@ function main() {
   print(grid);
 }
 
-
 function writingTest() {
   // Writing
   const arrayBufferGrid = create(8448, 2432, { splitSize: 64 });
 
   for (let y = 0; y < arrayBufferGrid.length; y++) {
     for (let x = 0; x < arrayBufferGrid[y].length; x++) {
-      fs.writeFileSync(`./mapdatas/${y}_${x}.ellie`, Buffer.from(arrayBufferGrid[y][x]));
+      fs.writeFileSync(
+        `./mapdatas/${y}_${x}.ellie`,
+        Buffer.from(arrayBufferGrid[y][x])
+      );
     }
   }
 }
@@ -122,7 +146,11 @@ function readingTest() {
         view[i] = buffer[i];
       }
 
-      const size = new Float64Array(arrayBuffer, arrayBuffer.byteLength - 16, 2);
+      const size = new Float64Array(
+        arrayBuffer,
+        arrayBuffer.byteLength - 16,
+        2
+      );
       console.log(size[0], size[1]);
     }
   }

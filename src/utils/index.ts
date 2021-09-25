@@ -22,6 +22,8 @@ async function preload(
     srcs.push(`waters/${i.toString().padStart(2, '0')}.png`);
   }
 
+  srcs.push(`characters/ellie/idle.png`);
+
   for (const src of srcs) {
     assets.push([src, `${BASE_URL}/${src}`]);
   }

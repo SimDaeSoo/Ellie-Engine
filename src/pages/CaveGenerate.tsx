@@ -10,19 +10,19 @@ const CaveGenerate = () => {
     // Buffer Tile Map Generate
     const width = Math.ceil(window.innerWidth / 8);
     const height = Math.ceil(window.innerHeight / 8);
-    const arrayBufferGrid: Array<Array<ArrayBuffer>> = Map.create(
+    const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
       height
     );
-    const grid: Array<Array<[Uint8Array, Float64Array]>> =
-      Map.merge(arrayBufferGrid);
+    const tileGrid: Array<Array<[Uint8Array, Float64Array]>> =
+      Map.merge(tileBufferGrids);
 
     // Rendering
     const app: PIXI.Application = setRenderer();
     const graphics = new PIXI.Graphics();
 
     graphics.clear();
-    drawTiles(graphics, grid);
+    drawTiles(graphics, tileGrid);
 
     app.stage.addChild(graphics);
 
@@ -32,14 +32,14 @@ const CaveGenerate = () => {
     setUpdater(() => {
       if (frames++ >= 10 && stepCount < 10) {
         CaveGenerator.nextStep(
-          grid,
+          tileGrid,
           stepCount < 4
             ? { deathLimit: 3, birthLimit: 5 }
             : { deathLimit: 4, birthLimit: 4 }
         );
 
         graphics.clear();
-        drawTiles(graphics, grid);
+        drawTiles(graphics, tileGrid);
 
         stepCount++;
         frames = 0;

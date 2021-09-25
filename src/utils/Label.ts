@@ -1,6 +1,9 @@
 import * as PIXI from 'pixi.js';
 
-function createLabel(text: string): PIXI.Container {
+function createLabel(text: string): {
+  container: PIXI.Container;
+  label: PIXI.Text;
+} {
   const labelContainer = new PIXI.Container();
   const labelBackground = new PIXI.Graphics();
   const label = new PIXI.Text(text, {
@@ -17,7 +20,10 @@ function createLabel(text: string): PIXI.Container {
   labelContainer.addChild(labelBackground);
   labelContainer.addChild(label);
 
-  return labelContainer;
+  return {
+    container: labelContainer,
+    label,
+  };
 }
 
 export { createLabel };

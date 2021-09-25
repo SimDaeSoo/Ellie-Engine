@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "homepage": "https://simdaesoo.github.io/Engine/build",
+  "author": "SimDaeSoo(daesoo94)",
+  "description": "2D Game Engine Using Typescript (Javascript) the goal of this project is to create efficient engine for huge tile platform 2D game like terraria.",
   "dependencies": {
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",

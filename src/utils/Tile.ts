@@ -1,28 +1,30 @@
 function getTileNumber(
   x: number,
   y: number,
-  grid: Array<Array<[Uint8Array, Float64Array]>>
+  tileGrid: Array<Array<[Uint8Array, Float64Array]>>
 ): number {
   const topLeft =
-    y > 0 && x > 0 && grid[y - 1][x - 1][0][0] === grid[y][x][0][0];
-  const top = y > 0 && grid[y - 1][x][0][0] === grid[y][x][0][0];
+    y > 0 && x > 0 && tileGrid[y - 1][x - 1][0][0] === tileGrid[y][x][0][0];
+  const top = y > 0 && tileGrid[y - 1][x][0][0] === tileGrid[y][x][0][0];
   const topRight =
     y > 0 &&
-    x < grid[0].length - 1 &&
-    grid[y - 1][x + 1][0][0] === grid[y][x][0][0];
-  const left = x > 0 && grid[y][x - 1][0][0] === grid[y][x][0][0];
+    x < tileGrid[0].length - 1 &&
+    tileGrid[y - 1][x + 1][0][0] === tileGrid[y][x][0][0];
+  const left = x > 0 && tileGrid[y][x - 1][0][0] === tileGrid[y][x][0][0];
   const right =
-    x < grid[0].length - 1 && grid[y][x + 1][0][0] === grid[y][x][0][0];
+    x < tileGrid[0].length - 1 &&
+    tileGrid[y][x + 1][0][0] === tileGrid[y][x][0][0];
   const bottomLeft =
-    y < grid.length - 1 &&
+    y < tileGrid.length - 1 &&
     x > 0 &&
-    grid[y + 1][x - 1][0][0] === grid[y][x][0][0];
+    tileGrid[y + 1][x - 1][0][0] === tileGrid[y][x][0][0];
   const bottom =
-    y < grid.length - 1 && grid[y + 1][x][0][0] === grid[y][x][0][0];
+    y < tileGrid.length - 1 &&
+    tileGrid[y + 1][x][0][0] === tileGrid[y][x][0][0];
   const bottomRight =
-    y < grid.length - 1 &&
-    x < grid[0].length - 1 &&
-    grid[y + 1][x + 1][0][0] === grid[y][x + 1][0][0];
+    y < tileGrid.length - 1 &&
+    x < tileGrid[0].length - 1 &&
+    tileGrid[y + 1][x + 1][0][0] === tileGrid[y][x + 1][0][0];
 
   if (!top && !left && right && bottom) return 1;
   if (!top && left && right && bottom && !bottomLeft && bottomRight) return 41;
@@ -233,42 +235,42 @@ function getTileNumber(
 function getWaterTileNumber(
   x: number,
   y: number,
-  grid: Array<Array<[Uint8Array, Float64Array]>>
+  tileGrid: Array<Array<[Uint8Array, Float64Array]>>
 ): number {
-  const waterLevel = Math.floor(33 - Math.min(grid[y][x][1][0], 1) * 33);
+  const waterLevel = Math.floor(33 - Math.min(tileGrid[y][x][1][0], 1) * 33);
 
   if (
-    y < grid.length - 1 &&
+    y < tileGrid.length - 1 &&
     y > 0 &&
-    x < grid[0].length - 1 &&
+    x < tileGrid[0].length - 1 &&
     x > 0 &&
-    !grid[y - 1][x][1][0] &&
-    grid[y + 1][x][1][0] &&
-    ((grid[y][x - 1][1][0] &&
-      grid[y - 1][x - 1][1][0] &&
-      grid[y][x - 1][1][0] < 1 &&
-      grid[y - 1][x - 1][1][0] < 1 &&
-      grid[y + 1][x + 1][1][0] < 1) ||
-      (grid[y][x + 1][1][0] &&
-        grid[y - 1][x + 1][1][0] &&
-        grid[y][x + 1][1][0] < 1 &&
-        grid[y - 1][x + 1][1][0] < 1 &&
-        grid[y + 1][x - 1][1][0] < 1))
+    !tileGrid[y - 1][x][1][0] &&
+    tileGrid[y + 1][x][1][0] &&
+    ((tileGrid[y][x - 1][1][0] &&
+      tileGrid[y - 1][x - 1][1][0] &&
+      tileGrid[y][x - 1][1][0] < 1 &&
+      tileGrid[y - 1][x - 1][1][0] < 1 &&
+      tileGrid[y + 1][x + 1][1][0] < 1) ||
+      (tileGrid[y][x + 1][1][0] &&
+        tileGrid[y - 1][x + 1][1][0] &&
+        tileGrid[y][x + 1][1][0] < 1 &&
+        tileGrid[y - 1][x + 1][1][0] < 1 &&
+        tileGrid[y + 1][x - 1][1][0] < 1))
   ) {
-    if (grid[y - 1][x - 1][1][0] && grid[y - 1][x + 1][1][0]) {
+    if (tileGrid[y - 1][x - 1][1][0] && tileGrid[y - 1][x + 1][1][0]) {
       return 36;
-    } else if (grid[y - 1][x - 1][1][0] && !grid[y][x + 1][1][0]) {
+    } else if (tileGrid[y - 1][x - 1][1][0] && !tileGrid[y][x + 1][1][0]) {
       return 35;
-    } else if (grid[y - 1][x + 1][1][0] && !grid[y][x - 1][1][0]) {
+    } else if (tileGrid[y - 1][x + 1][1][0] && !tileGrid[y][x - 1][1][0]) {
       return 34;
     }
   }
   if (
     waterLevel <= 1 &&
-    (y === 0 || (!grid[y - 1][x][0][0] && !grid[y - 1][x][1][0]))
+    (y === 0 || (!tileGrid[y - 1][x][0][0] && !tileGrid[y - 1][x][1][0]))
   ) {
     return 2;
-  } else if (y > 0 && grid[y - 1][x][1][0]) {
+  } else if (y > 0 && tileGrid[y - 1][x][1][0]) {
     return 0;
   } else {
     return waterLevel;

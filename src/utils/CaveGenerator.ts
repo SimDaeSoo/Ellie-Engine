@@ -3,7 +3,7 @@
 function countAliveNeighbours(
   x: number,
   y: number,
-  grid: Array<Array<[Uint8Array, Float64Array]>>
+  tileGrid: Array<Array<[Uint8Array, Float64Array]>>
 ): number {
   let aliveNeighbours = 0;
 
@@ -16,11 +16,11 @@ function countAliveNeighbours(
       } else if (
         neighborX < 0 ||
         neighborY < 0 ||
-        neighborX >= grid[0].length ||
-        neighborY >= grid.length
+        neighborX >= tileGrid[0].length ||
+        neighborY >= tileGrid.length
       ) {
         aliveNeighbours++;
-      } else if (grid[neighborY][neighborX][0][0]) {
+      } else if (tileGrid[neighborY][neighborX][0][0]) {
         aliveNeighbours++;
       }
     }
@@ -30,19 +30,19 @@ function countAliveNeighbours(
 }
 
 function nextStep(
-  grid: Array<Array<[Uint8Array, Float64Array]>>,
+  tileGrid: Array<Array<[Uint8Array, Float64Array]>>,
   options: { deathLimit: number; birthLimit: number }
 ): void {
-  const afterGrid: Array<Array<boolean>> = new Array(grid.length)
+  const afterGrid: Array<Array<boolean>> = new Array(tileGrid.length)
     .fill(true)
-    .map(() => new Array(grid[0].length).fill(false));
+    .map(() => new Array(tileGrid[0].length).fill(false));
   const { deathLimit, birthLimit } = options;
 
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[0].length; x++) {
-      let alives: number = countAliveNeighbours(x, y, grid);
+  for (let y = 0; y < tileGrid.length; y++) {
+    for (let x = 0; x < tileGrid[0].length; x++) {
+      let alives: number = countAliveNeighbours(x, y, tileGrid);
 
-      if (grid[y][x][0][0]) {
+      if (tileGrid[y][x][0][0]) {
         if (alives < birthLimit) {
           afterGrid[y][x] = false;
         } else {
@@ -60,7 +60,7 @@ function nextStep(
 
   for (let y = 0; y < afterGrid.length; y++) {
     for (let x = 0; x < afterGrid[0].length; x++) {
-      grid[y][x][0][0] = afterGrid[y][x] ? 1 : 0;
+      tileGrid[y][x][0][0] = afterGrid[y][x] ? 1 : 0;
     }
   }
 }
