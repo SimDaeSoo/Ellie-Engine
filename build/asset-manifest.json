@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/Ellie/build/static/js/main.6d75608d.chunk.js",
-    "main.js.map": "/Ellie/build/static/js/main.6d75608d.chunk.js.map",
+    "main.js": "/Ellie/build/static/js/main.012cf8e5.chunk.js",
+    "main.js.map": "/Ellie/build/static/js/main.012cf8e5.chunk.js.map",
     "runtime-main.js": "/Ellie/build/static/js/runtime-main.218d0f7c.js",
     "runtime-main.js.map": "/Ellie/build/static/js/runtime-main.218d0f7c.js.map",
     "static/css/2.2a7509dd.chunk.css": "/Ellie/build/static/css/2.2a7509dd.chunk.css",
-    "static/js/2.0bbdd071.chunk.js": "/Ellie/build/static/js/2.0bbdd071.chunk.js",
-    "static/js/2.0bbdd071.chunk.js.map": "/Ellie/build/static/js/2.0bbdd071.chunk.js.map",
+    "static/js/2.1499ec4e.chunk.js": "/Ellie/build/static/js/2.1499ec4e.chunk.js",
+    "static/js/2.1499ec4e.chunk.js.map": "/Ellie/build/static/js/2.1499ec4e.chunk.js.map",
     "index.html": "/Ellie/build/index.html",
     "static/css/2.2a7509dd.chunk.css.map": "/Ellie/build/static/css/2.2a7509dd.chunk.css.map",
-    "static/js/2.0bbdd071.chunk.js.LICENSE.txt": "/Ellie/build/static/js/2.0bbdd071.chunk.js.LICENSE.txt"
+    "static/js/2.1499ec4e.chunk.js.LICENSE.txt": "/Ellie/build/static/js/2.1499ec4e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.218d0f7c.js",
     "static/css/2.2a7509dd.chunk.css",
-    "static/js/2.0bbdd071.chunk.js",
-    "static/js/main.6d75608d.chunk.js"
+    "static/js/2.1499ec4e.chunk.js",
+    "static/js/main.012cf8e5.chunk.js"
   ]
 }
