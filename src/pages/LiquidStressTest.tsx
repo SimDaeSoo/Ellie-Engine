@@ -54,11 +54,18 @@ const LiquidStressTest = ({
 
     // Rendering
     const app: PIXI.Application = setRenderer();
+    const { container: tileLabelContainer } = createLabel(
+      `${width * height} sprites`
+    );
     const { container: labelContainer } = createLabel('Click to create water');
+    tileLabelContainer.x = Math.round(
+      window.innerWidth / 2 - tileLabelContainer.width / 2
+    );
+    tileLabelContainer.y = 60;
     labelContainer.x = Math.round(
       window.innerWidth / 2 - labelContainer.width / 2
     );
-    labelContainer.y = 60;
+    labelContainer.y = 80;
 
     const waterContainer = new PIXI.Container();
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
@@ -86,6 +93,7 @@ const LiquidStressTest = ({
 
     app.stage.addChild(waterContainer);
     app.stage.addChild(labelContainer);
+    app.stage.addChild(tileLabelContainer);
 
     // Update Logic
     const step = LiquidSimulator.stepGenerator(tileGrid, tileGridProperties);
