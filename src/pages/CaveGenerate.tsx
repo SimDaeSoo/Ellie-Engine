@@ -41,8 +41,8 @@ const CaveGenerate = ({
         CaveGenerator.nextStep(
           tileGrid,
           stepCount < 4
-            ? { deathLimit: 3, birthLimit: 5 }
-            : { deathLimit: 4, birthLimit: 4 }
+            ? { deathLimit: 3, birthLimit: 5, clearSky: false, margin: 0 }
+            : { deathLimit: 4, birthLimit: 4, clearSky: false, margin: 0 }
         );
 
         graphics.clear();

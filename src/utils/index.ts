@@ -14,12 +14,16 @@ async function preload(
   const assets: Array<[string, string]> = [];
   const srcs: Array<string> = [];
 
-  for (let i = 1; i <= 61; i++) {
+  for (let i = 1; i <= 62; i++) {
     srcs.push(`tiles/Tile_${i.toString().padStart(2, '0')}.png`);
   }
 
   for (let i = 0; i <= 36; i++) {
     srcs.push(`waters/${i.toString().padStart(2, '0')}.png`);
+  }
+
+  for (let i = 0; i <= 0; i++) {
+    srcs.push(`backgrounds/${i.toString().padStart(2, '0')}.png`);
   }
 
   srcs.push(`characters/ellie/idle.png`);

@@ -8,6 +8,7 @@ import ProgressBar from './components/ProgressBar';
 import TilemapWithBuffer from './pages/TilemapWithBuffer';
 import CaveGenerate from './pages/CaveGenerate';
 import CaveGenerateWithTexture from './pages/CaveGenerateWithTexture';
+import CaveGenerateWithSky from './pages/CaveGenerateWithSky';
 import LiquidSimulation from './pages/LiquidSimulation';
 import LiquidSimulation2 from './pages/LiquidSimulation2';
 import LiquidStressTest from './pages/LiquidStressTest';
@@ -77,6 +78,15 @@ const App = () => {
                 <CaveGenerateWithTexture
                   setCallback={(cb) => (callback = cb)}
                 />
+              )}
+            />
+          )}
+          {hide && (
+            <Route
+              exact
+              path='/cave-generate-sky'
+              render={() => (
+                <CaveGenerateWithSky setCallback={(cb) => (callback = cb)} />
               )}
             />
           )}

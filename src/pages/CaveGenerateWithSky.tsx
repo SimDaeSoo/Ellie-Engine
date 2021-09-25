@@ -6,7 +6,7 @@ import * as Map from '../utils/Map';
 import * as CaveGenerator from '../utils/CaveGenerator';
 import { getTileNumber } from '../utils/Tile';
 
-const CaveGenerateWithTexture = ({
+const CaveGenerateWithSky = ({
   setCallback,
 }: {
   setCallback: (callback: (x: number, y: number) => void) => void;
@@ -20,7 +20,15 @@ const CaveGenerateWithTexture = ({
     const height = Math.ceil(window.innerHeight / 8);
     const tileBufferGrids: Array<Array<ArrayBuffer>> = Map.create(
       width,
-      height
+      height,
+      {
+        splitSize: 0,
+        clearHeight: Math.round(height / 4),
+        density: {
+          block: 0.5,
+          liquid: 0.5,
+        },
+      }
     );
     const tileGrid: Array<Array<[Uint8Array, Float64Array]>> =
       Map.merge(tileBufferGrids);
@@ -28,6 +36,11 @@ const CaveGenerateWithTexture = ({
     // Rendering
     const app: PIXI.Application = setRenderer();
     const graphics = new PIXI.Graphics();
+    const background = new PIXI.Sprite(PIXI.Texture.WHITE);
+    background.tint = 0x87ceeb;
+    background.width = window.innerWidth;
+    background.height = window.innerHeight;
+    background.cacheAsBitmap = true;
 
     graphics.clear();
     drawTiles(graphics, tileGrid);
@@ -42,8 +55,18 @@ const CaveGenerateWithTexture = ({
         CaveGenerator.nextStep(
           tileGrid,
           stepCount < 4
-            ? { deathLimit: 3, birthLimit: 5, clearSky: false, margin: 0 }
-            : { deathLimit: 4, birthLimit: 4, clearSky: false, margin: 0 }
+            ? {
+                deathLimit: 3,
+                birthLimit: 5,
+                clearSky: true,
+                margin: Math.round(height / 8),
+              }
+            : {
+                deathLimit: 4,
+                birthLimit: 4,
+                clearSky: true,
+                margin: Math.round(height / 8),
+              }
         );
 
         graphics.clear();
@@ -54,6 +77,7 @@ const CaveGenerateWithTexture = ({
 
         if (stepCount === 10) {
           app.stage.removeChild(graphics);
+          app.stage.addChild(background);
 
           const tileContainer = new PIXI.Container();
           const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
@@ -94,4 +118,4 @@ const CaveGenerateWithTexture = ({
   return <></>;
 };
 
-export default CaveGenerateWithTexture;
+export default CaveGenerateWithSky;

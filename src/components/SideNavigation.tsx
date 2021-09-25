@@ -72,6 +72,13 @@ const SideNavigation = () => {
               Cave With Texture
             </Nav.Item>
             <Nav.Item
+              icon={<Icon icon='th2' />}
+              onSelect={() => history.push('/cave-generate-sky')}
+              eventKey='/cave-generate-sky'
+            >
+              Cave With Sky
+            </Nav.Item>
+            <Nav.Item
               icon={<Icon icon='tint' />}
               onSelect={() => history.push('/liquid-simulation')}
               eventKey='/liquid-simulation'

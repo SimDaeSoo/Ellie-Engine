@@ -4,7 +4,7 @@ import { setRenderer, setUpdater } from '../utils';
 import { createLabel } from '../utils/Label';
 import * as Map from '../utils/Map';
 import * as LiquidSimulator from '../utils/LiquidSimulator';
-import { getTileNumber, getWaterTileNumber } from '../utils/Tile';
+import { getWaterTileNumber } from '../utils/Tile';
 import { TileProperties } from '../interfaces';
 
 const LiquidStressTest = ({
@@ -21,6 +21,7 @@ const LiquidStressTest = ({
       height,
       {
         splitSize: 0,
+        clearHeight: 0,
         density: {
           block: 0,
           liquid: 1,
@@ -59,8 +60,6 @@ const LiquidStressTest = ({
     );
     labelContainer.y = 60;
 
-    const backgroundContainer = new PIXI.Container();
-    const tileContainer = new PIXI.Container();
     const waterContainer = new PIXI.Container();
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
       .fill(true)
@@ -68,55 +67,25 @@ const LiquidStressTest = ({
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        if (tileGrid[y][x][0][0]) {
-          const sprite = new PIXI.Sprite(
-            PIXI.Texture.from(
-              `tiles/Tile_${getTileNumber(x, y, tileGrid)
-                .toString()
-                .padStart(2, '0')}.png`
-            )
-          );
-          sprite.width = 8;
-          sprite.height = 8;
-          sprite.x = x * 8;
-          sprite.y = y * 8;
-          tileSprites[y][x] = sprite;
-          tileContainer.addChild(sprite);
-        } else {
-          const waterTileNumber = getWaterTileNumber(x, y, tileGrid);
-          const waterSprite = new PIXI.Sprite(
-            waterTileNumber >= 0
-              ? PIXI.Texture.from(
-                  `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
-                )
-              : PIXI.Texture.EMPTY
-          );
-          waterSprite.width = 8;
-          waterSprite.height = 8;
-          waterSprite.x = x * 8;
-          waterSprite.y = y * 8;
-          tileSprites[y][x] = waterSprite;
-          waterContainer.addChild(waterSprite);
-
-          const sprite = new PIXI.Sprite(
-            PIXI.Texture.from(`tiles/Tile_61.png`)
-          );
-          sprite.width = 8;
-          sprite.height = 8;
-          sprite.x = x * 8;
-          sprite.y = y * 8;
-          backgroundContainer.addChild(sprite);
-        }
+        const waterTileNumber = getWaterTileNumber(x, y, tileGrid);
+        const waterSprite = new PIXI.Sprite(
+          waterTileNumber >= 0
+            ? PIXI.Texture.from(
+                `waters/${waterTileNumber.toString().padStart(2, '0')}.png`
+              )
+            : PIXI.Texture.EMPTY
+        );
+        waterSprite.width = 8;
+        waterSprite.height = 8;
+        waterSprite.x = x * 8;
+        waterSprite.y = y * 8;
+        tileSprites[y][x] = waterSprite;
+        waterContainer.addChild(waterSprite);
       }
     }
 
-    app.stage.addChild(backgroundContainer);
-    app.stage.addChild(tileContainer);
     app.stage.addChild(waterContainer);
     app.stage.addChild(labelContainer);
-
-    backgroundContainer.cacheAsBitmap = true;
-    tileContainer.cacheAsBitmap = true;
 
     // Update Logic
     const step = LiquidSimulator.stepGenerator(tileGrid, tileGridProperties);
@@ -135,7 +104,7 @@ const LiquidStressTest = ({
                   )
                 : PIXI.Texture.EMPTY;
             tileSprites[y][x].alpha = Math.min(
-              0.3 + tileGrid[y][x][1][0] * 0.15,
+              0.4 + tileGrid[y][x][1][0] * 0.1,
               0.8
             );
           }

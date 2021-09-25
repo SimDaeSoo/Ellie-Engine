@@ -7,14 +7,18 @@ function create(
   height: number,
   options?: {
     splitSize: number;
+    clearHeight: number;
     density: {
       block: number;
       liquid: number;
     };
   }
 ): Array<Array<ArrayBuffer>> {
-  const { splitSize = 0, density = { block: 0.5, liquid: 0.5 } } =
-    options || {};
+  const {
+    splitSize = 0,
+    density = { block: 0.5, liquid: 0.5 },
+    clearHeight = 0,
+  } = options || {};
 
   if (splitSize === 0) {
     const arrayBuffer = new ArrayBuffer(width * height * TILE_BYTES + 16);
@@ -22,7 +26,8 @@ function create(
     for (let i = 0; i < width * height; i++) {
       const properties = new Uint8Array(arrayBuffer, i * TILE_BYTES, 4);
       const liquid = new Float32Array(arrayBuffer, i * TILE_BYTES + 4, 1);
-      const tileType = Math.random() < density.block ? 1 : 0;
+      const tileType =
+        i > width * clearHeight && Math.random() < density.block ? 1 : 0;
 
       properties[0] = tileType; // tileType
       properties[1] = 0; // backgroundType
@@ -52,7 +57,8 @@ function create(
         for (let i = 0; i < splitSize ** 2; i++) {
           const properties = new Uint8Array(arrayBuffer, i * TILE_BYTES, 4);
           const liquid = new Float32Array(arrayBuffer, i * TILE_BYTES + 4, 1);
-          const tileType = Math.random() < density.block ? 1 : 0;
+          const tileType =
+            i > width * clearHeight && Math.random() < density.block ? 1 : 0;
 
           properties[0] = tileType; // tileType
           properties[1] = 0; // backgroundType

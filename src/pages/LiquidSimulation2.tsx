@@ -22,6 +22,7 @@ const LiquidSimulation2 = ({
       height,
       {
         splitSize: 0,
+        clearHeight: Math.round(height / 4),
         density: {
           block: 0.5,
           liquid: 0,
@@ -37,8 +38,18 @@ const LiquidSimulation2 = ({
       CaveGenerator.nextStep(
         tileGrid,
         i < 4
-          ? { deathLimit: 3, birthLimit: 5 }
-          : { deathLimit: 4, birthLimit: 4 }
+          ? {
+              deathLimit: 3,
+              birthLimit: 5,
+              clearSky: true,
+              margin: Math.round(height / 8),
+            }
+          : {
+              deathLimit: 4,
+              birthLimit: 4,
+              clearSky: true,
+              margin: Math.round(height / 8),
+            }
       );
     }
 
@@ -75,6 +86,12 @@ const LiquidSimulation2 = ({
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)
       .fill(true)
       .map(() => new Array(width));
+    const background = new PIXI.Sprite(PIXI.Texture.WHITE);
+    background.tint = 0x87ceeb;
+    background.width = window.innerWidth;
+    background.height = window.innerHeight;
+    background.cacheAsBitmap = true;
+    app.stage.addChild(background);
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -108,14 +125,20 @@ const LiquidSimulation2 = ({
           tileSprites[y][x] = waterSprite;
           waterContainer.addChild(waterSprite);
 
-          const sprite = new PIXI.Sprite(
-            PIXI.Texture.from(`tiles/Tile_61.png`)
-          );
-          sprite.width = 8;
-          sprite.height = 8;
-          sprite.x = x * 8;
-          sprite.y = y * 8;
-          backgroundContainer.addChild(sprite);
+          if (tileGrid[y][x][0][1]) {
+            const sprite = new PIXI.Sprite(
+              tileGrid[y][x][0][1] === 1
+                ? PIXI.Texture.from(`tiles/Tile_61.png`)
+                : tileGrid[y][x][0][1] === 2
+                ? PIXI.Texture.from(`tiles/Tile_62.png`)
+                : PIXI.Texture.EMPTY
+            );
+            sprite.width = 8;
+            sprite.height = 8;
+            sprite.x = x * 8;
+            sprite.y = y * 8;
+            backgroundContainer.addChild(sprite);
+          }
         }
       }
     }
@@ -145,7 +168,7 @@ const LiquidSimulation2 = ({
                   )
                 : PIXI.Texture.EMPTY;
             tileSprites[y][x].alpha = Math.min(
-              0.3 + tileGrid[y][x][1][0] * 0.15,
+              0.4 + tileGrid[y][x][1][0] * 0.1,
               0.8
             );
           }
