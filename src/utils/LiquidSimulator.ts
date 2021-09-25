@@ -40,9 +40,10 @@ function* liquidSimulateGenerator(
   for (let y = 0; y < tileGridProperties.length; y++) {
     for (let x = 0; x < tileGridProperties[0].length; x++) {
       tileGridProperties[y][x].diff = 0;
-      if (++accumulate > accumulateLimit && Date.now() - begin >= limitDuration)
-        begin = yield;
-      if (accumulate > accumulateLimit) accumulate = 0;
+      if (++accumulate > accumulateLimit) {
+        accumulate = 0;
+        if (Date.now() - begin >= limitDuration) begin = yield;
+      }
     }
   }
 
@@ -165,9 +166,10 @@ function* liquidSimulateGenerator(
         if (x < tileGrid[0].length - 1 && tileGrid[y][x + 1])
           tileGridProperties[y][x + 1].isStable = false;
       }
-      if (++accumulate > accumulateLimit && Date.now() - begin >= limitDuration)
-        begin = yield;
-      if (accumulate > accumulateLimit) accumulate = 0;
+      if (++accumulate > accumulateLimit) {
+        accumulate = 0;
+        if (Date.now() - begin >= limitDuration) begin = yield;
+      }
     }
   }
 
@@ -177,9 +179,10 @@ function* liquidSimulateGenerator(
       if (tileGrid[y][x][1][0] < MIN_LIQUID_VALUE) {
         tileGrid[y][x][1][0] = 0;
       }
-      if (++accumulate > accumulateLimit && Date.now() - begin >= limitDuration)
-        begin = yield;
-      if (accumulate > accumulateLimit) accumulate = 0;
+      if (++accumulate > accumulateLimit) {
+        accumulate = 0;
+        if (Date.now() - begin >= limitDuration) begin = yield;
+      }
     }
   }
 
