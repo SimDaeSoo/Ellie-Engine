@@ -69,6 +69,7 @@ const LiquidStressTest = ({
 
     const waterContainer = new PIXI.ParticleContainer(width * height, {
       uvs: true,
+      position: false,
     });
     const waterParticleTextures = getWaterTextures();
     const tileSprites: Array<Array<PIXI.Sprite>> = new Array(height)

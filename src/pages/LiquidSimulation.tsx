@@ -67,9 +67,11 @@ const LiquidSimulation = ({
     // const tileContainer = new PIXI.Container();
     const tileContainer = new PIXI.ParticleContainer(width * height, {
       uvs: true,
+      position: false,
     });
     const waterContainer = new PIXI.ParticleContainer(width * height, {
       uvs: true,
+      position: false,
       alpha: true,
     });
     const tileParticleTextures = getTileTextures();

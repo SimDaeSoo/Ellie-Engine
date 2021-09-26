@@ -285,25 +285,27 @@ function getWaterTileNumber(
 }
 
 function getTileTextures(): Array<PIXI.Texture> {
+  const baseTexture = PIXI.Texture.from(`tiles.png`).baseTexture;
+
   return new Array(63).fill(true).map((_v, i) => {
     const [x, y] = [i % 9, Math.floor(i / 9)];
     return new PIXI.Texture(
-      PIXI.Texture.from(`tiles.png`).baseTexture,
+      baseTexture,
       new PIXI.Rectangle(x * 16 + (x + 1), y * 16 + (y + 1), 16, 16)
     );
   });
 }
 
 function getWaterTextures(): Array<PIXI.Texture> {
-  return new Array(38)
-    .fill(true)
-    .map(
-      (_v, i) =>
-        new PIXI.Texture(
-          PIXI.Texture.from(`waters.png`).baseTexture,
-          new PIXI.Rectangle(i * 16 + (i + 1), 1, 16, 16)
-        )
+  const baseTexture = PIXI.Texture.from(`waters.png`).baseTexture;
+
+  return new Array(38).fill(true).map((_v, i) => {
+    const [x, y] = [i % 13, Math.floor(i / 13)];
+    return new PIXI.Texture(
+      baseTexture,
+      new PIXI.Rectangle(x * 16 + (x + 1), y * 16 + (y + 1), 16, 16)
     );
+  });
 }
 
 export { getTileNumber, getWaterTileNumber, getTileTextures, getWaterTextures };

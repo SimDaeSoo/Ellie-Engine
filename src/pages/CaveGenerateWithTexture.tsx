@@ -60,6 +60,7 @@ const CaveGenerateWithTexture = ({
           // const tileContainer = new PIXI.Container();
           const tileContainer = new PIXI.ParticleContainer(width * height * 2, {
             uvs: true,
+            position: false,
           });
           const tileParticleTextures = getTileTextures();
 

@@ -59,6 +59,7 @@ const DefaultLighting = ({
     // const tileContainer = new PIXI.Container();
     const tileContainer = new PIXI.ParticleContainer(width * height, {
       uvs: true,
+      position: false,
     });
     const tileParticleTextures = getTileTextures();
     const background = new PIXI.Sprite(PIXI.Texture.WHITE);

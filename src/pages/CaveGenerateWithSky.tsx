@@ -84,6 +84,7 @@ const CaveGenerateWithSky = ({
           // const tileContainer = new PIXI.Container();
           const tileContainer = new PIXI.ParticleContainer(width * height, {
             uvs: true,
+            position: false,
           });
           const tileParticleTextures = getTileTextures();
 
