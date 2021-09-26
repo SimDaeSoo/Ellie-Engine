@@ -138,12 +138,13 @@ function setUpdater(callback: () => void): void {
 }
 
 function getClientSize(): [number, number] {
-  const ratio = window.innerWidth / window.innerHeight;
+  // const ratio = window.innerWidth / window.innerHeight;
 
-  return [
-    Math.min(1920, window.innerWidth),
-    Math.ceil(Math.min(1920, window.innerWidth) / ratio),
-  ];
+  // return [
+  //   Math.min(1920, window.innerWidth),
+  //   Math.ceil(Math.min(1920, window.innerWidth) / ratio),
+  // ];
+  return [window.innerWidth, window.innerHeight];
 }
 
 export { setRenderer, setUpdater, preload, getClientSize };

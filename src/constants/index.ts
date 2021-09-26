@@ -1,4 +1,4 @@
-const TILE_SIZE = 16;
+const TILE_SIZE = 8;
 const SAMPLE_POLYGON: Array<[number, number]> = [
   [0.65125, 0.73125],
   [0.6275, 0.7375],

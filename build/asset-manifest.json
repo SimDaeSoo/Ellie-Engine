@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/Ellie/build/static/js/main.a097ffd6.chunk.js",
-    "main.js.map": "/Ellie/build/static/js/main.a097ffd6.chunk.js.map",
+    "main.js": "/Ellie/build/static/js/main.82a0778e.chunk.js",
+    "main.js.map": "/Ellie/build/static/js/main.82a0778e.chunk.js.map",
     "runtime-main.js": "/Ellie/build/static/js/runtime-main.218d0f7c.js",
     "runtime-main.js.map": "/Ellie/build/static/js/runtime-main.218d0f7c.js.map",
     "static/css/2.2a7509dd.chunk.css": "/Ellie/build/static/css/2.2a7509dd.chunk.css",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.218d0f7c.js",
     "static/css/2.2a7509dd.chunk.css",
     "static/js/2.1499ec4e.chunk.js",
-    "static/js/main.a097ffd6.chunk.js"
+    "static/js/main.82a0778e.chunk.js"
   ]
 }
