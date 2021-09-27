@@ -1,12 +1,51 @@
 import { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Sidenav, Nav, Sidebar, Icon } from 'rsuite';
+import { IconNames } from 'rsuite/lib/Icon';
+
+const navigations: Array<{
+  icon: IconNames;
+  path: string;
+  name: string;
+}> = [
+  {
+    icon: 'th2',
+    path: '/',
+    name: 'Test1',
+  },
+];
 
 const SideNavigation = () => {
   const location = useLocation();
   const history = useHistory();
   const [toggle, setToggle] = useState(true);
   const { pathname } = location;
+
+  const HeaderElement = () => (
+    <Nav.Item
+      icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
+      onClick={(e: any) => {
+        setToggle(!toggle);
+      }}
+      className='noselect'
+      style={{ backgroundColor: '#0f131a' }}
+    >
+      {!toggle ? 'Ellie Engine v0.0.1' : '-'}
+    </Nav.Item>
+  );
+
+  const NavigationElements = () =>
+    navigations.map(({ icon, path, name }, i) => (
+      <Nav.Item
+        key={i}
+        icon={<Icon icon={icon} />}
+        onSelect={() => history.push(path)}
+        eventKey={path}
+        className='noselect'
+      >
+        {name}
+      </Nav.Item>
+    ));
 
   return (
     <Sidebar
@@ -35,149 +74,11 @@ const SideNavigation = () => {
             zIndex: 2,
           }}
         >
-          <Nav>
-            <Nav.Item
-              icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
-              onClick={(e: any) => {
-                setToggle(!toggle);
-              }}
-              style={{ backgroundColor: '#0f131a' }}
-            >
-              {!toggle ? 'Ellie Engine v0.0.1' : '-'}
-            </Nav.Item>
-          </Nav>
+          <Nav>{HeaderElement()}</Nav>
         </Sidenav.Header>
 
         <Sidenav.Body style={{ height: 'calc(100%-50px)', marginTop: '50px' }}>
-          <Nav activeKey={pathname}>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/')}
-              eventKey='/'
-            >
-              Tilemap With Buffer
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate')}
-              eventKey='/cave-generate'
-            >
-              Cave Generate
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate-texture')}
-              eventKey='/cave-generate-texture'
-            >
-              Cave With Texture
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate-sky')}
-              eventKey='/cave-generate-sky'
-            >
-              Cave With Sky
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-simulation')}
-              eventKey='/liquid-simulation'
-            >
-              Liquid Simulation
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-simulation-2')}
-              eventKey='/liquid-simulation-2'
-            >
-              Liquid Simulation 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-stress-test')}
-              eventKey='/liquid-stress-test'
-            >
-              Liquid Stress Test
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='close' />}
-              onSelect={() => history.push('/line-intersection')}
-              eventKey='/line-intersection'
-            >
-              Line Intersection
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='close' />}
-              onSelect={() => history.push('/line-intersection-2')}
-              eventKey='/line-intersection-2'
-            >
-              Line Intersection 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/default-lighting')}
-              eventKey='/default-lighting'
-            >
-              Default Lighting
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-area')}
-              eventKey='/lighting-area'
-              disabled
-            >
-              Lighting Area
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-area-2')}
-              eventKey='/lighting-area-2'
-              disabled
-            >
-              Lighting Area 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-stress-test')}
-              eventKey='/lighting-stress-test'
-              disabled
-            >
-              Lighting Stress Test
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-collision')}
-              eventKey='/aabb-collision'
-              disabled
-            >
-              AABB Collision
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-collision-2')}
-              eventKey='/aabb-collision-2'
-              disabled
-            >
-              AABB Collision 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-stress-test')}
-              eventKey='/aabb-stress-test'
-              disabled
-            >
-              AABB Stress Test
-            </Nav.Item>
-
-            <Nav.Item
-              icon={<Icon icon='globe' />}
-              onSelect={() => history.push('/sample-world')}
-              eventKey='/sample-world'
-              disabled
-            >
-              Sample World
-            </Nav.Item>
-          </Nav>
+          <Nav activeKey={pathname}>{NavigationElements()}</Nav>
         </Sidenav.Body>
       </Sidenav>
     </Sidebar>
