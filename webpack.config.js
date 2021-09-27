@@ -17,12 +17,10 @@ module.exports = {
     path: build
   },
   resolve: {
-    modules: ["node_modules", src],
-    extensions: [".js", ".json", ".jsx", ".ts", ".tsx"],
+    modules: [src],
+    extensions: [".ts"],
   },
-
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') })
   ],
   module: {
