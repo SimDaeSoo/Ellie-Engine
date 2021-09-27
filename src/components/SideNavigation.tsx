@@ -11,7 +11,7 @@ const navigations: Array<{
   {
     icon: 'th2',
     path: '/',
-    name: 'Test1',
+    name: 'Random Tile',
   },
 ];
 
