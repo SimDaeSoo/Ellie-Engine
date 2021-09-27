@@ -15,15 +15,14 @@ const TilemapWithBuffer = ({
         Math.ceil(window.innerWidth / thread) * thread,
         Math.ceil(window.innerHeight / thread) * thread,
       ];
-      const tileGrid = Map.create(width, height, {
-        splitWidth: width / thread,
-        splitHeight: height / thread,
-      });
+      const buffer = Map.create(width, height);
 
-      console.log(tileGrid, thread);
-
-      const worker: Worker = new Worker('WebWorker.js');
-      worker.postMessage(tileGrid);
+      for (let y = 0; y < thread; y++) {
+        for (let x = 0; x < thread; x++) {
+          const worker: Worker = new Worker('worker.js');
+          worker.postMessage({ buffer });
+        }
+      }
     })();
 
     setCallback((_x: number, _y: number) => {});
