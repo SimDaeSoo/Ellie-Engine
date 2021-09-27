@@ -2,13 +2,18 @@ const vertexShaderGLSL = `
 #version 100
 void main() {
   gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-  gl_PointSize = 64.0;
+  gl_PointSize = 1.0;
 }`;
 
 const fragmentShaderGLSL = `
-#version 100
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform float u_time;
+
 void main() {
-  gl_FragColor = vec4(0.18, 0.54, 0.34, 1.0);
+	gl_FragColor = vec4(1.0,1.0,1.0,1.0);
 }`;
 
 class Renderer {
