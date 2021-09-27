@@ -1,18 +1,4 @@
-const vertexShaderGLSL = `
-#version 100
-void main() {
-  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-  gl_PointSize = 1.0;
-}`;
-
-const fragmentShaderGLSL = `
-#ifdef GL_ES
-precision mediump float;
-#endif
-
-void main() {
-	gl_FragColor = vec4(1.0,1.0,1.0,1.0);
-}`;
+import { fragmentShaderGLSL, vertexShaderGLSL } from '../shaders/sample1';
 
 class Renderer {
   constructor(gl: WebGL2RenderingContext) {
