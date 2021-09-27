@@ -6,49 +6,51 @@ import CreatorTag from './components/CreatorTag';
 import SideNavigation from './components/SideNavigation';
 import RandomTile from './pages/RandomTile';
 
+let callback: (x: number, y: number) => void;
+const setCallback = (cb: (x: number, y: number) => void) => {
+  callback = cb;
+};
+
+let updater: () => void;
+const setUpdater = (cb: () => void) => {
+  updater = cb;
+};
+
 const App = () => {
-  const [updater, setUpdater] = useState<() => void>();
-  const [callback, setCallback] = useState<(x: number, y: number) => void>();
-
   useEffect(() => {
-    (async () => {
-      const onTouch = (e: any) => {
-        const [x, y] = [
-          (e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth,
-          (e.targetTouches[0].clientY / window.innerHeight) *
-            window.innerHeight,
-        ];
-        if (callback) callback(x, y);
-      };
-      const onClick = (e: any) => {
-        const [x, y] = [
-          (e.clientX / window.innerWidth) * window.innerWidth,
-          (e.clientY / window.innerHeight) * window.innerHeight,
-        ];
-        if (callback) callback(x, y);
-      };
-      window.removeEventListener('touchstart', onTouch);
-      window.removeEventListener('click', onClick);
-      window.addEventListener('touchstart', onTouch);
-      window.addEventListener('click', onClick);
+    const onTouch = (e: any) => {
+      const [x, y] = [
+        (e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth,
+        (e.targetTouches[0].clientY / window.innerHeight) * window.innerHeight,
+      ];
+      if (callback) callback(x, y);
+    };
+    const onClick = (e: any) => {
+      const [x, y] = [
+        (e.clientX / window.innerWidth) * window.innerWidth,
+        (e.clientY / window.innerHeight) * window.innerHeight,
+      ];
+      if (callback) callback(x, y);
+    };
+    window.removeEventListener('touchstart', onTouch);
+    window.removeEventListener('click', onClick);
+    window.addEventListener('touchstart', onTouch);
+    window.addEventListener('click', onClick);
 
-      const dom: HTMLElement = document.getElementById(
-        'content'
-      ) as HTMLElement;
-      const stats: Stats = new Stats();
-      stats.dom.style.right = '0';
-      stats.dom.style.removeProperty('left');
-      dom.appendChild(stats.dom);
+    const dom: HTMLElement = document.getElementById('content') as HTMLElement;
+    const stats: Stats = new Stats();
+    stats.dom.style.right = '0';
+    stats.dom.style.removeProperty('left');
+    dom.appendChild(stats.dom);
 
-      const render = () => {
-        if (updater) updater();
-        stats.update();
-        window.requestAnimationFrame(render);
-      };
-
+    const render = () => {
+      if (updater) updater();
+      stats.update();
       window.requestAnimationFrame(render);
-    })();
-  }, [callback, updater]);
+    };
+
+    window.requestAnimationFrame(render);
+  }, []);
 
   return (
     <>
