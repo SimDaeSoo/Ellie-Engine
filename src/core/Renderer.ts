@@ -38,6 +38,8 @@ class Renderer {
     this.gl.deleteShader(this.vertexShader);
     this.gl.deleteShader(this.fragmentShader);
 
+    this.gl.useProgram(this.program);
+
     // draw
     const vertices = new Float32Array([
       -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1, -1,
@@ -51,39 +53,80 @@ class Renderer {
     this.gl.enableVertexAttribArray(glPosition);
     this.gl.vertexAttribPointer(glPosition, 2, this.gl.FLOAT, false, 0, 0);
 
+    // Texture
     const texture = this.gl.createTexture();
     const glTexture = this.gl.getUniformLocation(this.program, 'uTexture');
-    const rgba = new Uint8Array([0, 0, 255, 255]);
+    const buffer = new ArrayBuffer(4 * this.width * this.height);
+    const pixels = new Uint8Array(buffer);
+
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
       0,
       this.gl.RGBA,
-      1,
-      1,
+      this.width,
+      this.height,
       0,
       this.gl.RGBA,
       this.gl.UNSIGNED_BYTE,
-      rgba
+      pixels
     );
     this.gl.uniform1i(glTexture, 0);
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
 
-    this.gl.useProgram(this.program);
-
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-
+    // Resolution
     const glResolution = this.gl.getUniformLocation(
       this.program,
       'uResolution'
     );
     this.gl.uniform2f(glResolution, this.width, this.height);
+
+    // Draw
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+
+    // TEST
+    setInterval(() => {
+      for (let i = 0; i < 100; i++) {
+        const index = Math.floor(Math.random() * this.width * this.height) * 4;
+
+        pixels[index] = 255;
+        pixels[index + 1] = 255;
+        pixels[index + 2] = 255;
+        pixels[index + 3] = 255;
+      }
+
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.RGBA,
+        this.width,
+        this.height,
+        0,
+        this.gl.RGBA,
+        this.gl.UNSIGNED_BYTE,
+        pixels
+      );
+    }, 16);
   }
 
   public render(): void {
-    const dt = Math.sin(((Date.now() % 2000) / 1000) * Math.PI);
+    const dt = Math.sin(((Date.now() % 20000) / 10000) * Math.PI);
     const glDeltatime = this.gl.getUniformLocation(this.program, 'uDeltatime');
-    this.gl.uniform1f(glDeltatime, dt);
-
+    this.gl.uniform1f(glDeltatime, dt * 0.3 + 0.7);
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
