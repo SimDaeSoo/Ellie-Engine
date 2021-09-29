@@ -27,7 +27,7 @@ const RandomTile = ({
 
     const canvas = document.getElementById('glCanvas') as HTMLCanvasElement;
     const gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
-    const renderer = new Renderer(gl);
+    const renderer = new Renderer(gl, window.innerWidth, window.innerHeight);
 
     setCallback((_x: number, _y: number) => {});
     setUpdater(() => {

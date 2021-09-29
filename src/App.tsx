@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Route } from 'react-router';
 import { Container } from 'rsuite';
 import Stats from 'stats.js';

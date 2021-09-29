@@ -5,9 +5,14 @@ class Renderer {
   public program: WebGLProgram;
   public vertexShader: WebGLShader;
   public fragmentShader: WebGLShader;
+  public width: number;
+  public height: number;
 
-  constructor(gl: WebGL2RenderingContext) {
+  constructor(gl: WebGL2RenderingContext, width: number, height: number) {
     this.gl = gl;
+    this.width = width;
+    this.height = height;
+    this.gl.viewport(0, 0, this.width, this.height);
 
     this.vertexShader = this.gl.createShader(
       this.gl.VERTEX_SHADER
@@ -25,19 +30,62 @@ class Renderer {
     this.gl.attachShader(this.program, this.vertexShader);
     this.gl.attachShader(this.program, this.fragmentShader);
     this.gl.linkProgram(this.program);
+
+    this.debug();
+
     this.gl.detachShader(this.program, this.vertexShader);
     this.gl.detachShader(this.program, this.fragmentShader);
     this.gl.deleteShader(this.vertexShader);
     this.gl.deleteShader(this.fragmentShader);
 
     // draw
+    const vertices = new Float32Array([
+      -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1, -1,
+    ]);
+
+    const glBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+
+    const glPosition = gl.getAttribLocation(this.program, 'aPosition');
+    this.gl.enableVertexAttribArray(glPosition);
+    this.gl.vertexAttribPointer(glPosition, 2, gl.FLOAT, false, 0, 0);
+
     this.gl.useProgram(this.program);
+
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+
+    const glResolution = this.gl.getUniformLocation(
+      this.program,
+      'uResolution'
+    );
+    this.gl.uniform2f(glResolution, this.width, this.height);
   }
 
   public render(): void {
-    const uTime = this.gl.getUniformLocation(this.program, 'u_time');
-    this.gl.uniform1f(uTime, (Date.now() % 1000) / 1000);
-    this.gl.drawArrays(this.gl.POINTS, 0, 1);
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+
+    const dt = Math.sin(((Date.now() % 2000) / 1000) * Math.PI);
+    const glDeltatime = this.gl.getUniformLocation(this.program, 'uDeltatime');
+    this.gl.uniform1f(glDeltatime, dt);
+  }
+
+  public debug(): void {
+    if (
+      !this.gl.getShaderParameter(this.vertexShader, this.gl.COMPILE_STATUS)
+    ) {
+      console.log(this.gl.getShaderInfoLog(this.vertexShader));
+    }
+
+    if (
+      !this.gl.getShaderParameter(this.fragmentShader, this.gl.COMPILE_STATUS)
+    ) {
+      console.log(this.gl.getShaderInfoLog(this.fragmentShader));
+    }
+
+    if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
+      console.log(this.gl.getProgramInfoLog(this.program));
+    }
   }
 }
 
