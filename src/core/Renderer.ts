@@ -52,7 +52,8 @@ class Renderer {
     this.gl.vertexAttribPointer(glPosition, 2, this.gl.FLOAT, false, 0, 0);
 
     const texture = this.gl.createTexture();
-    const glTexture = gl.getUniformLocation(this.program, 'uTexture');
+    const glTexture = this.gl.getUniformLocation(this.program, 'uTexture');
+    const rgba = new Uint8Array([0, 0, 255, 255]);
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
@@ -63,7 +64,7 @@ class Renderer {
       0,
       this.gl.RGBA,
       this.gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255, 255])
+      rgba
     );
     this.gl.uniform1i(glTexture, 0);
 
@@ -79,11 +80,11 @@ class Renderer {
   }
 
   public render(): void {
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-
     const dt = Math.sin(((Date.now() % 2000) / 1000) * Math.PI);
     const glDeltatime = this.gl.getUniformLocation(this.program, 'uDeltatime');
     this.gl.uniform1f(glDeltatime, dt);
+
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
   public debug(): void {
