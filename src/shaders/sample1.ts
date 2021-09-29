@@ -16,10 +16,19 @@ precision mediump float;
 
 uniform vec2 uResolution;
 uniform float uDeltatime;
+uniform sampler2D u_texture;
+
+vec4 getTextureColor(vec2 offset) {
+  float b = texture2D(u_texture, (gl_FragCoord.xy + offset) / uResolution).b;
+  return vec4(0.0, 0.0, b, 1.0);
+}
 
 void main() {
   vec2 coord = gl_FragCoord.xy / uResolution;
-  gl_FragColor = vec4(coord[0] * coord[1] * uDeltatime, coord[0] * coord[1] * uDeltatime, coord[0] * coord[1] * uDeltatime, 1.0);
+  vec4 textureColor = getTextureColor(vec2(0.0, 0.0));
+  float value = coord[0] * coord[1] * uDeltatime;
+  vec4 vectorValue = vec4(value, value, value, value);
+  gl_FragColor = vectorValue * textureColor;
 }`;
 
 // `

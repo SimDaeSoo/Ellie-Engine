@@ -47,9 +47,25 @@ class Renderer {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
 
-    const glPosition = gl.getAttribLocation(this.program, 'aPosition');
+    const glPosition = this.gl.getAttribLocation(this.program, 'aPosition');
     this.gl.enableVertexAttribArray(glPosition);
-    this.gl.vertexAttribPointer(glPosition, 2, gl.FLOAT, false, 0, 0);
+    this.gl.vertexAttribPointer(glPosition, 2, this.gl.FLOAT, false, 0, 0);
+
+    const texture = this.gl.createTexture();
+    const glTexture = gl.getUniformLocation(this.program, 'uTexture');
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.RGBA,
+      1,
+      1,
+      0,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 255, 255])
+    );
+    this.gl.uniform1i(glTexture, 0);
 
     this.gl.useProgram(this.program);
 
