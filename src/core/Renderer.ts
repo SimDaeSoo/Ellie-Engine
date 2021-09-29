@@ -93,7 +93,7 @@ class Renderer {
     let draw = true;
     setInterval(() => {
       cycle++;
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < (!draw ? 3000 : 1000); i++) {
         const index = Math.floor(Math.random() * this.width * this.height) * 4;
         let r = draw ? Math.floor(Math.random() * 256) : 0;
         let g = draw ? Math.floor(Math.random() * 256) : 0;
