@@ -93,9 +93,18 @@ class Renderer {
       for (let i = 0; i < 100; i++) {
         const index = Math.floor(Math.random() * this.width * this.height) * 4;
 
-        pixels[index] = 255;
-        pixels[index + 1] = 255;
-        pixels[index + 2] = 255;
+        pixels[index] = Math.floor(Math.random() * 256);
+        pixels[index + 1] = Math.floor(Math.random() * 256);
+        pixels[index + 2] = Math.floor(Math.random() * 256);
+        pixels[index + 3] = 255;
+      }
+
+      for (let i = 0; i < 100; i++) {
+        const index = Math.floor(Math.random() * this.width * this.height) * 4;
+
+        pixels[index] = 0;
+        pixels[index + 1] = 0;
+        pixels[index + 2] = 0;
         pixels[index + 3] = 255;
       }
 
