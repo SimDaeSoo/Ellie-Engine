@@ -19,7 +19,7 @@ uniform float uDeltatime;
 
 void main() {
   vec2 coord = gl_FragCoord.xy / uResolution;
-  gl_FragColor = vec4(coord[0] * uDeltatime, coord[0] * uDeltatime, coord[0] * uDeltatime, 1.0);
+  gl_FragColor = vec4(coord[0] * coord[1] * uDeltatime, coord[0] * coord[1] * uDeltatime, coord[0] * coord[1] * uDeltatime, 1.0);
 }`;
 
 // `
