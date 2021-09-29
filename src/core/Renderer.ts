@@ -89,23 +89,24 @@ class Renderer {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 
     // TEST
+    let cycle = 0;
+    let draw = true;
     setInterval(() => {
-      for (let i = 0; i < 100; i++) {
+      cycle++;
+      for (let i = 0; i < 1000; i++) {
         const index = Math.floor(Math.random() * this.width * this.height) * 4;
+        let r = draw ? Math.floor(Math.random() * 256) : 0;
+        let g = draw ? Math.floor(Math.random() * 256) : 0;
+        let b = draw ? Math.floor(Math.random() * 256) : 0;
 
-        pixels[index] = Math.floor(Math.random() * 256);
-        pixels[index + 1] = Math.floor(Math.random() * 256);
-        pixels[index + 2] = Math.floor(Math.random() * 256);
+        pixels[index] = r;
+        pixels[index + 1] = g;
+        pixels[index + 2] = b;
         pixels[index + 3] = 255;
       }
-
-      for (let i = 0; i < 100; i++) {
-        const index = Math.floor(Math.random() * this.width * this.height) * 4;
-
-        pixels[index] = 0;
-        pixels[index + 1] = 0;
-        pixels[index + 2] = 0;
-        pixels[index + 3] = 255;
+      if (cycle === 100) {
+        cycle = 0;
+        draw = !draw;
       }
 
       this.gl.texImage2D(
