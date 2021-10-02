@@ -15,17 +15,15 @@ precision mediump float;
 #endif
 
 uniform vec2 uResolution;
-uniform float uDeltatime;
 uniform sampler2D u_texture;
 
 vec4 getTextureColor(vec2 offset) {
-  return texture2D(u_texture, (gl_FragCoord.xy + offset) / uResolution);
+  return texture2D(u_texture, (gl_FragCoord.xy + offset) / uResolution * vec2(1.0, -1.0));
 }
 
 void main() {
   vec4 textureColor = getTextureColor(vec2(0.0, 0.0));
-  vec4 dt = vec4(uDeltatime, uDeltatime, uDeltatime, uDeltatime);
-  gl_FragColor = dt * textureColor;
+  gl_FragColor = textureColor;
 }`;
 
 export { fragmentShaderGLSL, vertexShaderGLSL };
