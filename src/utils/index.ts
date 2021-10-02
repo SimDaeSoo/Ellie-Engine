@@ -131,6 +131,15 @@ const fillTile = (
   }
 };
 
+const isSharedArrayBufferSupport = () => {
+  try {
+    new SharedArrayBuffer(10);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
 export {
   setController,
   setMouseEventCallback,
@@ -139,4 +148,5 @@ export {
   setMenuSelectCallback,
   menuSelectCallback,
   fillTile,
+  isSharedArrayBufferSupport,
 };

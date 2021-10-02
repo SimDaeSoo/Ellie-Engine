@@ -1,4 +1,6 @@
 import { WORKER_CALLBACK_COMMAND, WORKER_COMMAND } from '../constants';
+import { isSharedArrayBufferSupport } from '../utils';
+import run from './Thread';
 
 class MultiThread {
   private threads: Array<{
@@ -6,13 +8,16 @@ class MultiThread {
     worker: Worker;
   }>;
   public threadQuantity: number;
+  private sharedArrayBufferSupport: boolean;
 
   constructor(threadQuantity: number) {
     this.threads = [];
-    this.threadQuantity = threadQuantity;
+    this.sharedArrayBufferSupport = isSharedArrayBufferSupport();
+    this.threadQuantity = this.sharedArrayBufferSupport ? threadQuantity : 1;
   }
 
   public async initialize(): Promise<void> {
+    if (!this.sharedArrayBufferSupport) return;
     await new Promise<void>((resolve) => {
       let initialized: number = 0;
       const messageCallback = ({
@@ -41,31 +46,36 @@ class MultiThread {
   }
 
   public async run(command: WORKER_COMMAND, data: any): Promise<void> {
-    await new Promise<void>((resolve) => {
-      let running: number = this.threadQuantity;
-      const messageCallback = ({
-        data,
-      }: {
-        data: { command: WORKER_CALLBACK_COMMAND; data: any };
-      }) => {
-        const { command } = data;
-        if (command === WORKER_CALLBACK_COMMAND.DONE) running--;
-        if (running === 0) resolve();
-      };
+    if (this.sharedArrayBufferSupport) {
+      await new Promise<void>((resolve) => {
+        let running: number = this.threadQuantity;
+        const messageCallback = ({
+          data,
+        }: {
+          data: { command: WORKER_CALLBACK_COMMAND; data: any };
+        }) => {
+          const { command } = data;
+          if (command === WORKER_CALLBACK_COMMAND.DONE) running--;
+          if (running === 0) resolve();
+        };
+
+        for (const thread of this.threads) {
+          thread.worker.postMessage({
+            id: thread.id,
+            threadQuantity: this.threadQuantity,
+            command,
+            data,
+          });
+          thread.worker.onmessage = messageCallback;
+        }
+      });
 
       for (const thread of this.threads) {
-        thread.worker.postMessage({
-          id: thread.id,
-          threadQuantity: this.threadQuantity,
-          command,
-          data,
-        });
-        thread.worker.onmessage = messageCallback;
+        thread.worker.onmessage = null;
       }
-    });
-
-    for (const thread of this.threads) {
-      thread.worker.onmessage = null;
+    } else {
+      // Not Support Threading...
+      await run({ id: 0, threadQuantity: 1, command, data });
     }
   }
 }

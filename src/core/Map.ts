@@ -1,7 +1,8 @@
 import { TILE_BYTES } from '../constants';
+import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
-  private _tileBufferGrid?: Array<Array<SharedArrayBuffer>>;
+  private _tileBufferGrid?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
   private _tileProperties?: Array<Array<Uint8Array>>;
   private _width?: number;
   private _height?: number;
@@ -32,14 +33,21 @@ class Map {
     this._lookupX = new Array(this.totalWidth);
     this._lookupY = new Array(this.totalHeight);
 
+    const sharedArrayBufferSupported = isSharedArrayBufferSupport();
     for (let y = 0; y < this.splitQuantity; y++) {
       this._tileBufferGrid.push([]);
       this._tileProperties.push([]);
 
       for (let x = 0; x < this.splitQuantity; x++) {
-        this._tileBufferGrid[y].push(
-          new SharedArrayBuffer(width * height * TILE_BYTES)
-        );
+        if (!sharedArrayBufferSupported) {
+          this._tileBufferGrid[y].push(
+            new ArrayBuffer(width * height * TILE_BYTES)
+          );
+        } else {
+          this._tileBufferGrid[y].push(
+            new SharedArrayBuffer(width * height * TILE_BYTES)
+          );
+        }
         this._tileProperties[y].push(new Uint8Array(this.tileBufferGrid[y][x]));
         for (let offsetX = 0; offsetX < width; offsetX++) {
           this._lookupX[x * width + offsetX] = x;
@@ -53,7 +61,7 @@ class Map {
   }
 
   public import(data: {
-    tileBufferGrid: Array<Array<SharedArrayBuffer>>;
+    tileBufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
     x: number;
     y: number;
     width: number;
@@ -90,7 +98,7 @@ class Map {
   }
 
   public export(): {
-    tileBufferGrid: Array<Array<SharedArrayBuffer>>;
+    tileBufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
     x: number;
     y: number;
     width: number;
@@ -107,7 +115,7 @@ class Map {
     };
   }
 
-  private get tileBufferGrid(): Array<Array<SharedArrayBuffer>> {
+  private get tileBufferGrid(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
     if (!this._tileBufferGrid) throw new Error('map tilerBuffer undefined');
     return this._tileBufferGrid;
   }
@@ -162,7 +170,9 @@ class Map {
     return this._tileProperties;
   }
 
-  private set tileBufferGrid(bufferGrid: Array<Array<SharedArrayBuffer>>) {
+  private set tileBufferGrid(
+    bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>
+  ) {
     this._tileBufferGrid = bufferGrid;
   }
 

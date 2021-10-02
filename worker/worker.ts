@@ -1,7 +1,5 @@
 import { WORKER_CALLBACK_COMMAND, WORKER_COMMAND } from '../src/constants';
-import Map from '../src/core/Map';
-
-type Store = {};
+import run from '../src/core/Thread';
 
 type MessageEventData = {
   data: Message;
@@ -14,40 +12,12 @@ type Message = {
   data: any;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const store: Store = {};
-
-onmessage = (e) => {
+onmessage = async (e) => {
   const { data: message }: MessageEventData = e;
-  const { id, threadQuantity, command, data }: Message = message;
 
-  switch (command) {
-    case WORKER_COMMAND.CLEAR_MAP: {
-      const { map: mapData } = data;
-      const map = new Map();
+  await run(message);
 
-      map.import(mapData);
-
-      const begin = Math.ceil(
-        ((map.totalWidth * map.totalHeight) / threadQuantity) * id
-      );
-      const end = Math.ceil(
-        ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
-      );
-
-      for (let i = begin; i < end; i++) {
-        const x = i % map.totalWidth;
-        const y = Math.floor(i / map.totalWidth);
-        map.setTileProperties(x, y, 0, 0, 0, 0);
-      }
-
-      postMessage({ command: WORKER_CALLBACK_COMMAND.DONE });
-      break;
-    }
-    default: {
-      throw new Error(`${command} is not defined`);
-    }
-  }
+  postMessage({ command: WORKER_CALLBACK_COMMAND.DONE });
 };
 
 postMessage({ command: WORKER_CALLBACK_COMMAND.INITIALIZED });
