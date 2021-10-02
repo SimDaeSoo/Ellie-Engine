@@ -33,23 +33,39 @@ onmessage = (e) => {
 
       if (!store.testIndex) store.testIndex = 0;
       const begin =
-        Math.ceil(((map.width * map.height) / threadQuantity) * id) +
+        Math.ceil(((map.totalWidth * map.totalHeight) / threadQuantity) * id) +
         store.testIndex;
       const end = Math.min(
-        Math.ceil(((map.width * map.height) / threadQuantity) * (id + 1)),
-        begin + 1
+        Math.ceil(
+          ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
+        ),
+        begin + 20000
       );
 
       for (let i = begin; i < end; i++) {
-        const x = i % map.width;
-        const y = Math.floor(i / map.width);
+        const x = i % map.totalWidth;
+        const y = Math.floor(i / map.totalWidth);
 
-        map.setTileProperty(x, y, 0, Math.floor(Math.random() * 256));
-        map.setTileProperty(x, y, 1, Math.floor(Math.random() * 256));
-        map.setTileProperty(x, y, 2, Math.floor(Math.random() * 256));
-        map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
+        map.setTileProperty(x, y, 0, Math.floor((x / map.totalWidth) * 256));
+        map.setTileProperty(
+          x,
+          y,
+          1,
+          Math.floor((x / map.totalWidth) * (y / map.totalHeight) * 256)
+        );
+        map.setTileProperty(x, y, 2, Math.floor((y / map.totalHeight) * 256));
+        map.setTileProperty(x, y, 3, 255);
 
         store.testIndex++;
+      }
+
+      if (
+        end ===
+        Math.ceil(
+          ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
+        )
+      ) {
+        store.testIndex = 0;
       }
       postMessage({ command: WORKER_CALLBACK_COMMAND.DONE });
       break;

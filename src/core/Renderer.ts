@@ -65,18 +65,14 @@ class Renderer {
 
   // Samples..
   public setPixelsRenderer(
+    program: WebGLProgram,
     width: number,
     height: number,
-    program: WebGLProgram
+    splitQuantity: number
   ): void {
     // Default Triangles
-    const vertices = new Float32Array([
-      -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1, -1,
-    ]);
-
     const glBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
 
     const glPosition = this.gl.getAttribLocation(program, 'aPosition');
     this.gl.enableVertexAttribArray(glPosition);
@@ -97,27 +93,59 @@ class Renderer {
     // Resolution
     const glResolution = this.gl.getUniformLocation(program, 'uResolution');
     this.gl.uniform2f(glResolution, width, height);
+
+    const vertices: Array<number> = [];
+    for (let y = 0; y < splitQuantity; y++) {
+      for (let x = 0; x < splitQuantity; x++) {
+        vertices.push(
+          -1 + x * (1 / splitQuantity) * 2,
+          1 - y * (1 / splitQuantity) * 2,
+          -1 + (x + 1) * (1 / splitQuantity) * 2,
+          1 - y * (1 / splitQuantity) * 2,
+          -1 + (x + 1) * (1 / splitQuantity) * 2,
+          1 - (y + 1) * (1 / splitQuantity) * 2,
+          -1 + x * (1 / splitQuantity) * 2,
+          1 - y * (1 / splitQuantity) * 2,
+          -1 + (x + 1) * (1 / splitQuantity) * 2,
+          1 - (y + 1) * (1 / splitQuantity) * 2,
+          -1 + x * (1 / splitQuantity) * 2,
+          1 - (y + 1) * (1 / splitQuantity) * 2
+        );
+      }
+    }
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(vertices),
+      this.gl.STATIC_DRAW
+    );
   }
 
   public pixelsRendering(
-    pixels: Uint8Array,
+    pixelGrids: Array<Array<Uint8Array>>,
     width: number,
     height: number
   ): void {
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.RGBA,
-      width,
-      height,
-      0,
-      this.gl.RGBA,
-      this.gl.UNSIGNED_BYTE,
-      pixels
-    );
+    for (let y = 0; y < pixelGrids.length; y++) {
+      for (let x = 0; x < pixelGrids[y].length; x++) {
+        this.gl.texImage2D(
+          this.gl.TEXTURE_2D,
+          0,
+          this.gl.RGBA,
+          width,
+          height,
+          0,
+          this.gl.RGBA,
+          this.gl.UNSIGNED_BYTE,
+          pixelGrids[y][x]
+        );
 
-    // Draw
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        this.gl.drawArrays(
+          this.gl.TRIANGLES,
+          (y * pixelGrids[y].length + x) * 6,
+          6
+        );
+      }
+    }
   }
 
   public render(): void {}

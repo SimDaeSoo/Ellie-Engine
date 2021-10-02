@@ -14,15 +14,19 @@ const RandomTile = ({
 }) => {
   useEffect(() => {
     (async () => {
+      // Each Map Block Resolution
+      const splitQuantity = 4;
+      const width = Math.round(window.innerWidth / splitQuantity);
+      const height = Math.round(window.innerHeight / splitQuantity);
+
       // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
       const threadController = new MultiThread(threadQuantity);
       await threadController.initialize();
 
       // Create Map
-      const [width, height] = [window.innerWidth, window.innerHeight];
       const map = new Map();
-      map.create(width, height);
+      map.create(0, 0, width, height, splitQuantity);
 
       // Set Renderer
       const renderer = new Renderer('WEB_GL_CANVAS');
@@ -30,9 +34,9 @@ const RandomTile = ({
       const fragmentShader = renderer.createFragmentShader(fragmentShaderGLSL);
       const program = renderer.createProgram(vertexShader, fragmentShader);
 
-      renderer.setViewport(0, 0, width, height);
+      renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
       renderer.useProgram(program);
-      renderer.setPixelsRenderer(map.width, map.height, program);
+      renderer.setPixelsRenderer(program, width, height, splitQuantity);
       renderer.deleteProgram(program);
 
       setUpdater(async () => {
@@ -42,43 +46,11 @@ const RandomTile = ({
           map: map.export(),
         });
 
-        // Single Thread
-        // for (let i = 0; i < map.width * map.height; i++) {
-        //   const x = i % map.width;
-        //   const y = Math.floor(i / map.width);
-
-        //   map.setTileProperty(x, y, 0, Math.floor(Math.random() * 256));
-        //   map.setTileProperty(x, y, 1, Math.floor(Math.random() * 256));
-        //   map.setTileProperty(x, y, 2, Math.floor(Math.random() * 256));
-        //   map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
-        // }
-
         // Render
-        renderer.clear(0, 0, 0, 0);
-        renderer.pixelsRendering(map.properties, map.width, map.height);
+        renderer.pixelsRendering(map.tileProperties, width, height);
       });
 
-      setCallback((_x: number, _y: number) => {
-        const [x, y]: [number, number] = [Math.round(_x), Math.round(_y)];
-        const boundary = {
-          x: {
-            min: Math.max(0, x - 10),
-            max: Math.min(map.width, x + 10),
-          },
-          y: {
-            min: Math.max(0, y - 10),
-            max: Math.min(map.height, y + 10),
-          },
-        };
-        for (let y = boundary.y.min; y < boundary.y.max; y++) {
-          for (let x = boundary.x.min; x < boundary.x.max; x++) {
-            map.setTileProperty(x, y, 0, Math.floor(Math.random() * 256));
-            map.setTileProperty(x, y, 1, Math.floor(Math.random() * 256));
-            map.setTileProperty(x, y, 2, Math.floor(Math.random() * 256));
-            map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
-          }
-        }
-      });
+      setCallback((_x: number, _y: number) => {});
     })();
   }, [setCallback, setUpdater]);
 
