@@ -22,7 +22,7 @@ onmessage = (e) => {
   const { id, threadQuantity, command, data }: Message = message;
 
   switch (command) {
-    case WORKER_COMMAND.SAMPLE_COMMAND: {
+    case WORKER_COMMAND.CLEAR_MAP: {
       const { map: mapData } = data;
       const map = new Map();
 
@@ -36,10 +36,9 @@ onmessage = (e) => {
       );
 
       for (let i = begin; i < end; i++) {
-        // const x = i % map.totalWidth;
-        // const y = Math.floor(i / map.totalWidth);
-        // const value = Math.floor(Math.random() * 256);
-        // map.setTileProperties(x, y, value, value, value, value);
+        const x = i % map.totalWidth;
+        const y = Math.floor(i / map.totalWidth);
+        map.setTileProperties(x, y, 0, 0, 0, 0);
       }
 
       postMessage({ command: WORKER_CALLBACK_COMMAND.DONE });

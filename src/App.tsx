@@ -4,43 +4,25 @@ import Stats from 'stats.js';
 import CreatorTag from './components/CreatorTag';
 import SideNavigation from './components/SideNavigation';
 import Main from './pages/Main';
-
-let callback: (x: number, y: number) => void;
-const setCallback = (cb: (x: number, y: number) => void) => {
-  callback = cb;
-};
-
-let updater: () => void;
-const setUpdater = (cb: () => void) => {
-  updater = cb;
-};
+import {
+  setController,
+  setMouseEventCallback,
+  updater,
+  setUpdater,
+  setMenuSelectCallback,
+} from './utils';
 
 const App = () => {
-  useEffect(() => {
-    const onTouch = (e: any) => {
-      const [x, y] = [
-        (e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth,
-        (e.targetTouches[0].clientY / window.innerHeight) * window.innerHeight,
-      ];
-      if (callback) callback(x, y);
-    };
-    const onClick = (e: any) => {
-      const [x, y] = [
-        (e.clientX / window.innerWidth) * window.innerWidth,
-        (e.clientY / window.innerHeight) * window.innerHeight,
-      ];
-      if (callback) callback(x, y);
-    };
-    window.removeEventListener('touchstart', onTouch);
-    window.removeEventListener('click', onClick);
-    window.addEventListener('touchstart', onTouch);
-    window.addEventListener('click', onClick);
+  const isWide = window.innerWidth >= 768;
 
+  useEffect(() => {
     const dom: HTMLElement = document.getElementById('content') as HTMLElement;
     const stats: Stats = new Stats();
     stats.dom.style.right = '0';
     stats.dom.style.removeProperty('left');
     dom.appendChild(stats.dom);
+
+    setController();
 
     const render = async () => {
       if (updater) await updater();
@@ -49,19 +31,26 @@ const App = () => {
     };
 
     window.requestAnimationFrame(render);
-  }, []);
+  }, [isWide]);
 
   return (
     <>
       <Container style={{ height: '100%' }}>
-        <Container id='content'>
+        <Container
+          id='content'
+          style={{
+            marginLeft: isWide ? '220px' : 0,
+            height: '100%',
+          }}
+        >
           <Main
-            setCallback={(cb) => setCallback(cb)}
+            setMouseEventCallback={(cb) => setMouseEventCallback(cb, isWide)}
+            setMenuSelectCallback={(cb) => setMenuSelectCallback(cb)}
             setUpdater={(cb) => setUpdater(cb)}
           />
           <CreatorTag />
         </Container>
-        <SideNavigation />
+        <SideNavigation isWide={isWide} />
       </Container>
     </>
   );

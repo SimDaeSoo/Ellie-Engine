@@ -1,8 +1,10 @@
 class Renderer {
   public gl: WebGL2RenderingContext;
 
-  constructor(canvasID: string) {
+  constructor(canvasID: string, width: number, height: number) {
     const canvas = document.getElementById(canvasID) as HTMLCanvasElement;
+    canvas.width = width;
+    canvas.height = height;
     this.gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
   }
 
@@ -87,6 +89,11 @@ class Renderer {
     this.gl.texParameteri(
       this.gl.TEXTURE_2D,
       this.gl.TEXTURE_MIN_FILTER,
+      this.gl.NEAREST
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MAG_FILTER,
       this.gl.NEAREST
     );
 

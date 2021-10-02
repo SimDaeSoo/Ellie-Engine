@@ -1,116 +1,148 @@
 import { useState } from 'react';
 import { Sidenav, Dropdown, Nav, Sidebar, Icon } from 'rsuite';
-import { IconNames } from 'rsuite/lib/Icon';
+import { NAVIGATIONS, MENU_TYPES } from '../constants';
+import { menuSelectCallback } from '../utils';
 
-const navigations: Array<{
-  icon: IconNames;
-  name: string;
-  subNavigations?: Array<{ icon: IconNames; name: string }>;
-}> = [
-  {
-    icon: 'th2',
-    name: 'Create Blocks',
-    subNavigations: [
-      {
-        icon: 'th2',
-        name: 'Hard Block',
-      },
-      {
-        icon: 'th2',
-        name: 'Soft Block',
-      },
-    ],
-  },
-  {
-    icon: 'th2',
-    name: 'Create Blocks',
-  },
-];
+const HeaderElement = ({
+  toggle,
+  onClick,
+}: {
+  toggle: boolean;
+  onClick: () => void;
+}) => (
+  <Sidenav.Header
+    style={{
+      position: 'fixed',
+      top: 0,
+      height: 52,
+      width: 130,
+      zIndex: 2,
+      backgroundColor: '#0f131a',
+      borderRadius: '12px',
+      border: '#555555 1px solid',
+      margin: '5px',
+      overflow: 'hidden',
+      display: !toggle ? 'none' : '',
+    }}
+  >
+    <Nav>
+      <Nav.Item
+        icon={<Icon icon={'bars'} />}
+        onClick={onClick}
+        className='noselect'
+      >
+        Menus
+      </Nav.Item>
+    </Nav>
+  </Sidenav.Header>
+);
 
-const SideNavigation = () => {
-  const [selectedMenu, setSelectedMenu] = useState('');
-  const [toggle, setToggle] = useState(true);
+const SideNavigation = ({ isWide }: { isWide: boolean }) => {
+  const [selectedMenus, setSelectedMenus] = useState([
+    'Play',
+    'Dirt Block',
+    '1px',
+    '1x',
+    '',
+  ]);
+  const [toggle, setToggle] = useState(isWide ? false : true);
 
-  const HeaderElement = () => (
-    <Nav.Item
-      icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
-      onClick={(e: any) => {
-        setToggle(!toggle);
-      }}
-      className='noselect'
-      style={{ backgroundColor: '#0f131a' }}
-    >
-      {!toggle ? 'Ellie Engine v0.0.1' : '-'}
-    </Nav.Item>
-  );
+  const onSelectMenu = (i: number, name: string, type: MENU_TYPES) => {
+    if (!isWide) setToggle(!toggle);
+
+    const newSelecteds = [...selectedMenus];
+    newSelecteds[i] = name;
+
+    setSelectedMenus(newSelecteds);
+    menuSelectCallback(type);
+  };
 
   const NavigationElements = () =>
-    navigations.map(({ icon, name, subNavigations }, i) =>
+    NAVIGATIONS.map(({ icon, name, type, subNavigations }, i) =>
       subNavigations ? (
-        <Dropdown
-          key={i}
-          icon={<Icon icon={icon} />}
-          eventKey={name}
-          className='noselect'
-          title={name}
-        >
-          {subNavigations.map(({ icon, name }, i) => (
-            <Dropdown.Item
-              key={i}
-              icon={<Icon icon={icon} />}
-              onSelect={() => setSelectedMenu(name)}
-              eventKey={name}
-              className='noselect'
-            >
-              {name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
+        <Nav activeKey={selectedMenus[i]} key={i}>
+          <Dropdown
+            icon={<Icon icon={icon} />}
+            eventKey={name}
+            className='noselect'
+            title={name}
+            noCaret={true}
+            open={true}
+          >
+            {subNavigations.map(({ name, type }, j) => (
+              <Dropdown.Item
+                key={j}
+                icon={<Icon icon='caret-right' />}
+                onSelect={(name) => onSelectMenu(i, name, type)}
+                eventKey={name}
+                className='noselect'
+              >
+                {name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+        </Nav>
       ) : (
-        <Nav.Item
-          key={i}
-          icon={<Icon icon={icon} />}
-          onSelect={() => setSelectedMenu(name)}
-          eventKey={name}
-          className='noselect'
-        >
-          {name}
-        </Nav.Item>
+        <Nav key={i}>
+          <Nav.Item
+            icon={<Icon icon={icon} />}
+            onSelect={(name) => onSelectMenu(i, name, type)}
+            eventKey={name}
+            className='noselect'
+          >
+            {name}
+          </Nav.Item>
+        </Nav>
       )
     );
 
   return (
     <Sidebar
       collapsible
-      width={toggle ? 0 : 250}
+      width={toggle ? 0 : 220}
       style={{
         position: 'absolute',
         height: '100%',
         overflow: 'auto',
         backgroundColor: '#1a1d24',
       }}
-      onClick={(e: any) => {
+      onMouseDown={(e: any) => {
         e.stopPropagation();
       }}
       onTouchStart={(e: any) => {
         e.stopPropagation();
       }}
     >
-      <Sidenav>
-        <Sidenav.Header
-          style={{
-            position: 'fixed',
-            top: 0,
-            height: '50px',
-            width: toggle ? 56 : 250,
-            zIndex: 2,
+      <Sidenav defaultOpenKeys={NAVIGATIONS.map(({ name }) => name)}>
+        <HeaderElement
+          toggle={toggle}
+          onClick={() => {
+            setToggle(!toggle);
           }}
-        >
-          <Nav>{HeaderElement()}</Nav>
-        </Sidenav.Header>
+        />
+        <Sidenav.Body style={{ height: '100%' }}>
+          <Nav activeKey='header'>
+            <Nav.Item
+              icon={<Icon icon='play' />}
+              disabled
+              className='noselect'
+              style={{ backgroundColor: '#202020' }}
+            >
+              Playground
+            </Nav.Item>
+          </Nav>
+          {NavigationElements()}
 
-        <Sidenav.Body style={{ height: 'calc(100%-50px)', marginTop: '50px' }}>
-          <Nav activeKey={selectedMenu}>{NavigationElements()}</Nav>
+          <div
+            style={{
+              margin: '20px',
+              color: '#333344',
+              textAlign: 'center',
+            }}
+            className='noselect'
+          >
+            Ellie Engine v0.0.0
+          </div>
         </Sidenav.Body>
       </Sidenav>
     </Sidebar>
