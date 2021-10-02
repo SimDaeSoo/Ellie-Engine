@@ -1,7 +1,7 @@
 import { TILE_BYTES } from '../constants';
 
 class Map {
-  public _tileBuffer?: SharedArrayBuffer;
+  private _tileBuffer?: SharedArrayBuffer;
   private _width?: number;
   private _height?: number;
   private _properties?: Uint8Array;
@@ -38,7 +38,7 @@ class Map {
     };
   }
 
-  public get tileBuffer(): SharedArrayBuffer {
+  private get tileBuffer(): SharedArrayBuffer {
     if (!this._tileBuffer) throw new Error('map tilerBuffer undefined');
     return this._tileBuffer;
   }
@@ -58,7 +58,7 @@ class Map {
     return this._properties;
   }
 
-  public set tileBuffer(buffer: SharedArrayBuffer) {
+  private set tileBuffer(buffer: SharedArrayBuffer) {
     this._tileBuffer = buffer;
   }
 
