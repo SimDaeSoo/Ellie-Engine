@@ -74,13 +74,13 @@ class Renderer {
     const glBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
 
-    const glPosition = this.gl.getAttribLocation(program, 'aPosition');
+    const glPosition = this.gl.getAttribLocation(program, 'a_position');
     this.gl.enableVertexAttribArray(glPosition);
     this.gl.vertexAttribPointer(glPosition, 2, this.gl.FLOAT, false, 0, 0);
 
     // Texture
     const texture = this.gl.createTexture();
-    const glTexture = this.gl.getUniformLocation(program, 'uTexture');
+    const glTexture = this.gl.getUniformLocation(program, 'u_texture');
 
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.uniform1i(glTexture, 0);
@@ -91,7 +91,7 @@ class Renderer {
     );
 
     // Resolution
-    const glResolution = this.gl.getUniformLocation(program, 'uResolution');
+    const glResolution = this.gl.getUniformLocation(program, 'u_resolution');
     this.gl.uniform2f(glResolution, width, height);
 
     const vertices: Array<number> = [];

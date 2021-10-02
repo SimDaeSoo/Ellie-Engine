@@ -39,22 +39,22 @@ onmessage = (e) => {
         Math.ceil(
           ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
         ),
-        begin + 20000
+        begin + 10000
       );
 
       for (let i = begin; i < end; i++) {
         const x = i % map.totalWidth;
         const y = Math.floor(i / map.totalWidth);
 
-        map.setTileProperty(x, y, 0, Math.floor((x / map.totalWidth) * 256));
+        map.setTileProperty(x, y, 0, Math.floor((x / map.totalWidth) * 128));
         map.setTileProperty(
           x,
           y,
           1,
-          Math.floor((x / map.totalWidth) * (y / map.totalHeight) * 256)
+          Math.floor((x / map.totalWidth) * (y / map.totalHeight) * 128)
         );
-        map.setTileProperty(x, y, 2, Math.floor((y / map.totalHeight) * 256));
-        map.setTileProperty(x, y, 3, 255);
+        map.setTileProperty(x, y, 2, Math.floor((y / map.totalHeight) * 128));
+        map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
 
         store.testIndex++;
       }

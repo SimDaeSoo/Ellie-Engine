@@ -15,9 +15,10 @@ const RandomTile = ({
   useEffect(() => {
     (async () => {
       // Each Map Block Resolution
-      const splitQuantity = 4;
-      const width = Math.round(window.innerWidth / splitQuantity);
-      const height = Math.round(window.innerHeight / splitQuantity);
+      const zoom = 2;
+      const splitQuantity = 1;
+      const width = Math.round(window.innerWidth / splitQuantity / zoom);
+      const height = Math.round(window.innerHeight / splitQuantity / zoom);
 
       // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
@@ -36,7 +37,12 @@ const RandomTile = ({
 
       renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
       renderer.useProgram(program);
-      renderer.setPixelsRenderer(program, width, height, splitQuantity);
+      renderer.setPixelsRenderer(
+        program,
+        width * zoom,
+        height * zoom,
+        splitQuantity
+      );
       renderer.deleteProgram(program);
 
       setUpdater(async () => {
