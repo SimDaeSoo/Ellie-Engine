@@ -1,3 +1,5 @@
+import { Icon } from 'rsuite';
+
 const CreatorTag = () => {
   return (
     <div
@@ -11,6 +13,7 @@ const CreatorTag = () => {
       }}
       className='noselect'
     >
+      <Icon icon={'github'} style={{ marginRight: '6px' }} />
       <a href='https://github.com/SimDaeSoo'>Created by daesoo94</a>
     </div>
   );

@@ -1,183 +1,148 @@
 import { useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { Sidenav, Nav, Sidebar, Icon } from 'rsuite';
+import { Sidenav, Dropdown, Nav, Sidebar, Icon } from 'rsuite';
+import { NAVIGATIONS, MENU_TYPES } from '../constants';
+import { menuSelectCallback } from '../utils';
 
-const SideNavigation = () => {
-  const location = useLocation();
-  const history = useHistory();
-  const [toggle, setToggle] = useState(true);
-  const { pathname } = location;
+const HeaderElement = ({
+  toggle,
+  onClick,
+}: {
+  toggle: boolean;
+  onClick: () => void;
+}) => (
+  <Sidenav.Header
+    style={{
+      position: 'fixed',
+      top: 0,
+      height: 52,
+      width: 130,
+      zIndex: 2,
+      backgroundColor: '#0f131a',
+      borderRadius: '12px',
+      border: '#555555 1px solid',
+      margin: '5px',
+      overflow: 'hidden',
+      display: !toggle ? 'none' : '',
+    }}
+  >
+    <Nav>
+      <Nav.Item
+        icon={<Icon icon={'bars'} />}
+        onClick={onClick}
+        className='noselect'
+      >
+        Menus
+      </Nav.Item>
+    </Nav>
+  </Sidenav.Header>
+);
+
+const SideNavigation = ({ isWide }: { isWide: boolean }) => {
+  const [selectedMenus, setSelectedMenus] = useState([
+    'Play',
+    'Dirt Block',
+    '1px',
+    '1x',
+    '',
+  ]);
+  const [toggle, setToggle] = useState(isWide ? false : true);
+
+  const onSelectMenu = (i: number, name: string, type: MENU_TYPES) => {
+    if (!isWide) setToggle(!toggle);
+
+    const newSelecteds = [...selectedMenus];
+    newSelecteds[i] = name;
+
+    setSelectedMenus(newSelecteds);
+    menuSelectCallback(type);
+  };
+
+  const NavigationElements = () =>
+    NAVIGATIONS.map(({ icon, name, type, subNavigations }, i) =>
+      subNavigations ? (
+        <Nav activeKey={selectedMenus[i]} key={i}>
+          <Dropdown
+            icon={<Icon icon={icon} />}
+            eventKey={name}
+            className='noselect'
+            title={name}
+            noCaret={true}
+            open={true}
+          >
+            {subNavigations.map(({ name, type }, j) => (
+              <Dropdown.Item
+                key={j}
+                icon={<Icon icon='caret-right' />}
+                onSelect={(name) => onSelectMenu(i, name, type)}
+                eventKey={name}
+                className='noselect'
+              >
+                {name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+        </Nav>
+      ) : (
+        <Nav key={i}>
+          <Nav.Item
+            icon={<Icon icon={icon} />}
+            onSelect={(name) => onSelectMenu(i, name, type)}
+            eventKey={name}
+            className='noselect'
+          >
+            {name}
+          </Nav.Item>
+        </Nav>
+      )
+    );
 
   return (
     <Sidebar
       collapsible
-      width={toggle ? 0 : 250}
+      width={toggle ? 0 : 220}
       style={{
         position: 'absolute',
         height: '100%',
         overflow: 'auto',
         backgroundColor: '#1a1d24',
       }}
-      onClick={(e: any) => {
+      onMouseDown={(e: any) => {
         e.stopPropagation();
       }}
       onTouchStart={(e: any) => {
         e.stopPropagation();
       }}
     >
-      <Sidenav>
-        <Sidenav.Header
-          style={{
-            position: 'fixed',
-            top: 0,
-            height: '50px',
-            width: toggle ? 56 : 250,
-            zIndex: 2,
+      <Sidenav defaultOpenKeys={NAVIGATIONS.map(({ name }) => name)}>
+        <HeaderElement
+          toggle={toggle}
+          onClick={() => {
+            setToggle(!toggle);
           }}
-        >
-          <Nav>
+        />
+        <Sidenav.Body style={{ height: '100%' }}>
+          <Nav activeKey='header'>
             <Nav.Item
-              icon={<Icon icon={toggle ? 'external-link-square' : 'gears2'} />}
-              onClick={(e: any) => {
-                setToggle(!toggle);
-              }}
-              style={{ backgroundColor: '#0f131a' }}
+              icon={<Icon icon='play' />}
+              disabled
+              className='noselect'
+              style={{ backgroundColor: '#202020' }}
             >
-              {!toggle ? 'Ellie Engine v0.0.1' : '-'}
+              Playground
             </Nav.Item>
           </Nav>
-        </Sidenav.Header>
+          {NavigationElements()}
 
-        <Sidenav.Body style={{ height: 'calc(100%-50px)', marginTop: '50px' }}>
-          <Nav activeKey={pathname}>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/')}
-              eventKey='/'
-            >
-              Tilemap With Buffer
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate')}
-              eventKey='/cave-generate'
-            >
-              Cave Generate
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate-texture')}
-              eventKey='/cave-generate-texture'
-            >
-              Cave With Texture
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='th2' />}
-              onSelect={() => history.push('/cave-generate-sky')}
-              eventKey='/cave-generate-sky'
-            >
-              Cave With Sky
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-simulation')}
-              eventKey='/liquid-simulation'
-            >
-              Liquid Simulation
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-simulation-2')}
-              eventKey='/liquid-simulation-2'
-            >
-              Liquid Simulation 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='tint' />}
-              onSelect={() => history.push('/liquid-stress-test')}
-              eventKey='/liquid-stress-test'
-            >
-              Liquid Stress Test
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='close' />}
-              onSelect={() => history.push('/line-intersection')}
-              eventKey='/line-intersection'
-            >
-              Line Intersection
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='close' />}
-              onSelect={() => history.push('/line-intersection-2')}
-              eventKey='/line-intersection-2'
-            >
-              Line Intersection 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/default-lighting')}
-              eventKey='/default-lighting'
-            >
-              Default Lighting
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-area')}
-              eventKey='/lighting-area'
-              disabled
-            >
-              Lighting Area
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-area-2')}
-              eventKey='/lighting-area-2'
-              disabled
-            >
-              Lighting Area 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='lightbulb-o' />}
-              onSelect={() => history.push('/lighting-stress-test')}
-              eventKey='/lighting-stress-test'
-              disabled
-            >
-              Lighting Stress Test
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-collision')}
-              eventKey='/aabb-collision'
-              disabled
-            >
-              AABB Collision
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-collision-2')}
-              eventKey='/aabb-collision-2'
-              disabled
-            >
-              AABB Collision 2
-            </Nav.Item>
-            <Nav.Item
-              icon={<Icon icon='object-ungroup' />}
-              onSelect={() => history.push('/aabb-stress-test')}
-              eventKey='/aabb-stress-test'
-              disabled
-            >
-              AABB Stress Test
-            </Nav.Item>
-
-            <Nav.Item
-              icon={<Icon icon='globe' />}
-              onSelect={() => history.push('/sample-world')}
-              eventKey='/sample-world'
-              disabled
-            >
-              Sample World
-            </Nav.Item>
-          </Nav>
+          <div
+            style={{
+              margin: '20px',
+              color: '#333344',
+              textAlign: 'center',
+            }}
+            className='noselect'
+          >
+            Ellie Engine v0.0.0
+          </div>
         </Sidenav.Body>
       </Sidenav>
     </Sidebar>

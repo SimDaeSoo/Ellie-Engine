@@ -1,150 +1,142 @@
-import * as PIXI from 'pixi.js';
-import * as PIXI_LAYERS from '@pixi/layers';
-import Stats from 'stats.js';
+import { BLOCKS, MENU_TYPES } from '../constants';
+import Map from '../core/Map';
+
+let mouseEventCallback: (x: number, y: number) => void;
+const setMouseEventCallback = (
+  cb: (x: number, y: number) => void,
+  isWide: boolean
+) => {
+  mouseEventCallback = (x, y) => {
+    cb(Math.round(x - (isWide ? 220 : 0)), Math.round(y));
+  };
+};
 
 let updater: () => void;
-let stage: PIXI.Container;
-let lightContainer: PIXI.Container;
+const setUpdater = (cb: () => void) => {
+  updater = cb;
+};
 
-async function preload(
-  callback: (percentage: number, assetName: string) => void
-): Promise<void> {
-  const BASE_URL: string =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000/Ellie/build'
-      : 'https://simdaesoo.github.io/Ellie/build';
-  const assets: Array<[string, string]> = [];
-  const srcs: Array<string> = [];
+let menuSelectCallback: (type: MENU_TYPES) => void = () => {};
+const setMenuSelectCallback = (cb: (type: MENU_TYPES) => void) => {
+  menuSelectCallback = cb;
+};
 
-  srcs.push(`tiles.png`);
-  srcs.push(`waters.png`);
+let movable = false;
+const onTouchstart = (e: any) => {
+  if (movable) return;
+  const [x, y] = [
+    (e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth,
+    (e.targetTouches[0].clientY / window.innerHeight) * window.innerHeight,
+  ];
+  if (mouseEventCallback) mouseEventCallback(x, y);
+  movable = true;
+};
 
-  for (const src of srcs) {
-    assets.push([src, `${BASE_URL}/${src}`]);
-  }
+const onTouchmove = (e: any) => {
+  if (!movable) return;
+  const [x, y] = [
+    (e.changedTouches[0].clientX / window.innerWidth) * window.innerWidth,
+    (e.changedTouches[0].clientY / window.innerHeight) * window.innerHeight,
+  ];
+  if (mouseEventCallback) mouseEventCallback(x, y);
+  movable = true;
+};
 
-  let loaded = 0;
+const onTouchend = () => {
+  movable = false;
+};
 
-  PIXI.Loader.shared.onLoad.add((...args: any) => {
-    const resource = args[1];
-    callback(++loaded / assets.length, resource.name);
-  });
+const onMousedown = (e: any) => {
+  const [x, y] = [
+    (e.clientX / window.innerWidth) * window.innerWidth,
+    (e.clientY / window.innerHeight) * window.innerHeight,
+  ];
+  if (mouseEventCallback) mouseEventCallback(x, y);
+  movable = true;
+};
 
-  return new Promise((resolve) => {
-    for (const asset of assets) {
-      PIXI.Loader.shared.add(...asset);
+const onMousemove = (e: any) => {
+  if (!movable) return;
+  const [x, y] = [
+    (e.clientX / window.innerWidth) * window.innerWidth,
+    (e.clientY / window.innerHeight) * window.innerHeight,
+  ];
+  if (mouseEventCallback) mouseEventCallback(x, y);
+};
+
+const onMouseup = () => {
+  movable = false;
+};
+
+const setController = () => {
+  window.removeEventListener('touchstart', onTouchstart);
+  window.removeEventListener('touchmove', onTouchmove);
+  window.removeEventListener('touchend', onTouchend);
+  window.addEventListener('touchstart', onTouchstart);
+  window.addEventListener('touchmove', onTouchmove);
+  window.addEventListener('touchend', onTouchend);
+
+  window.removeEventListener('mousedown', onMousedown);
+  window.removeEventListener('mousemove', onMousemove);
+  window.removeEventListener('mouseup', onMouseup);
+  window.addEventListener('mousedown', onMousedown);
+  window.addEventListener('mousemove', onMousemove);
+  window.addEventListener('mouseup', onMouseup);
+};
+
+const fillTile = (
+  map: Map,
+  x: number,
+  y: number,
+  length: number,
+  menuType: MENU_TYPES
+): void => {
+  for (let offsetY = -length; offsetY <= length; offsetY++) {
+    for (let offsetX = -length; offsetX <= length; offsetX++) {
+      if (
+        x + offsetX < 0 ||
+        x + offsetX >= map.totalWidth ||
+        y + offsetY < 0 ||
+        y + offsetY >= map.totalHeight ||
+        Math.sqrt(offsetX ** 2 + offsetY ** 2) > length
+      ) {
+        continue;
+      }
+
+      switch (menuType) {
+        case MENU_TYPES.DIRT: {
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.DIRT, 255);
+          break;
+        }
+        case MENU_TYPES.SAND: {
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.SAND, 255);
+          break;
+        }
+        case MENU_TYPES.WATER: {
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
+          break;
+        }
+        case MENU_TYPES.LAVA: {
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.LAVA, 255);
+          break;
+        }
+        case MENU_TYPES.ERASER: {
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.EMPTY, 0);
+          break;
+        }
+        default: {
+        }
+      }
     }
-
-    PIXI.Loader.shared.load(() => {
-      resolve();
-    });
-  });
-}
-
-function setRenderer(
-  options: { defaultLighting: boolean } = { defaultLighting: true }
-): {
-  stage: PIXI.Container;
-  lightContainer: PIXI.Container;
-} {
-  const [clientWidth, clientHeight] = getClientSize();
-  if (stage) {
-    stage.removeChildren();
-    stage.removeAllListeners();
-    lightContainer.removeChildren();
-    lightContainer.removeAllListeners();
-
-    if (options.defaultLighting) {
-      const defaultLightingArea = new PIXI.Graphics();
-      defaultLightingArea.beginFill(0xffffff);
-      defaultLightingArea.drawRect(0, 0, clientWidth, clientHeight);
-      defaultLightingArea.endFill();
-      lightContainer.addChild(defaultLightingArea);
-      defaultLightingArea.cacheAsBitmap = true;
-    }
-
-    return { stage, lightContainer };
   }
-  const resolution: number = window.devicePixelRatio || 1;
-  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-  PIXI.settings.MIPMAP_TEXTURES = PIXI.MIPMAP_MODES.OFF;
-  PIXI.settings.STRICT_TEXTURE_CACHE = true;
-  PIXI.settings.SPRITE_MAX_TEXTURES = 200;
+};
 
-  const stats: Stats = new Stats();
-  const app = new PIXI.Application({
-    width: clientWidth,
-    height: clientHeight,
-    sharedLoader: true,
-    powerPreference: 'high-performance',
-    backgroundColor: 0x202020,
-    autoStart: false,
-    antialias: false,
-    forceCanvas: false,
-    preserveDrawingBuffer: false,
-    resolution,
-  });
-  app.stage = new PIXI_LAYERS.Stage();
-  app.view.className = 'renderer';
-  app.view.style.width = '100%';
-  app.view.style.height = '100%';
-  stats.dom.style.right = '0';
-  stats.dom.style.removeProperty('left');
-
-  const dom: HTMLElement = document.getElementById('content') as HTMLElement;
-  dom.appendChild(app.view);
-  dom.appendChild(stats.dom);
-
-  const lightingStage = new PIXI_LAYERS.Stage();
-  const lightingLayer = new PIXI_LAYERS.Layer();
-  lightingLayer.useRenderTexture = true;
-  lightingLayer.clearColor = [0.075, 0.075, 0.075, 1];
-
-  stage = new PIXI.Container();
-  lightContainer = new PIXI.Container();
-  lightContainer.parentLayer = lightingLayer;
-
-  const lightingSprite = new PIXI.Sprite(lightingLayer.getRenderTexture());
-  lightingSprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
-
-  lightingStage.addChild(stage);
-  lightingStage.addChild(lightContainer);
-  lightingStage.addChild(lightingLayer);
-  lightingStage.addChild(lightingSprite);
-  app.stage.addChild(lightingStage);
-
-  if (options.defaultLighting) {
-    const defaultLightingArea = new PIXI.Graphics();
-    defaultLightingArea.beginFill(0xffffff);
-    defaultLightingArea.drawRect(0, 0, clientWidth, clientHeight);
-    defaultLightingArea.endFill();
-    lightContainer.addChild(defaultLightingArea);
-    defaultLightingArea.cacheAsBitmap = true;
-  }
-
-  const render = () => {
-    if (updater) updater();
-    stats.update();
-    app.render();
-    window.requestAnimationFrame(render);
-  };
-  window.requestAnimationFrame(render);
-
-  return { stage, lightContainer };
-}
-
-function setUpdater(callback: () => void): void {
-  updater = callback;
-}
-
-function getClientSize(): [number, number] {
-  // const ratio = window.innerWidth / window.innerHeight;
-
-  // return [
-  //   Math.min(1920, window.innerWidth),
-  //   Math.ceil(Math.min(1920, window.innerWidth) / ratio),
-  // ];
-  return [window.innerWidth, window.innerHeight];
-}
-
-export { setRenderer, setUpdater, preload, getClientSize };
+export {
+  setController,
+  setMouseEventCallback,
+  setUpdater,
+  updater,
+  setMenuSelectCallback,
+  menuSelectCallback,
+  fillTile,
+};
