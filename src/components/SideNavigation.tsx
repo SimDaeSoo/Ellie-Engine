@@ -1,25 +1,35 @@
 import { useState } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { Sidenav, Nav, Sidebar, Icon } from 'rsuite';
+import { Sidenav, Dropdown, Nav, Sidebar, Icon } from 'rsuite';
 import { IconNames } from 'rsuite/lib/Icon';
 
 const navigations: Array<{
   icon: IconNames;
-  path: string;
   name: string;
+  subNavigations?: Array<{ icon: IconNames; name: string }>;
 }> = [
   {
     icon: 'th2',
-    path: '/',
-    name: 'Random Tile',
+    name: 'Create Blocks',
+    subNavigations: [
+      {
+        icon: 'th2',
+        name: 'Hard Block',
+      },
+      {
+        icon: 'th2',
+        name: 'Soft Block',
+      },
+    ],
+  },
+  {
+    icon: 'th2',
+    name: 'Create Blocks',
   },
 ];
 
 const SideNavigation = () => {
-  const location = useLocation();
-  const history = useHistory();
+  const [selectedMenu, setSelectedMenu] = useState('');
   const [toggle, setToggle] = useState(true);
-  const { pathname } = location;
 
   const HeaderElement = () => (
     <Nav.Item
@@ -35,17 +45,39 @@ const SideNavigation = () => {
   );
 
   const NavigationElements = () =>
-    navigations.map(({ icon, path, name }, i) => (
-      <Nav.Item
-        key={i}
-        icon={<Icon icon={icon} />}
-        onSelect={() => history.push(path)}
-        eventKey={path}
-        className='noselect'
-      >
-        {name}
-      </Nav.Item>
-    ));
+    navigations.map(({ icon, name, subNavigations }, i) =>
+      subNavigations ? (
+        <Dropdown
+          key={i}
+          icon={<Icon icon={icon} />}
+          eventKey={name}
+          className='noselect'
+          title={name}
+        >
+          {subNavigations.map(({ icon, name }, i) => (
+            <Dropdown.Item
+              key={i}
+              icon={<Icon icon={icon} />}
+              onSelect={() => setSelectedMenu(name)}
+              eventKey={name}
+              className='noselect'
+            >
+              {name}
+            </Dropdown.Item>
+          ))}
+        </Dropdown>
+      ) : (
+        <Nav.Item
+          key={i}
+          icon={<Icon icon={icon} />}
+          onSelect={() => setSelectedMenu(name)}
+          eventKey={name}
+          className='noselect'
+        >
+          {name}
+        </Nav.Item>
+      )
+    );
 
   return (
     <Sidebar
@@ -78,7 +110,7 @@ const SideNavigation = () => {
         </Sidenav.Header>
 
         <Sidenav.Body style={{ height: 'calc(100%-50px)', marginTop: '50px' }}>
-          <Nav activeKey={pathname}>{NavigationElements()}</Nav>
+          <Nav activeKey={selectedMenu}>{NavigationElements()}</Nav>
         </Sidenav.Body>
       </Sidenav>
     </Sidebar>

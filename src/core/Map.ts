@@ -214,6 +214,29 @@ class Map {
       ((y % this.height) * this.width + (x % this.width)) * TILE_BYTES + index
     ] = property;
   }
+
+  public setTileProperties(
+    x: number,
+    y: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number
+  ): void {
+    const index = (y % this.height) * this.width + (x % this.width);
+    this.tileProperties[this.lookupY[y]][this.lookupX[x]][
+      index * TILE_BYTES + 0
+    ] = r;
+    this.tileProperties[this.lookupY[y]][this.lookupX[x]][
+      index * TILE_BYTES + 1
+    ] = g;
+    this.tileProperties[this.lookupY[y]][this.lookupX[x]][
+      index * TILE_BYTES + 2
+    ] = b;
+    this.tileProperties[this.lookupY[y]][this.lookupX[x]][
+      index * TILE_BYTES + 3
+    ] = a;
+  }
 }
 
 export default Map;

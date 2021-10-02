@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { Route } from 'react-router';
 import { Container } from 'rsuite';
 import Stats from 'stats.js';
 import CreatorTag from './components/CreatorTag';
 import SideNavigation from './components/SideNavigation';
-import RandomTile from './pages/RandomTile';
+import Main from './pages/Main';
 
 let callback: (x: number, y: number) => void;
 const setCallback = (cb: (x: number, y: number) => void) => {
@@ -56,15 +55,9 @@ const App = () => {
     <>
       <Container style={{ height: '100%' }}>
         <Container id='content'>
-          <Route
-            exact
-            path='/'
-            render={() => (
-              <RandomTile
-                setCallback={(cb) => setCallback(cb)}
-                setUpdater={(cb) => setUpdater(cb)}
-              />
-            )}
+          <Main
+            setCallback={(cb) => setCallback(cb)}
+            setUpdater={(cb) => setUpdater(cb)}
           />
           <CreatorTag />
         </Container>

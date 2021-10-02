@@ -5,7 +5,7 @@ import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
 import { fragmentShaderGLSL, vertexShaderGLSL } from '../shaders/PixelShader';
 
-const RandomTile = ({
+const Main = ({
   setCallback,
   setUpdater,
 }: {
@@ -15,7 +15,7 @@ const RandomTile = ({
   useEffect(() => {
     (async () => {
       // Each Map Block Resolution
-      const zoom = 2;
+      const zoom = 1;
       const splitQuantity = 1;
       const width = Math.round(window.innerWidth / splitQuantity / zoom);
       const height = Math.round(window.innerHeight / splitQuantity / zoom);
@@ -69,4 +69,4 @@ const RandomTile = ({
   );
 };
 
-export default RandomTile;
+export default Main;

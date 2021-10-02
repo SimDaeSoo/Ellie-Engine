@@ -1,9 +1,7 @@
 import { WORKER_CALLBACK_COMMAND, WORKER_COMMAND } from '../src/constants';
 import Map from '../src/core/Map';
 
-type Store = {
-  testIndex: number;
-};
+type Store = {};
 
 type MessageEventData = {
   data: Message;
@@ -16,9 +14,8 @@ type Message = {
   data: any;
 };
 
-const store: Store = {
-  testIndex: 0,
-};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const store: Store = {};
 
 onmessage = (e) => {
   const { data: message }: MessageEventData = e;
@@ -31,42 +28,20 @@ onmessage = (e) => {
 
       map.import(mapData);
 
-      if (!store.testIndex) store.testIndex = 0;
-      const begin =
-        Math.ceil(((map.totalWidth * map.totalHeight) / threadQuantity) * id) +
-        store.testIndex;
-      const end = Math.min(
-        Math.ceil(
-          ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
-        ),
-        begin + 10000
+      const begin = Math.ceil(
+        ((map.totalWidth * map.totalHeight) / threadQuantity) * id
+      );
+      const end = Math.ceil(
+        ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
       );
 
       for (let i = begin; i < end; i++) {
-        const x = i % map.totalWidth;
-        const y = Math.floor(i / map.totalWidth);
-
-        map.setTileProperty(x, y, 0, Math.floor((x / map.totalWidth) * 128));
-        map.setTileProperty(
-          x,
-          y,
-          1,
-          Math.floor((x / map.totalWidth) * (y / map.totalHeight) * 128)
-        );
-        map.setTileProperty(x, y, 2, Math.floor((y / map.totalHeight) * 128));
-        map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
-
-        store.testIndex++;
+        // const x = i % map.totalWidth;
+        // const y = Math.floor(i / map.totalWidth);
+        // const value = Math.floor(Math.random() * 256);
+        // map.setTileProperties(x, y, value, value, value, value);
       }
 
-      if (
-        end ===
-        Math.ceil(
-          ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
-        )
-      ) {
-        store.testIndex = 0;
-      }
       postMessage({ command: WORKER_CALLBACK_COMMAND.DONE });
       break;
     }
