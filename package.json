@@ -23,6 +23,7 @@
   },
   "description": "2D Game Engine Using Typescript (Javascript) the goal of this project is to create efficient engine for huge tile platform 2D game like terraria.",
   "devDependencies": {
+    "@types/body-scroll-lock": "^3.1.0",
     "@types/node": "^14.0.0",
     "@types/react": "^17.0.26",
     "@types/react-dom": "^17.0.9",
@@ -30,11 +31,12 @@
     "@types/stats.js": "^0.17.0",
     "react-app-rewired": "^2.1.8",
     "react-scripts": "4.0.3",
-    "typescript": "^4.4.3",
     "ts-loader": "^8.3.0",
+    "typescript": "^4.4.3",
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
+    "body-scroll-lock": "^4.0.0-beta.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rsuite": "^4.10.3",
