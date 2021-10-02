@@ -43,8 +43,8 @@ const App = () => {
     stats.dom.style.removeProperty('left');
     dom.appendChild(stats.dom);
 
-    const render = () => {
-      if (updater) updater();
+    const render = async () => {
+      if (updater) await updater();
       stats.update();
       window.requestAnimationFrame(render);
     };

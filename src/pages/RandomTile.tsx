@@ -37,9 +37,21 @@ const RandomTile = ({
 
       setUpdater(async () => {
         // Logic
+        // Multi Thread
         await threadController.run(WORKER_COMMAND.SAMPLE_COMMAND, {
           map: map.export(),
         });
+
+        // Single Thread
+        // for (let i = 0; i < map.width * map.height; i++) {
+        //   const x = i % map.width;
+        //   const y = Math.floor(i / map.width);
+
+        //   map.setTileProperty(x, y, 0, Math.floor(Math.random() * 256));
+        //   map.setTileProperty(x, y, 1, Math.floor(Math.random() * 256));
+        //   map.setTileProperty(x, y, 2, Math.floor(Math.random() * 256));
+        //   map.setTileProperty(x, y, 3, Math.floor(Math.random() * 256));
+        // }
 
         // Render
         renderer.clear(0, 0, 0, 0);

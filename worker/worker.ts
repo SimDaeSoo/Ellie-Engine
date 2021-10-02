@@ -37,7 +37,7 @@ onmessage = (e) => {
         store.testIndex;
       const end = Math.min(
         Math.ceil(((map.width * map.height) / threadQuantity) * (id + 1)),
-        begin + 20
+        begin + 1
       );
 
       for (let i = begin; i < end; i++) {
