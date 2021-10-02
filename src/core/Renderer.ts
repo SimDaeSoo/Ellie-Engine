@@ -1,10 +1,8 @@
-import { disableBodyScroll } from 'body-scroll-lock';
 class Renderer {
   public gl: WebGL2RenderingContext;
 
   constructor(canvasID: string, width: number, height: number) {
     const canvas = document.getElementById(canvasID) as HTMLCanvasElement;
-    disableBodyScroll(canvas);
     canvas.width = width;
     canvas.height = height;
     this.gl = canvas.getContext('webgl2') as WebGL2RenderingContext;

@@ -1,3 +1,4 @@
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import { useState } from 'react';
 import { Sidenav, Dropdown, Nav, Sidebar, Icon } from 'rsuite';
 import { NAVIGATIONS, MENU_TYPES } from '../constants';
@@ -48,7 +49,11 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
   const [toggle, setToggle] = useState(isWide ? false : true);
 
   const onSelectMenu = (i: number, name: string, type: MENU_TYPES) => {
-    if (!isWide) setToggle(!toggle);
+    if (!isWide) {
+      setToggle(!toggle);
+      const content = document.getElementById('content') as HTMLElement;
+      disableBodyScroll(content);
+    }
 
     const newSelecteds = [...selectedMenus];
     newSelecteds[i] = name;
@@ -118,6 +123,8 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
           toggle={toggle}
           onClick={() => {
             setToggle(!toggle);
+            const content = document.getElementById('content') as HTMLElement;
+            enableBodyScroll(content);
           }}
         />
         <Sidenav.Body style={{ height: '100%' }}>
