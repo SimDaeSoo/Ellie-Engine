@@ -27,7 +27,7 @@ const Main = ({
       const innerHeight = container.getBoundingClientRect().height;
 
       // Each Map Block Resolution
-      const splitQuantity = 1;
+      const splitQuantity = 3;
       const width = Math.round(innerWidth / splitQuantity / zoom);
       const height = Math.round(innerHeight / splitQuantity / zoom);
 
@@ -49,19 +49,9 @@ const Main = ({
       const fragmentShader = renderer.createFragmentShader(fragmentShaderGLSL);
       const program = renderer.createProgram(vertexShader, fragmentShader);
 
-      renderer.setViewport(
-        0,
-        0,
-        width * splitQuantity * zoom,
-        height * splitQuantity * zoom
-      );
+      renderer.setViewport(0, 0, width * splitQuantity * zoom, height * splitQuantity * zoom);
       renderer.useProgram(program);
-      renderer.setPixelsRenderer(
-        program,
-        width * zoom,
-        height * zoom,
-        splitQuantity
-      );
+      renderer.setPixelsRenderer(program, width * zoom, height * zoom, splitQuantity);
       renderer.deleteProgram(program);
 
       setUpdater(async () => {
@@ -73,7 +63,7 @@ const Main = ({
 
         // Render
         renderer.clear(0, 0, 0, 0);
-        renderer.pixelsRendering(map.tileTypeProperties, width, height);
+        renderer.pixelsRendering(map.tileRgbaView, width, height);
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {
@@ -90,16 +80,8 @@ const Main = ({
             paused = true;
             break;
           }
-          case MENU_TYPES.PIXEL_1: {
-            border = 0;
-            break;
-          }
           case MENU_TYPES.PIXEL_3: {
             border = 1;
-            break;
-          }
-          case MENU_TYPES.PIXEL_5: {
-            border = 2;
             break;
           }
           case MENU_TYPES.PIXEL_9: {
@@ -114,8 +96,16 @@ const Main = ({
             border = 12;
             break;
           }
-          case MENU_TYPES.PIXEL_50: {
-            border = 25;
+          case MENU_TYPES.PIXEL_40: {
+            border = 20;
+            break;
+          }
+          case MENU_TYPES.PIXEL_60: {
+            border = 30;
+            break;
+          }
+          case MENU_TYPES.PIXEL_100: {
+            border = 50;
             break;
           }
           case MENU_TYPES.ZOOM_1: {
@@ -126,8 +116,24 @@ const Main = ({
             initialize(2);
             break;
           }
+          case MENU_TYPES.ZOOM_3: {
+            initialize(3);
+            break;
+          }
           case MENU_TYPES.ZOOM_4: {
             initialize(4);
+            break;
+          }
+          case MENU_TYPES.ZOOM_5: {
+            initialize(5);
+            break;
+          }
+          case MENU_TYPES.ZOOM_6: {
+            initialize(6);
+            break;
+          }
+          case MENU_TYPES.ZOOM_7: {
+            initialize(7);
             break;
           }
           case MENU_TYPES.ZOOM_8: {

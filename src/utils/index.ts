@@ -2,10 +2,7 @@ import { BLOCKS, MENU_TYPES } from '../constants';
 import Map from '../core/Map';
 
 let mouseEventCallback: (x: number, y: number) => void;
-const setMouseEventCallback = (
-  cb: (x: number, y: number) => void,
-  isWide: boolean
-) => {
+const setMouseEventCallback = (cb: (x: number, y: number) => void, isWide: boolean) => {
   mouseEventCallback = (x, y) => {
     cb(Math.round(x - (isWide ? 220 : 0)), Math.round(y));
   };
@@ -24,10 +21,7 @@ const setMenuSelectCallback = (cb: (type: MENU_TYPES) => void) => {
 let movable = false;
 const onTouchstart = (e: any) => {
   if (movable) return;
-  const [x, y] = [
-    (e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth,
-    (e.targetTouches[0].clientY / window.innerHeight) * window.innerHeight,
-  ];
+  const [x, y] = [(e.targetTouches[0].clientX / window.innerWidth) * window.innerWidth, (e.targetTouches[0].clientY / window.innerHeight) * window.innerHeight];
   if (mouseEventCallback) mouseEventCallback(x, y);
   movable = true;
 };
@@ -47,20 +41,14 @@ const onTouchend = () => {
 };
 
 const onMousedown = (e: any) => {
-  const [x, y] = [
-    (e.clientX / window.innerWidth) * window.innerWidth,
-    (e.clientY / window.innerHeight) * window.innerHeight,
-  ];
+  const [x, y] = [(e.clientX / window.innerWidth) * window.innerWidth, (e.clientY / window.innerHeight) * window.innerHeight];
   if (mouseEventCallback) mouseEventCallback(x, y);
   movable = true;
 };
 
 const onMousemove = (e: any) => {
   if (!movable) return;
-  const [x, y] = [
-    (e.clientX / window.innerWidth) * window.innerWidth,
-    (e.clientY / window.innerHeight) * window.innerHeight,
-  ];
+  const [x, y] = [(e.clientX / window.innerWidth) * window.innerWidth, (e.clientY / window.innerHeight) * window.innerHeight];
   if (mouseEventCallback) mouseEventCallback(x, y);
 };
 
@@ -84,13 +72,7 @@ const setController = () => {
   window.addEventListener('mouseup', onMouseup);
 };
 
-const fillTile = (
-  map: Map,
-  x: number,
-  y: number,
-  length: number,
-  menuType: MENU_TYPES
-): void => {
+const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU_TYPES): void => {
   for (let offsetY = -length; offsetY <= length; offsetY++) {
     for (let offsetX = -length; offsetX <= length; offsetX++) {
       if (
@@ -105,47 +87,27 @@ const fillTile = (
 
       switch (menuType) {
         case MENU_TYPES.DIRT: {
-          map.setTileProperties(
-            x + offsetX,
-            y + offsetY,
-            ...BLOCKS.DIRT,
-            Math.floor(32 + Math.random() * 224)
-          );
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.DIRT, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.STONE: {
-          map.setTileProperties(
-            x + offsetX,
-            y + offsetY,
-            ...BLOCKS.STONE,
-            Math.floor(32 + Math.random() * 224)
-          );
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.STONE, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.SAND: {
-          map.setTileProperties(
-            x + offsetX,
-            y + offsetY,
-            ...BLOCKS.SAND,
-            Math.floor(32 + Math.random() * 224)
-          );
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.SAND, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
           break;
         }
         case MENU_TYPES.LAVA: {
-          map.setTileProperties(
-            x + offsetX,
-            y + offsetY,
-            ...BLOCKS.LAVA,
-            Math.floor(32 + Math.random() * 224)
-          );
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.LAVA, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.ERASER: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.EMPTY, 0);
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.EMPTY, 0);
           break;
         }
         default: {
@@ -164,13 +126,4 @@ const isSharedArrayBufferSupport = () => {
   }
 };
 
-export {
-  setController,
-  setMouseEventCallback,
-  setUpdater,
-  updater,
-  setMenuSelectCallback,
-  menuSelectCallback,
-  fillTile,
-  isSharedArrayBufferSupport,
-};
+export { setController, setMouseEventCallback, setUpdater, updater, setMenuSelectCallback, menuSelectCallback, fillTile, isSharedArrayBufferSupport };
