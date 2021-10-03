@@ -44,9 +44,10 @@
     "stats.js": "^0.17.0"
   },
   "scripts": {
-    "start": "yarn worker & react-app-rewired start",
-    "build": "yarn worker & GENERATE_SOURCEMAP=false react-app-rewired build",
-    "worker": "webpack --watch"
+    "start": "yarn worker-start & react-app-rewired start",
+    "build": "yarn worker-build && GENERATE_SOURCEMAP=false react-app-rewired build",
+    "worker-start": "webpack --watch",
+    "worker-build": "webpack"
   },
   "eslintConfig": {
     "extends": [
