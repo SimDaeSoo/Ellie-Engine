@@ -17,10 +17,7 @@ class Renderer {
     this.gl.viewport(x, y, w, h);
   }
 
-  public createProgram(
-    vertexShader: WebGLShader,
-    fragmentShader: WebGLShader
-  ): WebGLProgram {
+  public createProgram(vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram {
     const program = this.gl.createProgram() as WebGLProgram;
 
     this.gl.attachShader(program, vertexShader);
@@ -38,9 +35,7 @@ class Renderer {
   }
 
   public createVertexShader(vertexShaderGLSL: string): WebGLShader {
-    const vertexShader = this.gl.createShader(
-      this.gl.VERTEX_SHADER
-    ) as WebGLShader;
+    const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER) as WebGLShader;
     this.gl.shaderSource(vertexShader, vertexShaderGLSL);
     this.gl.compileShader(vertexShader);
 
@@ -48,9 +43,7 @@ class Renderer {
   }
 
   public createFragmentShader(fragmentShaderGLSL: string): WebGLShader {
-    const fragmentShader = this.gl.createShader(
-      this.gl.FRAGMENT_SHADER
-    ) as WebGLShader;
+    const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER) as WebGLShader;
     this.gl.shaderSource(fragmentShader, fragmentShaderGLSL);
     this.gl.compileShader(fragmentShader);
 
@@ -66,12 +59,7 @@ class Renderer {
   }
 
   // Samples..
-  public setPixelsRenderer(
-    program: WebGLProgram,
-    width: number,
-    height: number,
-    splitQuantity: number
-  ): void {
+  public setPixelsRenderer(program: WebGLProgram, width: number, height: number, splitQuantity: number): void {
     // Default Triangles
     const glBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, glBuffer);
@@ -86,16 +74,8 @@ class Renderer {
 
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.uniform1i(glTexture, 0);
-    this.gl.texParameteri(
-      this.gl.TEXTURE_2D,
-      this.gl.TEXTURE_MIN_FILTER,
-      this.gl.NEAREST
-    );
-    this.gl.texParameteri(
-      this.gl.TEXTURE_2D,
-      this.gl.TEXTURE_MAG_FILTER,
-      this.gl.NEAREST
-    );
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
     // Resolution
     const glResolution = this.gl.getUniformLocation(program, 'u_resolution');
@@ -120,37 +100,15 @@ class Renderer {
         );
       }
     }
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      new Float32Array(vertices),
-      this.gl.STATIC_DRAW
-    );
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
   }
 
-  public pixelsRendering(
-    pixelGrids: Array<Array<Uint8Array>>,
-    width: number,
-    height: number
-  ): void {
+  public pixelsRendering(pixelGrids: Array<Array<Uint8Array>>, width: number, height: number): void {
     for (let y = 0; y < pixelGrids.length; y++) {
       for (let x = 0; x < pixelGrids[y].length; x++) {
-        this.gl.texImage2D(
-          this.gl.TEXTURE_2D,
-          0,
-          this.gl.RGBA,
-          width,
-          height,
-          0,
-          this.gl.RGBA,
-          this.gl.UNSIGNED_BYTE,
-          pixelGrids[y][x]
-        );
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixelGrids[y][x]);
 
-        this.gl.drawArrays(
-          this.gl.TRIANGLES,
-          (y * pixelGrids[y].length + x) * 6,
-          6
-        );
+        this.gl.drawArrays(this.gl.TRIANGLES, (y * pixelGrids[y].length + x) * 6, 6);
       }
     }
   }

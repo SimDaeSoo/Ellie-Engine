@@ -1,17 +1,10 @@
-import { disableBodyScroll } from 'body-scroll-lock';
 import { useEffect } from 'react';
 import { Container } from 'rsuite';
 import Stats from 'stats.js';
 import CreatorTag from './components/CreatorTag';
 import SideNavigation from './components/SideNavigation';
 import Main from './pages/Main';
-import {
-  setController,
-  setMouseEventCallback,
-  updater,
-  setUpdater,
-  setMenuSelectCallback,
-} from './utils';
+import { setController, setMouseEventCallback, updater, setUpdater, setMenuSelectCallback } from './utils';
 
 const App = () => {
   const isWide = window.innerWidth >= 768;
@@ -23,7 +16,6 @@ const App = () => {
     stats.dom.style.removeProperty('left');
     stats.dom.className += 'noselect';
     dom.appendChild(stats.dom);
-    disableBodyScroll(dom);
 
     setController();
 
