@@ -26,52 +26,52 @@ class Map {
   }
 
   public update(): void {
-    // this.simulator.next();
-    let x;
-    let y;
-    let value;
-    let type;
-    let isLiquid;
+    this.simulator.next();
+    // let x;
+    // let y;
+    // let value;
+    // let type;
+    // let isLiquid;
 
-    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
-      x = i % this.totalWidth;
-      y = Math.floor(i / this.totalWidth);
-      value = this.getTileValue(x, y);
-      type = this.lookupTileType(value);
-      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+    // for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
+    //   x = i % this.totalWidth;
+    //   y = Math.floor(i / this.totalWidth);
+    //   value = this.getTileValue(x, y);
+    //   type = this.lookupTileType(value);
+    //   if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
 
-      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA;
+    //   isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA;
 
-      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTileValue(x, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x, y + 1, value);
-        continue;
-      }
+    //   if (y + 1 < this.totalHeight && this.lookupTileType(this.getTileValue(x, y + 1)) === BLOCK_TYPES.EMPTY) {
+    //     this.setTileValue(x, y, 0);
+    //     this.setTileValue(x, y + 1, value);
+    //     continue;
+    //   }
 
-      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTileValue(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y + 1, value);
-        continue;
-      }
+    //   if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTileValue(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
+    //     this.setTileValue(x, y, 0);
+    //     this.setTileValue(x + 1, y + 1, value);
+    //     continue;
+    //   }
 
-      if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTileValue(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y + 1, value);
-        continue;
-      }
+    //   if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTileValue(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
+    //     this.setTileValue(x, y, 0);
+    //     this.setTileValue(x - 1, y + 1, value);
+    //     continue;
+    //   }
 
-      if (x + 1 < this.totalWidth && isLiquid && this.lookupTileType(this.getTileValue(x + 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y, value);
-        continue;
-      }
+    //   if (x + 1 < this.totalWidth && isLiquid && this.lookupTileType(this.getTileValue(x + 1, y)) === BLOCK_TYPES.EMPTY) {
+    //     this.setTileValue(x, y, 0);
+    //     this.setTileValue(x + 1, y, value);
+    //     continue;
+    //   }
 
-      if (x - 1 >= 0 && isLiquid && this.lookupTileType(this.getTileValue(x - 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y, value);
-        continue;
-      }
-    }
+    //   if (x - 1 >= 0 && isLiquid && this.lookupTileType(this.getTileValue(x - 1, y)) === BLOCK_TYPES.EMPTY) {
+    //     this.setTileValue(x, y, 0);
+    //     this.setTileValue(x - 1, y, value);
+    //     continue;
+    //   }
+    // }
   }
 
   public clear(id: number, threadQuantity: number): void {
