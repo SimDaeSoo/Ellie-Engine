@@ -1,16 +1,10 @@
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidenav, Dropdown, Nav, Sidebar, Icon } from 'rsuite';
 import { NAVIGATIONS, MENU_TYPES } from '../constants';
 import { menuSelectCallback } from '../utils';
 
-const HeaderElement = ({
-  toggle,
-  onClick,
-}: {
-  toggle: boolean;
-  onClick: () => void;
-}) => (
+const HeaderElement = ({ toggle, onClick }: { toggle: boolean; onClick: () => void }) => (
   <Sidenav.Header
     style={{
       position: 'fixed',
@@ -27,11 +21,7 @@ const HeaderElement = ({
     }}
   >
     <Nav>
-      <Nav.Item
-        icon={<Icon icon={'bars'} />}
-        onClick={onClick}
-        className='noselect'
-      >
+      <Nav.Item icon={<Icon icon={'bars'} />} onClick={onClick} className='noselect'>
         Menus
       </Nav.Item>
     </Nav>
@@ -39,19 +29,13 @@ const HeaderElement = ({
 );
 
 const SideNavigation = ({ isWide }: { isWide: boolean }) => {
-  const [selectedMenus, setSelectedMenus] = useState([
-    'Play',
-    'Dirt Block',
-    '25px',
-    '4x',
-    '',
-  ]);
+  const [selectedMenus, setSelectedMenus] = useState(['Play', 'Dirt Block', '25px', '4x', '']);
   const [toggle, setToggle] = useState(isWide ? false : true);
 
   const onSelectMenu = (i: number, name: string, type: MENU_TYPES) => {
     if (!isWide) {
       setToggle(!toggle);
-      const content = document.getElementById('content') as HTMLElement;
+      const content = document.getElementById('sidebar') as HTMLElement;
       disableBodyScroll(content);
     }
 
@@ -62,26 +46,18 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
     menuSelectCallback(type);
   };
 
+  useEffect(() => {
+    const content = document.getElementById('sidebar') as HTMLElement;
+    disableBodyScroll(content);
+  }, []);
+
   const NavigationElements = () =>
     NAVIGATIONS.map(({ icon, name, type, subNavigations }, i) =>
       subNavigations ? (
         <Nav activeKey={selectedMenus[i]} key={i}>
-          <Dropdown
-            icon={<Icon icon={icon} />}
-            eventKey={name}
-            className='noselect'
-            title={name}
-            noCaret={true}
-            open={true}
-          >
+          <Dropdown icon={<Icon icon={icon} />} eventKey={name} className='noselect' title={name} noCaret={true} open={true}>
             {subNavigations.map(({ name, type }, j) => (
-              <Dropdown.Item
-                key={j}
-                icon={<Icon icon='caret-right' />}
-                onSelect={(name) => onSelectMenu(i, name, type)}
-                eventKey={name}
-                className='noselect'
-              >
+              <Dropdown.Item key={j} icon={<Icon icon='caret-right' />} onSelect={(name) => onSelectMenu(i, name, type)} eventKey={name} className='noselect'>
                 {name}
               </Dropdown.Item>
             ))}
@@ -89,12 +65,7 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
         </Nav>
       ) : (
         <Nav key={i}>
-          <Nav.Item
-            icon={<Icon icon={icon} />}
-            onSelect={(name) => onSelectMenu(i, name, type)}
-            eventKey={name}
-            className='noselect'
-          >
+          <Nav.Item icon={<Icon icon={icon} />} onSelect={(name) => onSelectMenu(i, name, type)} eventKey={name} className='noselect'>
             {name}
           </Nav.Item>
         </Nav>
@@ -104,6 +75,7 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
   return (
     <Sidebar
       collapsible
+      id='sidebar'
       width={toggle ? 0 : 220}
       style={{
         position: 'absolute',
@@ -123,18 +95,13 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
           toggle={toggle}
           onClick={() => {
             setToggle(!toggle);
-            const content = document.getElementById('content') as HTMLElement;
+            const content = document.getElementById('sidebar') as HTMLElement;
             enableBodyScroll(content);
           }}
         />
         <Sidenav.Body style={{ height: '100%' }}>
           <Nav activeKey='header'>
-            <Nav.Item
-              icon={<Icon icon='play' />}
-              disabled
-              className='noselect'
-              style={{ backgroundColor: '#202020' }}
-            >
+            <Nav.Item icon={<Icon icon='play' />} disabled className='noselect' style={{ backgroundColor: '#202020' }}>
               Playground
             </Nav.Item>
           </Nav>
