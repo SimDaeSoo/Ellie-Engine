@@ -285,7 +285,8 @@ class Map {
     if ((value & 0b00000000101110100101001000001111) === 0b00000000101110100101001000001111) return BLOCK_TYPES.WATER;
     if ((value & 0b00000000000001100101000011110111) === 0b00000000000001100101000011110111) return BLOCK_TYPES.LAVA;
     if ((value & 0b00000000010000110100000101000001) === 0b00000000010000110100000101000001) return BLOCK_TYPES.STONE;
-    throw new Error('undefined tile type');
+    if ((value & 0b00000000111111111111111111111111) === 0) return BLOCK_TYPES.EMPTY;
+    throw new Error(`undefined tile type ${value}`);
   }
 
   public getTileValue(x: number, y: number): number {
