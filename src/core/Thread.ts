@@ -8,29 +8,25 @@ type Message = {
   data: any;
 };
 
-// Generator 짤 생각에 벌써 머리가 아프다.
+type Store = any;
+const store: Store = {};
+
 async function run(message: Message): Promise<void> {
   const { id, threadQuantity, command, data }: Message = message;
 
   switch (command) {
-    case WORKER_COMMAND.CLEAR_MAP: {
+    case WORKER_COMMAND.MAP_INITIALIZE: {
       const { map: mapData } = data;
-      const map = new Map();
-
-      map.import(mapData);
-
-      const begin = Math.ceil(
-        ((map.totalWidth * map.totalHeight) / threadQuantity) * id
-      );
-      const end = Math.ceil(
-        ((map.totalWidth * map.totalHeight) / threadQuantity) * (id + 1)
-      );
-
-      for (let i = begin; i < end; i++) {
-        const x = i % map.totalWidth;
-        const y = Math.floor(i / map.totalWidth);
-        map.setTileProperties(x, y, 0, 0, 0, 0);
-      }
+      store.map = new Map();
+      store.map.import(mapData);
+      break;
+    }
+    case WORKER_COMMAND.MAP_CLEAR: {
+      store.map.clear(id, threadQuantity);
+      break;
+    }
+    case WORKER_COMMAND.MAP_PROCESSING: {
+      store.map.update(id, threadQuantity, 1);
       break;
     }
     default: {

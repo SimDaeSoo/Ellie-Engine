@@ -1,8 +1,11 @@
 import { IconNames } from 'rsuite/lib/Icon';
 
-const TILE_BYTES = 4;
+const TILE_TYPE_BYTES = 4;
+const TILE_VALUE_BYTES = 4;
 enum WORKER_COMMAND {
-  CLEAR_MAP,
+  MAP_CLEAR,
+  MAP_INITIALIZE,
+  MAP_PROCESSING,
 }
 enum WORKER_CALLBACK_COMMAND {
   INITIALIZED,
@@ -12,6 +15,7 @@ enum WORKER_CALLBACK_COMMAND {
 enum MENU_TYPES {
   EMPTY,
   ERASER,
+  STONE,
   DIRT,
   SAND,
   WATER,
@@ -34,10 +38,11 @@ enum MENU_TYPES {
 }
 
 const BLOCKS: { [key: string]: [number, number, number] } = {
-  DIRT: [112, 84, 62],
-  SAND: [255, 229, 124],
+  STONE: [65, 65, 67],
+  DIRT: [62, 44, 32],
+  SAND: [155, 129, 74],
   WATER: [15, 82, 186],
-  LAVA: [247, 104, 6],
+  LAVA: [247, 80, 6],
   EMPTY: [0, 0, 0],
 };
 
@@ -70,6 +75,10 @@ const NAVIGATIONS: Array<{
       {
         name: 'Dirt Block',
         type: MENU_TYPES.DIRT,
+      },
+      {
+        name: 'Stone Block',
+        type: MENU_TYPES.STONE,
       },
       {
         name: 'Sand Block',
@@ -157,7 +166,8 @@ const NAVIGATIONS: Array<{
 ];
 
 export {
-  TILE_BYTES,
+  TILE_TYPE_BYTES,
+  TILE_VALUE_BYTES,
   WORKER_COMMAND,
   WORKER_CALLBACK_COMMAND,
   BLOCKS,

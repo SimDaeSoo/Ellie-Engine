@@ -105,19 +105,48 @@ const fillTile = (
 
       switch (menuType) {
         case MENU_TYPES.DIRT: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.DIRT, 255);
+          map.setTileProperties(
+            x + offsetX,
+            y + offsetY,
+            ...BLOCKS.DIRT,
+            Math.floor(32 + Math.random() * 224)
+          );
+          break;
+        }
+        case MENU_TYPES.STONE: {
+          map.setTileProperties(
+            x + offsetX,
+            y + offsetY,
+            ...BLOCKS.STONE,
+            Math.floor(32 + Math.random() * 224)
+          );
           break;
         }
         case MENU_TYPES.SAND: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.SAND, 255);
+          map.setTileProperties(
+            x + offsetX,
+            y + offsetY,
+            ...BLOCKS.SAND,
+            Math.floor(32 + Math.random() * 224)
+          );
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
+          map.setTileProperties(
+            x + offsetX,
+            y + offsetY,
+            ...BLOCKS.WATER,
+            Math.floor(32 + Math.random() * 224)
+          );
           break;
         }
         case MENU_TYPES.LAVA: {
-          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.LAVA, 255);
+          map.setTileProperties(
+            x + offsetX,
+            y + offsetY,
+            ...BLOCKS.LAVA,
+            Math.floor(32 + Math.random() * 224)
+          );
           break;
         }
         case MENU_TYPES.ERASER: {

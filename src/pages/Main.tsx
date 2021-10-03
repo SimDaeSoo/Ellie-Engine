@@ -31,14 +31,17 @@ const Main = ({
       const width = Math.round(innerWidth / splitQuantity / zoom);
       const height = Math.round(innerHeight / splitQuantity / zoom);
 
+      // Create Map
+      const map = new Map();
+      map.create(0, 0, width, height, splitQuantity);
+
       // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
       const threadController = new MultiThread(threadQuantity);
       await threadController.initialize();
-
-      // Create Map
-      const map = new Map();
-      map.create(0, 0, width, height, splitQuantity);
+      threadController.run(WORKER_COMMAND.MAP_INITIALIZE, {
+        map: map.export(),
+      });
 
       // Set Renderer
       const renderer = new Renderer('WEB_GL_CANVAS', innerWidth, innerHeight);
@@ -63,19 +66,20 @@ const Main = ({
 
       setUpdater(async () => {
         if (!paused) {
-          // Some Logic...
+          await threadController.run(WORKER_COMMAND.MAP_PROCESSING, {
+            map: map.export(),
+          });
         }
 
         // Render
-        renderer.pixelsRendering(map.tileProperties, width, height);
+        renderer.clear(0, 0, 0, 0);
+        renderer.pixelsRendering(map.tileTypeProperties, width, height);
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {
         switch (type) {
           case MENU_TYPES.CLEAR: {
-            threadController.run(WORKER_COMMAND.CLEAR_MAP, {
-              map: map.export(),
-            });
+            threadController.run(WORKER_COMMAND.MAP_CLEAR, {});
             break;
           }
           case MENU_TYPES.PLAY: {
