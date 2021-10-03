@@ -17,12 +17,10 @@ class Map {
   private _y?: number;
   private _lookupX?: Array<number>;
   private _lookupY?: Array<number>;
-  private simulator: Generator;
 
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
-    this.simulator = this.stepGenerator(10, 10000);
   }
 
   public update(): void {
@@ -178,72 +176,6 @@ class Map {
       height: this.height,
       splitQuantity: this.splitQuantity,
     };
-  }
-
-  private *stepGenerator(limitDuration: number, accumulateLimit: number) {
-    let step = this.simulateGenerator(limitDuration, accumulateLimit);
-
-    while (true) {
-      if (step.next(Date.now()).done) step = this.simulateGenerator(limitDuration, accumulateLimit);
-      yield;
-    }
-  }
-
-  private *simulateGenerator(_limitDuration: number, _accumulateLimit: number) {
-    let begin = Date.now();
-    let x;
-    let y;
-    let value;
-    let type;
-    let isLiquid;
-    let accumulate = 0;
-
-    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
-      if (++accumulate >= _accumulateLimit) {
-        accumulate = 0;
-        if (Date.now() - begin >= _limitDuration) begin = yield;
-      }
-
-      x = i % this.totalWidth;
-      y = Math.floor(i / this.totalWidth);
-      value = this.getTileValue(x, y);
-      type = this.lookupTileType(value);
-      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
-
-      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA;
-
-      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTileValue(x, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x, y + 1, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTileValue(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y + 1, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTileValue(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y + 1, value);
-        continue;
-      }
-
-      if (x + 1 < this.totalWidth && isLiquid && this.lookupTileType(this.getTileValue(x + 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y, value);
-        continue;
-      }
-
-      if (x - 1 >= 0 && isLiquid && this.lookupTileType(this.getTileValue(x - 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y, value);
-        continue;
-      }
-    }
-
-    return;
   }
 
   private get tileBufferGrid(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
