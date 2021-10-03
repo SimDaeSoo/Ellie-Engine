@@ -17,7 +17,7 @@ async function run(message: Message): Promise<void> {
   switch (command) {
     case WORKER_COMMAND.MAP_INITIALIZE: {
       const { map: mapData } = data;
-      store.map = new Map();
+      store.map = new Map(id, threadQuantity);
       store.map.import(mapData);
       break;
     }

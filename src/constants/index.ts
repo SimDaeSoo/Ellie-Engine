@@ -32,6 +32,7 @@ enum MENU_TYPES {
   PIXEL_9,
   PIXEL_15,
   PIXEL_25,
+  PIXEL_50,
   ZOOM_1,
   ZOOM_2,
   ZOOM_4,
@@ -136,6 +137,10 @@ const NAVIGATIONS: Array<{
       {
         name: '25px',
         type: MENU_TYPES.PIXEL_25,
+      },
+      {
+        name: '50px',
+        type: MENU_TYPES.PIXEL_50,
       },
     ],
   },

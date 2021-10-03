@@ -32,7 +32,7 @@ const Main = ({
       const height = Math.round(innerHeight / splitQuantity / zoom);
 
       // Create Map
-      const map = new Map();
+      const map = new Map(0, 1);
       map.create(0, 0, width, height, splitQuantity);
 
       // Set Multi Thread Controller
@@ -114,6 +114,10 @@ const Main = ({
             border = 12;
             break;
           }
+          case MENU_TYPES.PIXEL_50: {
+            border = 25;
+            break;
+          }
           case MENU_TYPES.ZOOM_1: {
             initialize(1);
             break;
@@ -147,10 +151,10 @@ const Main = ({
       });
     };
 
-    initialize(2);
+    initialize(4);
   }, [setMouseEventCallback, setUpdater, setMenuSelectCallback]);
 
-  return <canvas id='WEB_GL_CANVAS' />;
+  return <canvas id='WEB_GL_CANVAS' className='noselect' />;
 };
 
 export default Main;

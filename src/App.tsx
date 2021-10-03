@@ -21,6 +21,7 @@ const App = () => {
     const stats: Stats = new Stats();
     stats.dom.style.right = '0';
     stats.dom.style.removeProperty('left');
+    stats.dom.className += 'noselect';
     dom.appendChild(stats.dom);
     disableBodyScroll(dom);
 
