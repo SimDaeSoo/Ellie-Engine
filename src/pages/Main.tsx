@@ -8,7 +8,7 @@ import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
-let border = 0;
+let border = 12;
 
 const Main = ({
   setMouseEventCallback,
@@ -108,6 +108,10 @@ const Main = ({
           }
           case MENU_TYPES.PIXEL_15: {
             border = 7;
+            break;
+          }
+          case MENU_TYPES.PIXEL_25: {
+            border = 12;
             break;
           }
           case MENU_TYPES.ZOOM_1: {

@@ -25,7 +25,9 @@ class Map {
     id: number,
     threadQuantity: number,
     duration: number = 10
-  ): void {}
+  ): void {
+    // TEST
+  }
 
   public clear(id: number, threadQuantity: number): void {
     for (

@@ -42,7 +42,7 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
   const [selectedMenus, setSelectedMenus] = useState([
     'Play',
     'Dirt Block',
-    '1px',
+    '25px',
     '1x',
     '',
   ]);
