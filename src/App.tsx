@@ -1,3 +1,4 @@
+import { disableBodyScroll } from 'body-scroll-lock';
 import { useEffect } from 'react';
 import { Container } from 'rsuite';
 import Stats from 'stats.js';
@@ -20,7 +21,9 @@ const App = () => {
     const stats: Stats = new Stats();
     stats.dom.style.right = '0';
     stats.dom.style.removeProperty('left');
+    stats.dom.className += 'noselect';
     dom.appendChild(stats.dom);
+    disableBodyScroll(dom);
 
     setController();
 

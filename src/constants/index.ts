@@ -1,8 +1,11 @@
 import { IconNames } from 'rsuite/lib/Icon';
 
-const TILE_BYTES = 4;
+const TILE_TYPE_BYTES = 4;
+const TILE_VALUE_BYTES = 4;
 enum WORKER_COMMAND {
-  CLEAR_MAP,
+  MAP_CLEAR,
+  MAP_INITIALIZE,
+  MAP_PROCESSING,
 }
 enum WORKER_CALLBACK_COMMAND {
   INITIALIZED,
@@ -12,6 +15,7 @@ enum WORKER_CALLBACK_COMMAND {
 enum MENU_TYPES {
   EMPTY,
   ERASER,
+  STONE,
   DIRT,
   SAND,
   WATER,
@@ -27,6 +31,8 @@ enum MENU_TYPES {
   PIXEL_5,
   PIXEL_9,
   PIXEL_15,
+  PIXEL_25,
+  PIXEL_50,
   ZOOM_1,
   ZOOM_2,
   ZOOM_4,
@@ -34,12 +40,22 @@ enum MENU_TYPES {
 }
 
 const BLOCKS: { [key: string]: [number, number, number] } = {
-  DIRT: [112, 84, 62],
-  SAND: [255, 229, 124],
+  STONE: [65, 65, 67],
+  DIRT: [62, 44, 32],
+  SAND: [155, 129, 74],
   WATER: [15, 82, 186],
-  LAVA: [247, 104, 6],
+  LAVA: [247, 80, 6],
   EMPTY: [0, 0, 0],
 };
+
+enum BLOCK_TYPES {
+  STONE,
+  DIRT,
+  SAND,
+  WATER,
+  LAVA,
+  EMPTY,
+}
 
 const NAVIGATIONS: Array<{
   icon: IconNames;
@@ -70,6 +86,10 @@ const NAVIGATIONS: Array<{
       {
         name: 'Dirt Block',
         type: MENU_TYPES.DIRT,
+      },
+      {
+        name: 'Stone Block',
+        type: MENU_TYPES.STONE,
       },
       {
         name: 'Sand Block',
@@ -114,6 +134,14 @@ const NAVIGATIONS: Array<{
         name: '15px',
         type: MENU_TYPES.PIXEL_15,
       },
+      {
+        name: '25px',
+        type: MENU_TYPES.PIXEL_25,
+      },
+      {
+        name: '50px',
+        type: MENU_TYPES.PIXEL_50,
+      },
     ],
   },
   {
@@ -156,11 +184,23 @@ const NAVIGATIONS: Array<{
   },
 ];
 
+const BLOCK_TYPE_LOOKUP: { [r: number]: BLOCK_TYPES } = {
+  65: BLOCK_TYPES.STONE,
+  62: BLOCK_TYPES.DIRT,
+  155: BLOCK_TYPES.SAND,
+  15: BLOCK_TYPES.WATER,
+  247: BLOCK_TYPES.LAVA,
+  0: BLOCK_TYPES.EMPTY,
+};
+
 export {
-  TILE_BYTES,
+  TILE_TYPE_BYTES,
+  TILE_VALUE_BYTES,
   WORKER_COMMAND,
   WORKER_CALLBACK_COMMAND,
   BLOCKS,
   MENU_TYPES,
   NAVIGATIONS,
+  BLOCK_TYPES,
+  BLOCK_TYPE_LOOKUP,
 };
