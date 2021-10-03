@@ -34,7 +34,91 @@ class Map {
   }
 
   public update(): void {
-    this.simulator.next();
+    // this.simulator.next();
+
+    for (
+      let i = this.totalWidth * this.totalHeight - 1 - this.id;
+      i >= 0;
+      i -= this.threadQuantity
+    ) {
+      const x = i % this.totalWidth;
+      const y = Math.floor(i / this.totalWidth);
+      const type = this.getBlockType(x, y);
+      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+
+      const properties = this.getTileProperties(x, y);
+
+      if (y + 1 < this.totalHeight) {
+        const targetBlockType = this.getBlockType(x, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth) {
+        const targetBlockType = this.getBlockType(x + 1, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x + 1, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x + 1, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (y + 1 < this.totalHeight && x - 1 >= 0) {
+        const targetBlockType = this.getBlockType(x - 1, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x - 1, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x - 1, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (
+        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
+        x + 1 < this.totalWidth
+      ) {
+        const targetBlockType = this.getBlockType(x + 1, y);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x + 1, y, ...properties);
+          continue;
+        }
+      }
+      if (
+        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
+        x - 1 >= 0
+      ) {
+        const targetBlockType = this.getBlockType(x - 1, y);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x - 1, y, ...properties);
+          continue;
+        }
+      }
+    }
   }
 
   public clear(id: number, threadQuantity: number): void {
@@ -187,126 +271,18 @@ class Map {
   }
 
   private *stepGenerator(limitDuration: number, accumulateLimit: number) {
-    let step = this.simulateGenerator(
-      this.id,
-      this.threadQuantity,
-      limitDuration,
-      accumulateLimit
-    );
+    let step = this.simulateGenerator(limitDuration, accumulateLimit);
 
     while (true) {
       if (step.next(Date.now()).done) {
-        step = this.simulateGenerator(
-          this.id,
-          this.threadQuantity,
-          limitDuration,
-          accumulateLimit
-        );
+        step = this.simulateGenerator(limitDuration, accumulateLimit);
       }
       yield;
     }
   }
 
-  private *simulateGenerator(
-    id: number,
-    threadQuantity: number,
-    limitDuration: number,
-    accumulateLimit: number
-  ) {
-    let accumulate = 0;
-    let begin = Date.now();
-
-    for (
-      let i = this.totalWidth * this.totalHeight - 1 - id;
-      i >= 0;
-      i -= threadQuantity
-    ) {
-      if (++accumulate >= accumulateLimit) {
-        accumulate = 0;
-        if (Date.now() - begin >= limitDuration) {
-          begin = yield;
-        }
-      }
-
-      const x = i % this.totalWidth;
-      const y = Math.floor(i / this.totalWidth);
-      const type = this.getBlockType(x, y);
-      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
-
-      const properties = this.getTileProperties(x, y);
-
-      if (y + 1 < this.totalHeight) {
-        const targetBlockType = this.getBlockType(x, y + 1);
-        if (targetBlockType === BLOCK_TYPES.EMPTY) {
-          this.setTileProperties(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x, y + 1, ...properties);
-          continue;
-        } else if (
-          type !== BLOCK_TYPES.WATER &&
-          targetBlockType === BLOCK_TYPES.WATER
-        ) {
-          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
-          this.setTileProperties(x, y + 1, ...properties);
-          continue;
-        }
-      }
-
-      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth) {
-        const targetBlockType = this.getBlockType(x + 1, y + 1);
-        if (targetBlockType === BLOCK_TYPES.EMPTY) {
-          this.setTileProperties(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x + 1, y + 1, ...properties);
-          continue;
-        } else if (
-          type !== BLOCK_TYPES.WATER &&
-          targetBlockType === BLOCK_TYPES.WATER
-        ) {
-          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
-          this.setTileProperties(x + 1, y + 1, ...properties);
-          continue;
-        }
-      }
-
-      if (y + 1 < this.totalHeight && x - 1 >= 0) {
-        const targetBlockType = this.getBlockType(x - 1, y + 1);
-        if (targetBlockType === BLOCK_TYPES.EMPTY) {
-          this.setTileProperties(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x - 1, y + 1, ...properties);
-          continue;
-        } else if (
-          type !== BLOCK_TYPES.WATER &&
-          targetBlockType === BLOCK_TYPES.WATER
-        ) {
-          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
-          this.setTileProperties(x - 1, y + 1, ...properties);
-          continue;
-        }
-      }
-
-      if (
-        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
-        x + 1 < this.totalWidth
-      ) {
-        const targetBlockType = this.getBlockType(x + 1, y);
-        if (targetBlockType === BLOCK_TYPES.EMPTY) {
-          this.setTileProperties(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x + 1, y, ...properties);
-          continue;
-        }
-      }
-      if (
-        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
-        x - 1 >= 0
-      ) {
-        const targetBlockType = this.getBlockType(x - 1, y);
-        if (targetBlockType === BLOCK_TYPES.EMPTY) {
-          this.setTileProperties(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x - 1, y, ...properties);
-          continue;
-        }
-      }
-    }
-
+  private *simulateGenerator(_limitDuration: number, _accumulateLimit: number) {
+    yield;
     return;
   }
 
