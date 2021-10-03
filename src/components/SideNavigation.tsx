@@ -43,7 +43,7 @@ const SideNavigation = ({ isWide }: { isWide: boolean }) => {
     'Play',
     'Dirt Block',
     '25px',
-    '1x',
+    '2x',
     '',
   ]);
   const [toggle, setToggle] = useState(isWide ? false : true);

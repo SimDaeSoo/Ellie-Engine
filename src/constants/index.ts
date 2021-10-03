@@ -47,6 +47,15 @@ const BLOCKS: { [key: string]: [number, number, number] } = {
   EMPTY: [0, 0, 0],
 };
 
+enum BLOCK_TYPES {
+  STONE,
+  DIRT,
+  SAND,
+  WATER,
+  LAVA,
+  EMPTY,
+}
+
 const NAVIGATIONS: Array<{
   icon: IconNames;
   name: string;
@@ -170,6 +179,15 @@ const NAVIGATIONS: Array<{
   },
 ];
 
+const BLOCK_TYPE_LOOKUP: { [r: number]: BLOCK_TYPES } = {
+  65: BLOCK_TYPES.STONE,
+  62: BLOCK_TYPES.DIRT,
+  155: BLOCK_TYPES.SAND,
+  15: BLOCK_TYPES.WATER,
+  247: BLOCK_TYPES.LAVA,
+  0: BLOCK_TYPES.EMPTY,
+};
+
 export {
   TILE_TYPE_BYTES,
   TILE_VALUE_BYTES,
@@ -178,4 +196,6 @@ export {
   BLOCKS,
   MENU_TYPES,
   NAVIGATIONS,
+  BLOCK_TYPES,
+  BLOCK_TYPE_LOOKUP,
 };

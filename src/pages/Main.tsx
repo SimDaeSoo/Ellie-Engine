@@ -147,7 +147,7 @@ const Main = ({
       });
     };
 
-    initialize(1);
+    initialize(2);
   }, [setMouseEventCallback, setUpdater, setMenuSelectCallback]);
 
   return <canvas id='WEB_GL_CANVAS' />;

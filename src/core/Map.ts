@@ -1,4 +1,10 @@
-import { TILE_TYPE_BYTES, TILE_VALUE_BYTES } from '../constants';
+import {
+  BLOCKS,
+  BLOCK_TYPES,
+  BLOCK_TYPE_LOOKUP,
+  TILE_TYPE_BYTES,
+  TILE_VALUE_BYTES,
+} from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
@@ -26,7 +32,90 @@ class Map {
     threadQuantity: number,
     duration: number = 10
   ): void {
-    // Some Logic...
+    // TEST...
+    for (
+      let i = this.totalWidth * this.totalHeight - 1 - id;
+      i >= 0;
+      i -= threadQuantity
+    ) {
+      const x = i % this.totalWidth;
+      const y = Math.floor(i / this.totalWidth);
+      const type = this.getBlockType(x, y);
+      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+
+      const properties = this.getTileProperties(x, y);
+
+      if (y + 1 < this.totalHeight) {
+        const targetBlockType = this.getBlockType(x, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth) {
+        const targetBlockType = this.getBlockType(x + 1, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x + 1, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x + 1, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (y + 1 < this.totalHeight && x - 1 >= 0) {
+        const targetBlockType = this.getBlockType(x - 1, y + 1);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x - 1, y + 1, ...properties);
+          continue;
+        } else if (
+          type !== BLOCK_TYPES.WATER &&
+          targetBlockType === BLOCK_TYPES.WATER
+        ) {
+          this.setTileProperties(x, y, ...BLOCKS.WATER, 255);
+          this.setTileProperties(x - 1, y + 1, ...properties);
+          continue;
+        }
+      }
+
+      if (
+        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
+        x + 1 < this.totalWidth
+      ) {
+        const targetBlockType = this.getBlockType(x + 1, y);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x + 1, y, ...properties);
+          continue;
+        }
+      }
+      if (
+        (type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA) &&
+        x - 1 >= 0
+      ) {
+        const targetBlockType = this.getBlockType(x - 1, y);
+        if (targetBlockType === BLOCK_TYPES.EMPTY) {
+          this.setTileProperties(x, y, 0, 0, 0, 0);
+          this.setTileProperties(x - 1, y, ...properties);
+          continue;
+        }
+      }
+    }
   }
 
   public clear(id: number, threadQuantity: number): void {
@@ -329,6 +418,28 @@ class Map {
     ] = value;
   }
 
+  public getTileProperties(
+    x: number,
+    y: number
+  ): [number, number, number, number] {
+    const index =
+      ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
+    return [
+      this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 0],
+      this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 1],
+      this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 2],
+      this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 3],
+    ];
+  }
+
+  public getBlockType(x: number, y: number): BLOCK_TYPES {
+    const index =
+      ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
+    return BLOCK_TYPE_LOOKUP[
+      this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 0]
+    ];
+  }
+
   public setTileProperties(
     x: number,
     y: number,
@@ -337,19 +448,12 @@ class Map {
     b: number,
     a: number
   ): void {
-    const index = (y % this.height) * this.width + (x % this.width);
-    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][
-      index * TILE_TYPE_BYTES + 0
-    ] = r;
-    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][
-      index * TILE_TYPE_BYTES + 1
-    ] = g;
-    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][
-      index * TILE_TYPE_BYTES + 2
-    ] = b;
-    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][
-      index * TILE_TYPE_BYTES + 3
-    ] = a;
+    const index =
+      ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
+    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 0] = r;
+    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 1] = g;
+    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 2] = b;
+    this.tileTypeProperties[this.lookupY[y]][this.lookupX[x]][index + 3] = a;
   }
 }
 

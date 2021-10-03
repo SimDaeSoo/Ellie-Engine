@@ -132,12 +132,7 @@ const fillTile = (
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileProperties(
-            x + offsetX,
-            y + offsetY,
-            ...BLOCKS.WATER,
-            Math.floor(32 + Math.random() * 224)
-          );
+          map.setTileProperties(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
           break;
         }
         case MENU_TYPES.LAVA: {
