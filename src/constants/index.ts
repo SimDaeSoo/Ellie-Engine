@@ -3,7 +3,6 @@ import { IconNames } from 'rsuite/lib/Icon';
 const TILE_TYPE_BYTES = 4;
 const TILE_VALUE_BYTES = 4;
 enum WORKER_COMMAND {
-  MAP_CLEAR,
   MAP_INITIALIZE,
   MAP_PROCESSING,
 }
@@ -22,7 +21,6 @@ enum MENU_TYPES {
   LAVA,
   STATIC_LIGHT,
   MOVING_LIGHT,
-  CLEAR,
   CAVE_GENERATE,
   PLAY,
   PAUSE,
@@ -184,17 +182,6 @@ const NAVIGATIONS: Array<{
       {
         name: '8x',
         type: MENU_TYPES.ZOOM_8,
-      },
-    ],
-  },
-  {
-    icon: 'setting',
-    name: 'Utils',
-    type: MENU_TYPES.EMPTY,
-    subNavigations: [
-      {
-        name: 'Clear',
-        type: MENU_TYPES.CLEAR,
       },
     ],
   },

@@ -21,10 +21,6 @@ async function run(message: Message): Promise<void> {
       store.map.import(mapData);
       break;
     }
-    case WORKER_COMMAND.MAP_CLEAR: {
-      store.map.clear(id, threadQuantity);
-      break;
-    }
     case WORKER_COMMAND.MAP_PROCESSING: {
       store.map.update(id, threadQuantity, 1);
       break;

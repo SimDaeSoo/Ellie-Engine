@@ -68,10 +68,6 @@ const Main = ({
 
       setMenuSelectCallback((type: MENU_TYPES) => {
         switch (type) {
-          case MENU_TYPES.CLEAR: {
-            threadController.run(WORKER_COMMAND.MAP_CLEAR, {});
-            break;
-          }
           case MENU_TYPES.PLAY: {
             paused = false;
             break;
