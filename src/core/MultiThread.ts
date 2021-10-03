@@ -20,7 +20,11 @@ class MultiThread {
     if (!this.sharedArrayBufferSupport) return;
     await new Promise<void>((resolve) => {
       let initialized: number = 0;
-      const messageCallback = ({ data }: { data: { command: WORKER_CALLBACK_COMMAND; data: any } }) => {
+      const messageCallback = ({
+        data,
+      }: {
+        data: { command: WORKER_CALLBACK_COMMAND; data: any };
+      }) => {
         const { command } = data;
         if (command === WORKER_CALLBACK_COMMAND.INITIALIZED) initialized++;
         if (initialized === this.threadQuantity) resolve();
@@ -45,7 +49,11 @@ class MultiThread {
     if (this.sharedArrayBufferSupport) {
       await new Promise<void>((resolve) => {
         let running: number = this.threadQuantity;
-        const messageCallback = ({ data }: { data: { command: WORKER_CALLBACK_COMMAND; data: any } }) => {
+        const messageCallback = ({
+          data,
+        }: {
+          data: { command: WORKER_CALLBACK_COMMAND; data: any };
+        }) => {
           const { command } = data;
           if (command === WORKER_CALLBACK_COMMAND.DONE) running--;
           if (running === 0) resolve();

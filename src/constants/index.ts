@@ -26,30 +26,17 @@ enum MENU_TYPES {
   CAVE_GENERATE,
   PLAY,
   PAUSE,
+  PIXEL_1,
   PIXEL_3,
+  PIXEL_5,
   PIXEL_9,
   PIXEL_15,
   PIXEL_25,
-  PIXEL_40,
-  PIXEL_60,
-  PIXEL_100,
+  PIXEL_50,
   ZOOM_1,
   ZOOM_2,
-  ZOOM_3,
   ZOOM_4,
-  ZOOM_5,
-  ZOOM_6,
-  ZOOM_7,
   ZOOM_8,
-}
-
-enum BLOCK_TYPES {
-  STONE,
-  DIRT,
-  SAND,
-  WATER,
-  LAVA,
-  EMPTY,
 }
 
 const BLOCKS: { [key: string]: [number, number, number] } = {
@@ -60,6 +47,15 @@ const BLOCKS: { [key: string]: [number, number, number] } = {
   LAVA: [247, 80, 6],
   EMPTY: [0, 0, 0],
 };
+
+enum BLOCK_TYPES {
+  STONE,
+  DIRT,
+  SAND,
+  WATER,
+  LAVA,
+  EMPTY,
+}
 
 const NAVIGATIONS: Array<{
   icon: IconNames;
@@ -119,8 +115,16 @@ const NAVIGATIONS: Array<{
     type: MENU_TYPES.EMPTY,
     subNavigations: [
       {
+        name: '1px',
+        type: MENU_TYPES.PIXEL_1,
+      },
+      {
         name: '3px',
         type: MENU_TYPES.PIXEL_3,
+      },
+      {
+        name: '5px',
+        type: MENU_TYPES.PIXEL_5,
       },
       {
         name: '9px',
@@ -135,16 +139,8 @@ const NAVIGATIONS: Array<{
         type: MENU_TYPES.PIXEL_25,
       },
       {
-        name: '40px',
-        type: MENU_TYPES.PIXEL_40,
-      },
-      {
-        name: '60px',
-        type: MENU_TYPES.PIXEL_60,
-      },
-      {
-        name: '100px',
-        type: MENU_TYPES.PIXEL_100,
+        name: '50px',
+        type: MENU_TYPES.PIXEL_50,
       },
     ],
   },
@@ -162,24 +158,8 @@ const NAVIGATIONS: Array<{
         type: MENU_TYPES.ZOOM_2,
       },
       {
-        name: '3x',
-        type: MENU_TYPES.ZOOM_3,
-      },
-      {
         name: '4x',
         type: MENU_TYPES.ZOOM_4,
-      },
-      {
-        name: '5x',
-        type: MENU_TYPES.ZOOM_5,
-      },
-      {
-        name: '6x',
-        type: MENU_TYPES.ZOOM_6,
-      },
-      {
-        name: '7x',
-        type: MENU_TYPES.ZOOM_7,
       },
       {
         name: '8x',
@@ -193,6 +173,10 @@ const NAVIGATIONS: Array<{
     type: MENU_TYPES.EMPTY,
     subNavigations: [
       {
+        name: 'Cave Generate',
+        type: MENU_TYPES.CAVE_GENERATE,
+      },
+      {
         name: 'Clear',
         type: MENU_TYPES.CLEAR,
       },
@@ -200,4 +184,23 @@ const NAVIGATIONS: Array<{
   },
 ];
 
-export { TILE_TYPE_BYTES, TILE_VALUE_BYTES, WORKER_COMMAND, WORKER_CALLBACK_COMMAND, BLOCKS, MENU_TYPES, NAVIGATIONS, BLOCK_TYPES };
+const BLOCK_TYPE_LOOKUP: { [r: number]: BLOCK_TYPES } = {
+  65: BLOCK_TYPES.STONE,
+  62: BLOCK_TYPES.DIRT,
+  155: BLOCK_TYPES.SAND,
+  15: BLOCK_TYPES.WATER,
+  247: BLOCK_TYPES.LAVA,
+  0: BLOCK_TYPES.EMPTY,
+};
+
+export {
+  TILE_TYPE_BYTES,
+  TILE_VALUE_BYTES,
+  WORKER_COMMAND,
+  WORKER_CALLBACK_COMMAND,
+  BLOCKS,
+  MENU_TYPES,
+  NAVIGATIONS,
+  BLOCK_TYPES,
+  BLOCK_TYPE_LOOKUP,
+};
