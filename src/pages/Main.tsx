@@ -8,7 +8,7 @@ import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
-let border = 12;
+let border = 4;
 
 const Main = ({
   setMouseEventCallback,

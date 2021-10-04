@@ -185,38 +185,10 @@ class Map {
   }
 
   public updateState(): void {
-    let x, y, tile, value, type, isMovable;
+    let x, y;
     for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
       x = i % this.totalWidth;
       y = Math.floor(i / this.totalWidth);
-      tile = this.getTile(x, y);
-      value = this.getTileValue(x, y);
-      type = this.lookupTileType(tile);
-
-      if (type === BLOCK_TYPES.EMPTY) continue;
-
-      // Some Logic...
-      isMovable = type !== BLOCK_TYPES.STONE;
-
-      if (!isMovable) {
-        this.setNextTile(x, y, tile);
-        this.setNextTileValue(x, y, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTile(x, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setNextTile(x, y + 1, tile);
-        this.setNextTileValue(x, y + 1, value);
-      } else if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTile(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setNextTile(x + 1, y + 1, tile);
-        this.setNextTileValue(x + 1, y + 1, value);
-      } else if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTile(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setNextTile(x - 1, y + 1, tile);
-        this.setNextTileValue(x - 1, y + 1, value);
-      } else {
-        this.setNextTile(x, y, tile);
-        this.setNextTileValue(x, y, value);
-      }
     }
   }
 
@@ -225,11 +197,6 @@ class Map {
     for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
       x = i % this.totalWidth;
       y = Math.floor(i / this.totalWidth);
-
-      this.setTile(x, y, this.getNextTile(x, y));
-      this.setTileValue(x, y, this.getNextTileValue(x, y));
-      this.setNextTile(x, y, 0);
-      this.setNextTileValue(x, y, 0);
     }
   }
 
@@ -241,7 +208,6 @@ class Map {
     if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
     if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
     if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
-    // return BLOCK_TYPES.EMPTY;
     throw new Error(
       `undefined tile type ${value} / 0b${value
         .toString(2)
@@ -423,6 +389,14 @@ class Map {
     this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
   }
 
+  public plusTileValue(x: number, y: number, value: number): void {
+    this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] += value;
+  }
+
+  public minusTileValue(x: number, y: number, value: number): void {
+    this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] -= value;
+  }
+
   public getNextTile(x: number, y: number): number {
     return this.nextTileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
   }
@@ -437,6 +411,14 @@ class Map {
 
   public setNextTileValue(x: number, y: number, value: number): void {
     this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
+  }
+
+  public plusNextTileValue(x: number, y: number, value: number): void {
+    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] += value;
+  }
+
+  public minusNextTileValue(x: number, y: number, value: number): void {
+    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] -= value;
   }
 
   public getTileRgba(x: number, y: number): [number, number, number, number] {
