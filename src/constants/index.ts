@@ -154,14 +154,14 @@ const NAVIGATIONS: Array<{
         name: '40px',
         type: MENU_TYPES.PIXEL_40,
       },
-      // {
-      //   name: '60px',
-      //   type: MENU_TYPES.PIXEL_60,
-      // },
-      // {
-      //   name: '100px',
-      //   type: MENU_TYPES.PIXEL_100,
-      // },
+      {
+        name: '60px',
+        type: MENU_TYPES.PIXEL_60,
+      },
+      {
+        name: '100px',
+        type: MENU_TYPES.PIXEL_100,
+      },
     ],
   },
   {
@@ -169,14 +169,14 @@ const NAVIGATIONS: Array<{
     name: 'Zoom',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
-      // {
-      //   name: '1x',
-      //   type: MENU_TYPES.ZOOM_1,
-      // },
-      // {
-      //   name: '2x',
-      //   type: MENU_TYPES.ZOOM_2,
-      // },
+      {
+        name: '1x',
+        type: MENU_TYPES.ZOOM_1,
+      },
+      {
+        name: '2x',
+        type: MENU_TYPES.ZOOM_2,
+      },
       {
         name: '3x',
         type: MENU_TYPES.ZOOM_3,

@@ -185,10 +185,55 @@ class Map {
   }
 
   public updateState(): void {
-    let x, y;
+    let x, y, tile, value, type, isMovable, isLiquid;
     for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
       x = i % this.totalWidth;
       y = Math.floor(i / this.totalWidth);
+      tile = this.getTile(x, y);
+      value = this.getTileValue(x, y);
+      type = this.lookupTileType(tile);
+
+      if (type === BLOCK_TYPES.EMPTY) continue;
+
+      // Some Logic...
+      isMovable = type !== BLOCK_TYPES.STONE;
+      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA || type === BLOCK_TYPES.ACID;
+
+      if (!isMovable) {
+        this.setNextTile(x, y, tile);
+        this.setNextTileValue(x, y, value);
+        continue;
+      }
+
+      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTile(x, y + 1)) === BLOCK_TYPES.EMPTY && this.getNextTile(x, y + 1) === 0) {
+        this.setNextTile(x, y + 1, tile);
+        this.setNextTileValue(x, y + 1, value);
+      } else if (
+        y + 1 < this.totalHeight &&
+        x + 1 < this.totalWidth &&
+        this.lookupTileType(this.getTile(x + 1, y + 1)) === BLOCK_TYPES.EMPTY &&
+        this.getNextTile(x + 1, y + 1) === 0
+      ) {
+        this.setNextTile(x + 1, y + 1, tile);
+        this.setNextTileValue(x + 1, y + 1, value);
+      } else if (
+        y + 1 < this.totalHeight &&
+        x - 1 >= 0 &&
+        this.lookupTileType(this.getTile(x - 1, y + 1)) === BLOCK_TYPES.EMPTY &&
+        this.getNextTile(x - 1, y + 1) === 0
+      ) {
+        this.setNextTile(x - 1, y + 1, tile);
+        this.setNextTileValue(x - 1, y + 1, value);
+      } else if (isLiquid && x + 1 < this.totalWidth && this.lookupTileType(this.getTile(x + 1, y)) === BLOCK_TYPES.EMPTY && this.getNextTile(x + 1, y) === 0) {
+        this.setNextTile(x + 1, y, tile);
+        this.setNextTileValue(x + 1, y, value);
+      } else if (isLiquid && x - 1 >= 0 && this.lookupTileType(this.getTile(x - 1, y)) === BLOCK_TYPES.EMPTY && this.getNextTile(x - 1, y) === 0) {
+        this.setNextTile(x - 1, y, tile);
+        this.setNextTileValue(x - 1, y, value);
+      } else {
+        this.setNextTile(x, y, tile);
+        this.setNextTileValue(x, y, value);
+      }
     }
   }
 
@@ -197,6 +242,11 @@ class Map {
     for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
       x = i % this.totalWidth;
       y = Math.floor(i / this.totalWidth);
+
+      this.setTile(x, y, this.getNextTile(x, y));
+      this.setTileValue(x, y, this.getNextTileValue(x, y));
+      this.setNextTile(x, y, 0);
+      this.setNextTileValue(x, y, 0);
     }
   }
 
@@ -208,14 +258,15 @@ class Map {
     if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
     if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
     if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
-    throw new Error(
-      `undefined tile type ${value} / 0b${value
-        .toString(2)
-        .padStart(32, '0')
-        .split('')
-        .map((v, i) => (i < 8 ? 0 : v))
-        .join('')}`
-    );
+    return BLOCK_TYPES.EMPTY;
+    // throw new Error(
+    //   `undefined tile type ${value} / 0b${value
+    //     .toString(2)
+    //     .padStart(32, '0')
+    //     .split('')
+    //     .map((v, i) => (i < 8 ? 0 : v))
+    //     .join('')}`
+    // );
   }
 
   /* Getters, Setters */
