@@ -99,11 +99,15 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, 255);
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.LAVA: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.LAVA, Math.floor(32 + Math.random() * 224));
+          break;
+        }
+        case MENU_TYPES.ACID: {
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.ACID, Math.floor(32 + Math.random() * 224));
           break;
         }
         case MENU_TYPES.ERASER: {
