@@ -1,4 +1,4 @@
-import { BLOCK_TYPES, TILE_TYPE_BYTES } from '../constants';
+import { BLOCK_TYPES, BLOCK_TYPE_VALUES, TILE_TYPE_BYTES } from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
@@ -30,15 +30,17 @@ class Map {
     let value;
     let type;
     let isLiquid;
+    let isMovable;
 
     for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
       x = i % this.totalWidth;
       y = Math.floor(i / this.totalWidth);
       value = this.getTileValue(x, y);
       type = this.lookupTileType(value);
-      if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+      isMovable = type !== BLOCK_TYPES.EMPTY && type !== BLOCK_TYPES.STONE;
+      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA || type === BLOCK_TYPES.ACID;
 
-      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA;
+      if (!isMovable) continue;
 
       if (y + 1 < this.totalHeight && this.lookupTileType(this.getTileValue(x, y + 1)) === BLOCK_TYPES.EMPTY) {
         this.setTileValue(x, y, 0);
@@ -279,14 +281,22 @@ class Map {
   }
 
   public lookupTileType(value: number): BLOCK_TYPES {
-    if (value === 0) return BLOCK_TYPES.EMPTY;
-    if ((value & 0b00000000001000000010110000111110) === 0b00000000001000000010110000111110) return BLOCK_TYPES.DIRT;
-    if ((value & 0b00000000010010101000000110011011) === 0b00000000010010101000000110011011) return BLOCK_TYPES.SAND;
-    if ((value & 0b00000000101110100101001000001111) === 0b00000000101110100101001000001111) return BLOCK_TYPES.WATER;
-    if ((value & 0b00000000000001100101000011110111) === 0b00000000000001100101000011110111) return BLOCK_TYPES.LAVA;
-    if ((value & 0b00000000010000110100000101000001) === 0b00000000010000110100000101000001) return BLOCK_TYPES.STONE;
-    if ((value & 0b00000000111111111111111111111111) === 0) return BLOCK_TYPES.EMPTY;
-    throw new Error(`undefined tile type ${value}`);
+    if ((value & BLOCK_TYPE_VALUES.EMPTY) === 0) return BLOCK_TYPES.EMPTY;
+    if ((value & BLOCK_TYPE_VALUES.DIRT) === BLOCK_TYPE_VALUES.DIRT) return BLOCK_TYPES.DIRT;
+    if ((value & BLOCK_TYPE_VALUES.SAND) === BLOCK_TYPE_VALUES.SAND) return BLOCK_TYPES.SAND;
+    if ((value & BLOCK_TYPE_VALUES.WATER) === BLOCK_TYPE_VALUES.WATER) return BLOCK_TYPES.WATER;
+    if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
+    if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
+    if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
+
+    throw new Error(
+      `undefined tile type ${value} / 0b${value
+        .toString(2)
+        .padStart(32, '0')
+        .split('')
+        .map((v, i) => (i < 8 ? 0 : v))
+        .join('')}`
+    );
   }
 
   public getTileValue(x: number, y: number): number {
