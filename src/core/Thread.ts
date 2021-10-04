@@ -21,8 +21,12 @@ async function run(message: Message): Promise<void> {
       store.map.import(mapData);
       break;
     }
-    case WORKER_COMMAND.MAP_PROCESSING: {
-      store.map.update(id, threadQuantity, 1);
+    case WORKER_COMMAND.MAP_UPDATE_STATE: {
+      store.map.updateState(id, threadQuantity, 1);
+      break;
+    }
+    case WORKER_COMMAND.MAP_APPLY_STATE: {
+      store.map.applyState(id, threadQuantity, 1);
       break;
     }
     default: {

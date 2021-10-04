@@ -41,7 +41,7 @@ class MultiThread {
     }
   }
 
-  public async run(command: WORKER_COMMAND, data: any): Promise<void> {
+  public async run(command: WORKER_COMMAND, data: any = {}): Promise<void> {
     if (this.sharedArrayBufferSupport) {
       await new Promise<void>((resolve) => {
         let running: number = this.threadQuantity;

@@ -8,7 +8,7 @@ import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
-let border = 12;
+let border = 4;
 
 const Main = ({
   setMouseEventCallback,
@@ -56,9 +56,8 @@ const Main = ({
 
       setUpdater(async () => {
         if (!paused) {
-          await threadController.run(WORKER_COMMAND.MAP_PROCESSING, {
-            map: map.export(),
-          });
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE);
+          await threadController.run(WORKER_COMMAND.MAP_APPLY_STATE);
         }
 
         // Render
