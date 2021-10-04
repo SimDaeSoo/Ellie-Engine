@@ -1,12 +1,20 @@
-import { BLOCK_TYPES, BLOCK_TYPE_VALUES, TILE_TYPE_BYTES } from '../constants';
+import { BLOCK_TYPES, BLOCK_TYPE_VALUES, TILE_TYPE_BYTES, TILE_VALUE_BYTES } from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
   private id: number;
   private threadQuantity: number;
-  private _tileBufferGrid?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
   private _tileRgbaView?: Array<Array<Uint8Array>>;
-  private _tileValueView?: Array<Array<Uint32Array>>;
+
+  private _tileBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+  private _tileView?: Array<Array<Uint32Array>>;
+  private _tileValueBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+  private _tileValueView?: Array<Array<Float32Array>>;
+
+  private _nextTileBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+  private _nextTileView?: Array<Array<Uint32Array>>;
+  private _nextTileValueBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+  private _nextTileValueView?: Array<Array<Float32Array>>;
 
   private _width?: number;
   private _height?: number;
@@ -23,70 +31,7 @@ class Map {
     this.threadQuantity = threadQuantity;
   }
 
-  public update(): void {
-    // this.simulator.next();
-    let x;
-    let y;
-    let value;
-    let type;
-    let isLiquid;
-    let isMovable;
-
-    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
-      x = i % this.totalWidth;
-      y = Math.floor(i / this.totalWidth);
-      value = this.getTileValue(x, y);
-      type = this.lookupTileType(value);
-      isMovable = type !== BLOCK_TYPES.EMPTY && type !== BLOCK_TYPES.STONE;
-      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA || type === BLOCK_TYPES.ACID;
-
-      if (!isMovable) continue;
-
-      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTileValue(x, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x, y + 1, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTileValue(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y + 1, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTileValue(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y + 1, value);
-        continue;
-      }
-
-      if (x + 1 < this.totalWidth && isLiquid && this.lookupTileType(this.getTileValue(x + 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x + 1, y, value);
-        continue;
-      }
-
-      if (x - 1 >= 0 && isLiquid && this.lookupTileType(this.getTileValue(x - 1, y)) === BLOCK_TYPES.EMPTY) {
-        this.setTileValue(x, y, 0);
-        this.setTileValue(x - 1, y, value);
-        continue;
-      }
-    }
-  }
-
-  public clear(id: number, threadQuantity: number): void {
-    for (let i = id; i < this.totalWidth * this.totalHeight; i += threadQuantity) {
-      const x = i % this.totalWidth;
-      const y = Math.floor(i / this.totalWidth);
-
-      this.setTileValue(x, y, 0);
-    }
-  }
-
   public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1): void {
-    this._tileBufferGrid = [];
-    this._tileRgbaView = [];
-    this._tileValueView = [];
     this._x = x;
     this._y = y;
     this._width = width;
@@ -96,21 +41,51 @@ class Map {
     this._splitQuantity = splitQuantity;
     this._lookupX = new Array(this.totalWidth);
     this._lookupY = new Array(this.totalHeight);
+    this._tileRgbaView = [];
+
+    this._tileBuffer = [];
+    this._tileView = [];
+    this._tileValueBuffer = [];
+    this._tileValueView = [];
+
+    this._nextTileBuffer = [];
+    this._nextTileView = [];
+    this._nextTileValueBuffer = [];
+    this._nextTileValueView = [];
 
     const sharedArrayBufferSupported = isSharedArrayBufferSupport();
     for (let y = 0; y < this.splitQuantity; y++) {
-      this._tileBufferGrid.push([]);
       this._tileRgbaView.push([]);
+
+      this._tileBuffer.push([]);
+      this._tileView.push([]);
+      this._tileValueBuffer.push([]);
       this._tileValueView.push([]);
+
+      this._nextTileBuffer.push([]);
+      this._nextTileView.push([]);
+      this._nextTileValueBuffer.push([]);
+      this._nextTileValueView.push([]);
 
       for (let x = 0; x < this.splitQuantity; x++) {
         if (!sharedArrayBufferSupported) {
-          this._tileBufferGrid[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._tileBuffer[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._tileValueBuffer[y].push(new ArrayBuffer(width * height * TILE_VALUE_BYTES));
+          this._nextTileBuffer[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._nextTileValueBuffer[y].push(new ArrayBuffer(width * height * TILE_VALUE_BYTES));
         } else {
-          this._tileBufferGrid[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._tileBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._tileValueBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._nextTileBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this._nextTileValueBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
         }
-        this._tileRgbaView[y].push(new Uint8Array(this.tileBufferGrid[y][x]));
-        this._tileValueView[y].push(new Uint32Array(this.tileBufferGrid[y][x]));
+        this._tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
+
+        this._tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
+        this._tileValueView[y].push(new Float32Array(this.tileValueBuffer[y][x]));
+        this._nextTileView[y].push(new Uint32Array(this.nextTileBuffer[y][x]));
+        this._nextTileValueView[y].push(new Float32Array(this.nextTileValueBuffer[y][x]));
+
         for (let offsetX = 0; offsetX < width; offsetX++) {
           this._lookupX[x * width + offsetX] = x;
         }
@@ -123,18 +98,30 @@ class Map {
   }
 
   public import(data: {
-    tileBufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    nextTileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    nextTileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
     x: number;
     y: number;
     width: number;
     height: number;
     splitQuantity: number;
   }): void {
-    const { tileBufferGrid, x, y, width, height, splitQuantity } = data;
+    const { tileBuffer, tileValueBuffer, nextTileBuffer, nextTileValueBuffer, x, y, width, height, splitQuantity } = data;
 
-    this._tileBufferGrid = tileBufferGrid;
     this._tileRgbaView = [];
+
+    this._tileBuffer = tileBuffer;
+    this._tileView = [];
+    this._tileValueBuffer = tileValueBuffer;
     this._tileValueView = [];
+
+    this._nextTileBuffer = nextTileBuffer;
+    this._nextTileView = [];
+    this._nextTileValueBuffer = nextTileValueBuffer;
+    this._nextTileValueView = [];
+
     this._width = width;
     this._height = height;
     this._totalWidth = width * splitQuantity;
@@ -147,11 +134,22 @@ class Map {
 
     for (let y = 0; y < this.splitQuantity; y++) {
       this._tileRgbaView.push([]);
+
+      this._tileView.push([]);
       this._tileValueView.push([]);
 
+      this._nextTileView.push([]);
+      this._nextTileValueView.push([]);
+
       for (let x = 0; x < this.splitQuantity; x++) {
-        this._tileRgbaView[y].push(new Uint8Array(this.tileBufferGrid[y][x]));
-        this._tileValueView[y].push(new Uint32Array(this.tileBufferGrid[y][x]));
+        this._tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
+
+        this._tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
+        this._tileValueView[y].push(new Float32Array(this.tileValueBuffer[y][x]));
+
+        this._nextTileView[y].push(new Uint32Array(this.nextTileBuffer[y][x]));
+        this._nextTileValueView[y].push(new Float32Array(this.nextTileValueBuffer[y][x]));
+
         for (let offsetX = 0; offsetX < width; offsetX++) {
           this._lookupX[x * width + offsetX] = x;
         }
@@ -163,7 +161,10 @@ class Map {
   }
 
   public export(): {
-    tileBufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    nextTileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    nextTileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
     x: number;
     y: number;
     width: number;
@@ -171,7 +172,10 @@ class Map {
     splitQuantity: number;
   } {
     return {
-      tileBufferGrid: this.tileBufferGrid,
+      tileBuffer: this.tileBuffer,
+      tileValueBuffer: this.tileValueBuffer,
+      nextTileBuffer: this.nextTileBuffer,
+      nextTileValueBuffer: this.nextTileValueBuffer,
       x: this.x,
       y: this.y,
       width: this.width,
@@ -180,9 +184,118 @@ class Map {
     };
   }
 
-  private get tileBufferGrid(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
-    if (!this._tileBufferGrid) throw new Error('map tilerBuffer undefined');
-    return this._tileBufferGrid;
+  public updateState(): void {
+    let x, y, tile, value, type, isMovable;
+    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
+      x = i % this.totalWidth;
+      y = Math.floor(i / this.totalWidth);
+      tile = this.getTile(x, y);
+      value = this.getTileValue(x, y);
+      type = this.lookupTileType(tile);
+
+      if (type === BLOCK_TYPES.EMPTY) continue;
+
+      // Some Logic...
+      isMovable = type !== BLOCK_TYPES.STONE;
+
+      if (!isMovable) {
+        this.setNextTile(x, y, tile);
+        this.setNextTileValue(x, y, value);
+        continue;
+      }
+
+      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTile(x, y + 1)) === BLOCK_TYPES.EMPTY) {
+        this.setNextTile(x, y + 1, tile);
+        this.setNextTileValue(x, y + 1, value);
+      } else if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.lookupTileType(this.getTile(x + 1, y + 1)) === BLOCK_TYPES.EMPTY) {
+        this.setNextTile(x + 1, y + 1, tile);
+        this.setNextTileValue(x + 1, y + 1, value);
+      } else if (y + 1 < this.totalHeight && x - 1 >= 0 && this.lookupTileType(this.getTile(x - 1, y + 1)) === BLOCK_TYPES.EMPTY) {
+        this.setNextTile(x - 1, y + 1, tile);
+        this.setNextTileValue(x - 1, y + 1, value);
+      } else {
+        this.setNextTile(x, y, tile);
+        this.setNextTileValue(x, y, value);
+      }
+    }
+  }
+
+  public applyState(): void {
+    let x, y;
+    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
+      x = i % this.totalWidth;
+      y = Math.floor(i / this.totalWidth);
+
+      this.setTile(x, y, this.getNextTile(x, y));
+      this.setTileValue(x, y, this.getNextTileValue(x, y));
+      this.setNextTile(x, y, 0);
+      this.setNextTileValue(x, y, 0);
+    }
+  }
+
+  public lookupTileType(value: number): BLOCK_TYPES {
+    if ((value & BLOCK_TYPE_VALUES.EMPTY) === 0) return BLOCK_TYPES.EMPTY;
+    if ((value & BLOCK_TYPE_VALUES.DIRT) === BLOCK_TYPE_VALUES.DIRT) return BLOCK_TYPES.DIRT;
+    if ((value & BLOCK_TYPE_VALUES.SAND) === BLOCK_TYPE_VALUES.SAND) return BLOCK_TYPES.SAND;
+    if ((value & BLOCK_TYPE_VALUES.WATER) === BLOCK_TYPE_VALUES.WATER) return BLOCK_TYPES.WATER;
+    if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
+    if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
+    if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
+    // return BLOCK_TYPES.EMPTY;
+    throw new Error(
+      `undefined tile type ${value} / 0b${value
+        .toString(2)
+        .padStart(32, '0')
+        .split('')
+        .map((v, i) => (i < 8 ? 0 : v))
+        .join('')}`
+    );
+  }
+
+  /* Getters, Setters */
+  private get tileBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
+    if (!this._tileBuffer) throw new Error('map tileBuffer undefined');
+    return this._tileBuffer;
+  }
+
+  private get tileValueBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
+    if (!this._tileValueBuffer) throw new Error('map tileValueBuffer undefined');
+    return this._tileValueBuffer;
+  }
+
+  private get nextTileBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
+    if (!this._nextTileBuffer) throw new Error('map nextTilerBuffer undefined');
+    return this._nextTileBuffer;
+  }
+
+  private get nextTileValueBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
+    if (!this._nextTileValueBuffer) throw new Error('map nextTileValueBuffer undefined');
+    return this._nextTileValueBuffer;
+  }
+
+  public get tileRgbaView(): Array<Array<Uint8Array>> {
+    if (!this._tileRgbaView) throw new Error('map tile rgba undefined');
+    return this._tileRgbaView;
+  }
+
+  public get tileView(): Array<Array<Uint32Array>> {
+    if (!this._tileView) throw new Error('map tile undefined');
+    return this._tileView;
+  }
+
+  public get tileValueView(): Array<Array<Float32Array>> {
+    if (!this._tileValueView) throw new Error('map tile value undefined');
+    return this._tileValueView;
+  }
+
+  public get nextTileView(): Array<Array<Uint32Array>> {
+    if (!this._nextTileView) throw new Error('map next tile undefined');
+    return this._nextTileView;
+  }
+
+  public get nextTileValueView(): Array<Array<Float32Array>> {
+    if (!this._nextTileValueView) throw new Error('map next tile value undefined');
+    return this._nextTileValueView;
   }
 
   public get x(): number {
@@ -230,18 +343,40 @@ class Map {
     return this._splitQuantity;
   }
 
-  public get tileRgbaView(): Array<Array<Uint8Array>> {
-    if (!this._tileRgbaView) throw new Error('map tile properties undefined');
-    return this._tileRgbaView;
+  private set tileBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
+    this._tileBuffer = bufferGrid;
   }
 
-  public get tileValueView(): Array<Array<Uint32Array>> {
-    if (!this._tileValueView) throw new Error('map tile types undefined');
-    return this._tileValueView;
+  private set tileValueBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
+    this._tileValueBuffer = bufferGrid;
   }
 
-  private set tileBufferGrid(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
-    this._tileBufferGrid = bufferGrid;
+  private set nextTileBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
+    this._nextTileBuffer = bufferGrid;
+  }
+
+  private set nextTileValueBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
+    this._nextTileValueBuffer = bufferGrid;
+  }
+
+  public set tileRgbaView(tileRgbaView: Array<Array<Uint8Array>>) {
+    this._tileRgbaView = tileRgbaView;
+  }
+
+  public set tileView(tileView: Array<Array<Uint32Array>>) {
+    this._tileView = tileView;
+  }
+
+  public set tileValueView(tileValueView: Array<Array<Float32Array>>) {
+    this._tileValueView = tileValueView;
+  }
+
+  public set nextTileView(nextTileView: Array<Array<Uint32Array>>) {
+    this._nextTileView = nextTileView;
+  }
+
+  public set nextTileValueView(nextTileValueView: Array<Array<Float32Array>>) {
+    this._nextTileValueView = nextTileValueView;
   }
 
   public set x(x: number) {
@@ -272,31 +407,12 @@ class Map {
     this._splitQuantity = splitQuantity;
   }
 
-  public set tileRgbaView(tileRgbaView: Array<Array<Uint8Array>>) {
-    this._tileRgbaView = tileRgbaView;
+  public getTile(x: number, y: number): number {
+    return this.tileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
   }
 
-  public set tileValueView(tileValueView: Array<Array<Uint32Array>>) {
-    this._tileValueView = tileValueView;
-  }
-
-  public lookupTileType(value: number): BLOCK_TYPES {
-    if ((value & BLOCK_TYPE_VALUES.EMPTY) === 0) return BLOCK_TYPES.EMPTY;
-    if ((value & BLOCK_TYPE_VALUES.DIRT) === BLOCK_TYPE_VALUES.DIRT) return BLOCK_TYPES.DIRT;
-    if ((value & BLOCK_TYPE_VALUES.SAND) === BLOCK_TYPE_VALUES.SAND) return BLOCK_TYPES.SAND;
-    if ((value & BLOCK_TYPE_VALUES.WATER) === BLOCK_TYPE_VALUES.WATER) return BLOCK_TYPES.WATER;
-    if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
-    if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
-    if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
-
-    throw new Error(
-      `undefined tile type ${value} / 0b${value
-        .toString(2)
-        .padStart(32, '0')
-        .split('')
-        .map((v, i) => (i < 8 ? 0 : v))
-        .join('')}`
-    );
+  public setTile(x: number, y: number, value: number): void {
+    this.tileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
   }
 
   public getTileValue(x: number, y: number): number {
@@ -305,6 +421,22 @@ class Map {
 
   public setTileValue(x: number, y: number, value: number): void {
     this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
+  }
+
+  public getNextTile(x: number, y: number): number {
+    return this.nextTileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
+  }
+
+  public setNextTile(x: number, y: number, value: number): void {
+    this.nextTileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
+  }
+
+  public getNextTileValue(x: number, y: number): number {
+    return this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
+  }
+
+  public setNextTileValue(x: number, y: number, value: number): void {
+    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
   }
 
   public getTileRgba(x: number, y: number): [number, number, number, number] {
@@ -317,12 +449,12 @@ class Map {
     ];
   }
 
-  public setTileRgba(x: number, y: number, r: number, g: number, b: number, a: number): void {
+  public setTileRgba(x: number, y: number, r?: number, g?: number, b?: number, a?: number): void {
     const index = ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
-    this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 0] = r;
-    this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 1] = g;
-    this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 2] = b;
-    this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 3] = a;
+    if (r !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 0] = r;
+    if (g !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 1] = g;
+    if (b !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 2] = b;
+    if (a !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 3] = a;
   }
 }
 
