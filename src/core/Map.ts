@@ -36,7 +36,7 @@ class Map {
   public updateState(): void {
     const beginX = Math.floor((this.totalWidth / this.threadQuantity) * (this.id + 1));
     const endX = Math.floor((this.totalWidth / this.threadQuantity) * this.id);
-    let tile, type, vectorX, vectorY;
+    let tile, type;
 
     for (let y = this.totalHeight - 1; y >= 0; y--) {
       for (let x = beginX - 1; x >= endX; x--) {
@@ -50,8 +50,8 @@ class Map {
 
         if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
 
-        vectorX = this.getTileProperties(x, y, 0);
-        vectorY = this.getTileProperties(x, y, 1) + 1;
+        // vectorX = this.getTileProperties(x, y, 0);
+        // vectorY = this.getTileProperties(x, y, 1) + 1;
 
         if (y + 1 < this.totalHeight && this.compareTileDensity(type, this.lookupTileType(this.getTile(x, y + 1)))) {
           this.swapTile(x, y, x, y + 1);
