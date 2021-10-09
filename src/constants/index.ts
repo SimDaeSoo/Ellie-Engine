@@ -1,7 +1,7 @@
 import { IconNames } from 'rsuite/lib/Icon';
 
 const TILE_TYPE_BYTES = 4;
-const TILE_PROPERTIES_BYTES = 2;
+const TILE_PROPERTIES_BYTES = 3;
 enum WORKER_COMMAND {
   MAP_INITIALIZE,
   MAP_UPDATE_STATE,
@@ -14,6 +14,8 @@ enum WORKER_CALLBACK_COMMAND {
 enum MENU_TYPES {
   EMPTY,
   ERASER,
+  OBSIDIAN,
+  IRON,
   STONE,
   DIRT,
   SAND,
@@ -25,6 +27,7 @@ enum MENU_TYPES {
   CAVE_GENERATE,
   PLAY,
   PAUSE,
+  PIXEL_1,
   PIXEL_3,
   PIXEL_9,
   PIXEL_15,
@@ -43,6 +46,8 @@ enum MENU_TYPES {
 }
 
 enum BLOCK_TYPES {
+  IRON,
+  OBSIDIAN,
   STONE,
   DIRT,
   SAND,
@@ -57,16 +62,20 @@ type EnumDictionary<T extends string | symbol | number, U> = {
 };
 
 const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
-  [BLOCK_TYPES.STONE]: 6,
-  [BLOCK_TYPES.DIRT]: 5,
-  [BLOCK_TYPES.SAND]: 4,
+  [BLOCK_TYPES.IRON]: 3,
+  [BLOCK_TYPES.OBSIDIAN]: 3,
+  [BLOCK_TYPES.STONE]: 3,
+  [BLOCK_TYPES.DIRT]: 3,
+  [BLOCK_TYPES.SAND]: 3,
   [BLOCK_TYPES.WATER]: 2,
-  [BLOCK_TYPES.LAVA]: 3,
+  [BLOCK_TYPES.LAVA]: 2,
   [BLOCK_TYPES.ACID]: 1,
   [BLOCK_TYPES.EMPTY]: 0,
 };
 
 const BLOCKS: { [key: string]: [number, number, number] } = {
+  IRON: [190, 190, 180],
+  OBSIDIAN: [20, 20, 40],
   STONE: [65, 65, 67],
   DIRT: [62, 44, 32],
   SAND: [155, 129, 74],
@@ -77,12 +86,14 @@ const BLOCKS: { [key: string]: [number, number, number] } = {
 };
 
 const BLOCK_TYPE_VALUES: { [key: string]: number } = {
+  IRON: 0b00000000101101001011111010111110,
   DIRT: 0b00000000001000000010110000111110,
   SAND: 0b00000000010010101000000110011011,
   WATER: 0b00000000101110100101001000001111,
   LAVA: 0b00000000000001100101000011110111,
   STONE: 0b00000000010000110100000101000001,
   ACID: 0b00000000001110111101001001001011,
+  OBSIDIAN: 0b00000000001010000001010000010100,
   EMPTY: 0b00000000111111111111111111111111,
 };
 
@@ -113,12 +124,20 @@ const NAVIGATIONS: Array<{
     type: MENU_TYPES.EMPTY,
     subNavigations: [
       {
-        name: 'Dirt Block',
-        type: MENU_TYPES.DIRT,
-      },
-      {
         name: 'Stone Block',
         type: MENU_TYPES.STONE,
+      },
+      {
+        name: 'Iron Block',
+        type: MENU_TYPES.IRON,
+      },
+      {
+        name: 'Obsidian Block',
+        type: MENU_TYPES.OBSIDIAN,
+      },
+      {
+        name: 'Dirt Block',
+        type: MENU_TYPES.DIRT,
       },
       {
         name: 'Sand Block',
@@ -147,6 +166,10 @@ const NAVIGATIONS: Array<{
     name: 'Border Setting',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
+      {
+        name: '1px',
+        type: MENU_TYPES.PIXEL_1,
+      },
       {
         name: '3px',
         type: MENU_TYPES.PIXEL_3,
