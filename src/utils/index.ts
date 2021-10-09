@@ -88,6 +88,7 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
       switch (menuType) {
         case MENU_TYPES.DIRT: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.DIRT, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 80);
           break;
         }
@@ -108,26 +109,31 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
         }
         case MENU_TYPES.SAND: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.SAND, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
         case MENU_TYPES.PEBBLE: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.PEBBLE, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
           break;
         }
         case MENU_TYPES.WATER: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
           break;
         }
         case MENU_TYPES.LAVA: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.LAVA, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
         case MENU_TYPES.ACID: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.ACID, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
