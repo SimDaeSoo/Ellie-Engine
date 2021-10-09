@@ -35,16 +35,17 @@ class Map {
 
   public updateState(offset: number): void {
     const reverse = Math.random() < 0.5 ? true : false;
-    const beginX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * (this.id + 1)) - offset;
-    const endX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * this.id) - offset;
-
+    let beginX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * (this.id + 1)) - offset;
+    let endX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * this.id) - offset;
     let x, tile, type, isMovable, isLiquid, biggerVector, vectorX, vectorY, absX, absY, targetX, targetY, tempX, tempY, collision, stateChanged, l, r, u, d;
     let lifeTime: number = 0;
+
+    if (beginX > this.totalWidth) beginX = this.totalWidth;
+    if (endX < 0) endX = 0;
 
     for (let y = this.totalHeight - 1; y >= 0; y--) {
       for (let _x = beginX - 1; _x >= endX; _x--) {
         x = reverse ? endX + (beginX - _x - 1) : _x;
-        if (x < 0 || x > this.totalWidth - 1) continue;
 
         if (!this.isChunkDirty(x, y)) {
           x -= x % this.chunkSize;
