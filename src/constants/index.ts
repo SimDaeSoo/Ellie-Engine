@@ -15,6 +15,7 @@ enum MENU_TYPES {
   EMPTY,
   ERASER,
   OBSIDIAN,
+  PEBBLE,
   IRON,
   STONE,
   DIRT,
@@ -47,6 +48,7 @@ enum MENU_TYPES {
 
 enum BLOCK_TYPES {
   IRON,
+  PEBBLE,
   OBSIDIAN,
   STONE,
   DIRT,
@@ -66,6 +68,7 @@ const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
   [BLOCK_TYPES.OBSIDIAN]: 3,
   [BLOCK_TYPES.STONE]: 3,
   [BLOCK_TYPES.DIRT]: 3,
+  [BLOCK_TYPES.PEBBLE]: 3,
   [BLOCK_TYPES.SAND]: 3,
   [BLOCK_TYPES.WATER]: 2,
   [BLOCK_TYPES.LAVA]: 2,
@@ -77,6 +80,7 @@ const BLOCKS: { [key: string]: [number, number, number] } = {
   IRON: [190, 190, 180],
   OBSIDIAN: [20, 20, 40],
   STONE: [65, 65, 67],
+  PEBBLE: [34, 44, 54],
   DIRT: [62, 44, 32],
   SAND: [155, 129, 74],
   WATER: [15, 82, 186],
@@ -86,6 +90,7 @@ const BLOCKS: { [key: string]: [number, number, number] } = {
 };
 
 const BLOCK_TYPE_VALUES: { [key: string]: number } = {
+  PEBBLE: 0b00000000001101100010110000100010,
   IRON: 0b00000000101101001011111010111110,
   DIRT: 0b00000000001000000010110000111110,
   SAND: 0b00000000010010101000000110011011,
@@ -134,6 +139,10 @@ const NAVIGATIONS: Array<{
       {
         name: 'Obsidian Block',
         type: MENU_TYPES.OBSIDIAN,
+      },
+      {
+        name: 'Pebble Block',
+        type: MENU_TYPES.PEBBLE,
       },
       {
         name: 'Dirt Block',
