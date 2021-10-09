@@ -1,253 +1,230 @@
-import { BLOCK_TYPES, BLOCK_TYPE_VALUES, TILE_TYPE_BYTES, TILE_VALUE_BYTES } from '../constants';
+import { BLOCK_TYPES, BLOCK_TYPE_VALUES, BLOCK_WEIGHT, TILE_TYPE_BYTES, TILE_PROPERTIES_BYTES } from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
-  private id: number;
-  private threadQuantity: number;
-  private _tileRgbaView?: Array<Array<Uint8Array>>;
+  public id: number;
+  public threadQuantity: number;
+  public chunkSize: number = 0;
 
-  private _tileBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-  private _tileView?: Array<Array<Uint32Array>>;
-  private _tileValueBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-  private _tileValueView?: Array<Array<Float32Array>>;
+  public tileRgbaView: Array<Array<Uint8Array>> = [];
+  public tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
+  public tileView: Array<Array<Uint32Array>> = [];
+  public tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
+  public tilePropertiesView: Array<Array<Uint8Array>> = [];
+  public chunkBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
+  public chunkView: Uint8Array = new Uint8Array(this.chunkBuffer);
+  public nextChunkBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
+  public nextChunkView: Uint8Array = new Uint8Array(this.nextChunkBuffer);
 
-  private _nextTileBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-  private _nextTileView?: Array<Array<Uint32Array>>;
-  private _nextTileValueBuffer?: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-  private _nextTileValueView?: Array<Array<Float32Array>>;
-
-  private _width?: number;
-  private _height?: number;
-  private _totalWidth?: number;
-  private _totalHeight?: number;
-  private _splitQuantity?: number;
-  private _x?: number;
-  private _y?: number;
-  private _lookupX?: Array<number>;
-  private _lookupY?: Array<number>;
+  public width: number = 0;
+  public height: number = 0;
+  public totalWidth: number = 0;
+  public totalHeight: number = 0;
+  public splitQuantity: number = 0;
+  public x: number = 0;
+  public y: number = 0;
+  public lookupX: Array<number> = [];
+  public lookupY: Array<number> = [];
+  public chunkLookupX: Array<number> = [];
+  public chunkLookupY: Array<number> = [];
 
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
   }
 
-  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1): void {
-    this._x = x;
-    this._y = y;
-    this._width = width;
-    this._height = height;
-    this._totalWidth = width * splitQuantity;
-    this._totalHeight = height * splitQuantity;
-    this._splitQuantity = splitQuantity;
-    this._lookupX = new Array(this.totalWidth);
-    this._lookupY = new Array(this.totalHeight);
-    this._tileRgbaView = [];
+  public updateState(): void {
+    const beginX = Math.floor((this.totalWidth / this.threadQuantity) * (this.id + 1));
+    const endX = Math.floor((this.totalWidth / this.threadQuantity) * this.id);
+    let tile, type, vectorX, vectorY;
 
-    this._tileBuffer = [];
-    this._tileView = [];
-    this._tileValueBuffer = [];
-    this._tileValueView = [];
+    for (let y = this.totalHeight - 1; y >= 0; y--) {
+      for (let x = beginX - 1; x >= endX; x--) {
+        if (!this.isChunkDirty(x, y)) {
+          x -= x % this.chunkSize;
+          continue;
+        }
 
-    this._nextTileBuffer = [];
-    this._nextTileView = [];
-    this._nextTileValueBuffer = [];
-    this._nextTileValueView = [];
+        tile = this.getTile(x, y);
+        type = this.lookupTileType(tile);
+
+        if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+
+        vectorX = this.getTileProperties(x, y, 0);
+        vectorY = this.getTileProperties(x, y, 1) + 1;
+
+        if (y + 1 < this.totalHeight && this.compareTileDensity(type, this.lookupTileType(this.getTile(x, y + 1)))) {
+          this.swapTile(x, y, x, y + 1);
+        } else if (y + 1 < this.totalHeight && x - 1 >= 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(x - 1, y + 1)))) {
+          this.swapTile(x, y, x - 1, y + 1);
+        } else if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.compareTileDensity(type, this.lookupTileType(this.getTile(x + 1, y + 1)))) {
+          this.swapTile(x, y, x + 1, y + 1);
+        } else {
+        }
+      }
+    }
+  }
+
+  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 64): void {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.totalWidth = width * splitQuantity;
+    this.totalHeight = height * splitQuantity;
+    this.splitQuantity = splitQuantity;
+    this.lookupX = new Array(this.totalWidth);
+    this.lookupY = new Array(this.totalHeight);
+    this.chunkSize = chunkSize;
+    this.chunkLookupX = new Array(this.totalWidth);
+    this.chunkLookupY = new Array(this.totalHeight);
+    this.tileRgbaView = [];
+    this.tileBuffer = [];
+    this.tileView = [];
+    this.tilePropertiesBuffer = [];
+    this.tilePropertiesView = [];
 
     const sharedArrayBufferSupported = isSharedArrayBufferSupport();
+
+    for (let x = 0; x < this.totalWidth; x++) {
+      this.chunkLookupX[x] = Math.floor(x / this.chunkSize);
+    }
+    for (let y = 0; y < this.totalHeight; y++) {
+      this.chunkLookupY[y] = Math.floor(y / this.chunkSize) * Math.ceil(this.totalWidth / chunkSize);
+    }
+
+    if (sharedArrayBufferSupported) {
+      this.chunkBuffer = new SharedArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
+      this.nextChunkBuffer = new SharedArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
+    } else {
+      this.chunkBuffer = new ArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
+      this.nextChunkBuffer = new ArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
+    }
+    this.chunkView = new Uint8Array(this.chunkBuffer);
+    this.nextChunkView = new Uint8Array(this.nextChunkBuffer);
+
     for (let y = 0; y < this.splitQuantity; y++) {
-      this._tileRgbaView.push([]);
+      this.tileRgbaView.push([]);
 
-      this._tileBuffer.push([]);
-      this._tileView.push([]);
-      this._tileValueBuffer.push([]);
-      this._tileValueView.push([]);
-
-      this._nextTileBuffer.push([]);
-      this._nextTileView.push([]);
-      this._nextTileValueBuffer.push([]);
-      this._nextTileValueView.push([]);
+      this.tileBuffer.push([]);
+      this.tileView.push([]);
+      this.tilePropertiesBuffer.push([]);
+      this.tilePropertiesView.push([]);
 
       for (let x = 0; x < this.splitQuantity; x++) {
         if (!sharedArrayBufferSupported) {
-          this._tileBuffer[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
-          this._tileValueBuffer[y].push(new ArrayBuffer(width * height * TILE_VALUE_BYTES));
-          this._nextTileBuffer[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
-          this._nextTileValueBuffer[y].push(new ArrayBuffer(width * height * TILE_VALUE_BYTES));
+          this.tileBuffer[y].push(new ArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this.tilePropertiesBuffer[y].push(new ArrayBuffer(width * height * TILE_PROPERTIES_BYTES));
         } else {
-          this._tileBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
-          this._tileValueBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
-          this._nextTileBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
-          this._nextTileValueBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this.tileBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
+          this.tilePropertiesBuffer[y].push(new SharedArrayBuffer(width * height * TILE_TYPE_BYTES));
         }
-        this._tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
+        this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
 
-        this._tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
-        this._tileValueView[y].push(new Float32Array(this.tileValueBuffer[y][x]));
-        this._nextTileView[y].push(new Uint32Array(this.nextTileBuffer[y][x]));
-        this._nextTileValueView[y].push(new Float32Array(this.nextTileValueBuffer[y][x]));
+        this.tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
+        this.tilePropertiesView[y].push(new Uint8Array(this.tilePropertiesBuffer[y][x]));
 
         for (let offsetX = 0; offsetX < width; offsetX++) {
-          this._lookupX[x * width + offsetX] = x;
+          this.lookupX[x * width + offsetX] = x;
         }
       }
 
       for (let offsetY = 0; offsetY < height; offsetY++) {
-        this._lookupY[y * height + offsetY] = y;
+        this.lookupY[y * height + offsetY] = y;
       }
     }
   }
 
   public import(data: {
     tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    tileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    nextTileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    nextTileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    chunkBuffer: ArrayBuffer | SharedArrayBuffer;
+    nextChunkBuffer: ArrayBuffer | SharedArrayBuffer;
+    chunkSize: number;
     x: number;
     y: number;
     width: number;
     height: number;
     splitQuantity: number;
   }): void {
-    const { tileBuffer, tileValueBuffer, nextTileBuffer, nextTileValueBuffer, x, y, width, height, splitQuantity } = data;
+    const { tileBuffer, tilePropertiesBuffer, chunkBuffer, nextChunkBuffer, chunkSize, x, y, width, height, splitQuantity } = data;
 
-    this._tileRgbaView = [];
+    this.tileRgbaView = [];
+    this.chunkBuffer = chunkBuffer;
+    this.nextChunkBuffer = nextChunkBuffer;
+    this.tileBuffer = tileBuffer;
+    this.tileView = [];
+    this.tilePropertiesBuffer = tilePropertiesBuffer;
+    this.tilePropertiesView = [];
 
-    this._tileBuffer = tileBuffer;
-    this._tileView = [];
-    this._tileValueBuffer = tileValueBuffer;
-    this._tileValueView = [];
+    this.width = width;
+    this.height = height;
+    this.totalWidth = width * splitQuantity;
+    this.totalHeight = height * splitQuantity;
+    this.splitQuantity = splitQuantity;
+    this.x = x;
+    this.y = y;
+    this.lookupX = new Array(this.totalWidth);
+    this.lookupY = new Array(this.totalHeight);
+    this.chunkSize = chunkSize;
+    this.chunkLookupX = new Array(this.totalWidth);
+    this.chunkLookupY = new Array(this.totalHeight);
+    this.chunkView = new Uint8Array(this.chunkBuffer);
+    this.nextChunkView = new Uint8Array(this.nextChunkBuffer);
 
-    this._nextTileBuffer = nextTileBuffer;
-    this._nextTileView = [];
-    this._nextTileValueBuffer = nextTileValueBuffer;
-    this._nextTileValueView = [];
-
-    this._width = width;
-    this._height = height;
-    this._totalWidth = width * splitQuantity;
-    this._totalHeight = height * splitQuantity;
-    this._splitQuantity = splitQuantity;
-    this._x = x;
-    this._y = y;
-    this._lookupX = new Array(this.totalWidth);
-    this._lookupY = new Array(this.totalHeight);
+    for (let x = 0; x < this.totalWidth; x++) {
+      this.chunkLookupX[x] = Math.floor(x / this.chunkSize);
+    }
+    for (let y = 0; y < this.totalHeight; y++) {
+      this.chunkLookupY[y] = Math.floor(y / this.chunkSize) * Math.ceil(this.totalWidth / chunkSize);
+    }
 
     for (let y = 0; y < this.splitQuantity; y++) {
-      this._tileRgbaView.push([]);
+      this.tileRgbaView.push([]);
 
-      this._tileView.push([]);
-      this._tileValueView.push([]);
-
-      this._nextTileView.push([]);
-      this._nextTileValueView.push([]);
+      this.tileView.push([]);
+      this.tilePropertiesView.push([]);
 
       for (let x = 0; x < this.splitQuantity; x++) {
-        this._tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
+        this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
 
-        this._tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
-        this._tileValueView[y].push(new Float32Array(this.tileValueBuffer[y][x]));
-
-        this._nextTileView[y].push(new Uint32Array(this.nextTileBuffer[y][x]));
-        this._nextTileValueView[y].push(new Float32Array(this.nextTileValueBuffer[y][x]));
+        this.tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
+        this.tilePropertiesView[y].push(new Uint8Array(this.tilePropertiesBuffer[y][x]));
 
         for (let offsetX = 0; offsetX < width; offsetX++) {
-          this._lookupX[x * width + offsetX] = x;
+          this.lookupX[x * width + offsetX] = x;
         }
       }
       for (let offsetY = 0; offsetY < height; offsetY++) {
-        this._lookupY[y * height + offsetY] = y;
+        this.lookupY[y * height + offsetY] = y;
       }
     }
   }
 
   public export(): {
     tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    tileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    nextTileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
-    nextTileValueBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
+    chunkBuffer: ArrayBuffer | SharedArrayBuffer;
+    nextChunkBuffer: ArrayBuffer | SharedArrayBuffer;
     x: number;
     y: number;
     width: number;
     height: number;
     splitQuantity: number;
+    chunkSize: number;
   } {
     return {
       tileBuffer: this.tileBuffer,
-      tileValueBuffer: this.tileValueBuffer,
-      nextTileBuffer: this.nextTileBuffer,
-      nextTileValueBuffer: this.nextTileValueBuffer,
+      tilePropertiesBuffer: this.tilePropertiesBuffer,
+      chunkBuffer: this.chunkBuffer,
+      nextChunkBuffer: this.nextChunkBuffer,
       x: this.x,
       y: this.y,
       width: this.width,
       height: this.height,
       splitQuantity: this.splitQuantity,
+      chunkSize: this.chunkSize,
     };
-  }
-
-  public updateState(): void {
-    let x, y, tile, value, type, isMovable, isLiquid;
-    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
-      x = i % this.totalWidth;
-      y = Math.floor(i / this.totalWidth);
-      tile = this.getTile(x, y);
-      value = this.getTileValue(x, y);
-      type = this.lookupTileType(tile);
-
-      if (type === BLOCK_TYPES.EMPTY) continue;
-
-      // Some Logic...
-      isMovable = type !== BLOCK_TYPES.STONE;
-      isLiquid = type === BLOCK_TYPES.WATER || type === BLOCK_TYPES.LAVA || type === BLOCK_TYPES.ACID;
-
-      if (!isMovable) {
-        this.setNextTile(x, y, tile);
-        this.setNextTileValue(x, y, value);
-        continue;
-      }
-
-      if (y + 1 < this.totalHeight && this.lookupTileType(this.getTile(x, y + 1)) === BLOCK_TYPES.EMPTY && this.getNextTile(x, y + 1) === 0) {
-        this.setNextTile(x, y + 1, tile);
-        this.setNextTileValue(x, y + 1, value);
-      } else if (
-        y + 1 < this.totalHeight &&
-        x + 1 < this.totalWidth &&
-        this.lookupTileType(this.getTile(x + 1, y + 1)) === BLOCK_TYPES.EMPTY &&
-        this.getNextTile(x + 1, y + 1) === 0
-      ) {
-        this.setNextTile(x + 1, y + 1, tile);
-        this.setNextTileValue(x + 1, y + 1, value);
-      } else if (
-        y + 1 < this.totalHeight &&
-        x - 1 >= 0 &&
-        this.lookupTileType(this.getTile(x - 1, y + 1)) === BLOCK_TYPES.EMPTY &&
-        this.getNextTile(x - 1, y + 1) === 0
-      ) {
-        this.setNextTile(x - 1, y + 1, tile);
-        this.setNextTileValue(x - 1, y + 1, value);
-      } else if (isLiquid && x + 1 < this.totalWidth && this.lookupTileType(this.getTile(x + 1, y)) === BLOCK_TYPES.EMPTY && this.getNextTile(x + 1, y) === 0) {
-        this.setNextTile(x + 1, y, tile);
-        this.setNextTileValue(x + 1, y, value);
-      } else if (isLiquid && x - 1 >= 0 && this.lookupTileType(this.getTile(x - 1, y)) === BLOCK_TYPES.EMPTY && this.getNextTile(x - 1, y) === 0) {
-        this.setNextTile(x - 1, y, tile);
-        this.setNextTileValue(x - 1, y, value);
-      } else {
-        this.setNextTile(x, y, tile);
-        this.setNextTileValue(x, y, value);
-      }
-    }
-  }
-
-  public applyState(): void {
-    let x, y;
-    for (let i = this.totalWidth * this.totalHeight - 1 - this.id; i >= 0; i -= this.threadQuantity) {
-      x = i % this.totalWidth;
-      y = Math.floor(i / this.totalWidth);
-
-      this.setTile(x, y, this.getNextTile(x, y));
-      this.setTileValue(x, y, this.getNextTileValue(x, y));
-      this.setNextTile(x, y, 0);
-      this.setNextTileValue(x, y, 0);
-    }
   }
 
   public lookupTileType(value: number): BLOCK_TYPES {
@@ -269,159 +246,36 @@ class Map {
     // );
   }
 
-  /* Getters, Setters */
-  private get tileBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
-    if (!this._tileBuffer) throw new Error('map tileBuffer undefined');
-    return this._tileBuffer;
+  public isChunkDirty(x: number, y: number): boolean {
+    return !!this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x]];
   }
 
-  private get tileValueBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
-    if (!this._tileValueBuffer) throw new Error('map tileValueBuffer undefined');
-    return this._tileValueBuffer;
+  public setChunkDirty(x: number, y: number): void {
+    if (y < this.totalHeight - 1) {
+      this.chunkView[this.chunkLookupY[y + 1] + this.chunkLookupX[x]] = 1;
+      this.nextChunkView[this.chunkLookupY[y + 1] + this.chunkLookupX[x]] = 1;
+    }
+    if (x < this.totalWidth - 1) {
+      this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x + 1]] = 1;
+      this.nextChunkView[this.chunkLookupY[y] + this.chunkLookupX[x + 1]] = 1;
+    }
+    if (y > 0) {
+      this.chunkView[this.chunkLookupY[y - 1] + this.chunkLookupX[x]] = 1;
+      this.nextChunkView[this.chunkLookupY[y - 1] + this.chunkLookupX[x]] = 1;
+    }
+    if (x > 0) {
+      this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x - 1]] = 1;
+      this.nextChunkView[this.chunkLookupY[y] + this.chunkLookupX[x - 1]] = 1;
+    }
+    this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x]] = 1;
+    this.nextChunkView[this.chunkLookupY[y] + this.chunkLookupX[x]] = 1;
   }
 
-  private get nextTileBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
-    if (!this._nextTileBuffer) throw new Error('map nextTilerBuffer undefined');
-    return this._nextTileBuffer;
-  }
-
-  private get nextTileValueBuffer(): Array<Array<ArrayBuffer | SharedArrayBuffer>> {
-    if (!this._nextTileValueBuffer) throw new Error('map nextTileValueBuffer undefined');
-    return this._nextTileValueBuffer;
-  }
-
-  public get tileRgbaView(): Array<Array<Uint8Array>> {
-    if (!this._tileRgbaView) throw new Error('map tile rgba undefined');
-    return this._tileRgbaView;
-  }
-
-  public get tileView(): Array<Array<Uint32Array>> {
-    if (!this._tileView) throw new Error('map tile undefined');
-    return this._tileView;
-  }
-
-  public get tileValueView(): Array<Array<Float32Array>> {
-    if (!this._tileValueView) throw new Error('map tile value undefined');
-    return this._tileValueView;
-  }
-
-  public get nextTileView(): Array<Array<Uint32Array>> {
-    if (!this._nextTileView) throw new Error('map next tile undefined');
-    return this._nextTileView;
-  }
-
-  public get nextTileValueView(): Array<Array<Float32Array>> {
-    if (!this._nextTileValueView) throw new Error('map next tile value undefined');
-    return this._nextTileValueView;
-  }
-
-  public get x(): number {
-    if (this._x === undefined) throw new Error('map position x undefined');
-    return this._x;
-  }
-
-  public get y(): number {
-    if (this._y === undefined) throw new Error('map position y undefined');
-    return this._y;
-  }
-
-  public get lookupX(): Array<number> {
-    if (this._lookupX === undefined) throw new Error('map lookup x undefined');
-    return this._lookupX;
-  }
-
-  public get lookupY(): Array<number> {
-    if (this._lookupY === undefined) throw new Error('map lookup y undefined');
-    return this._lookupY;
-  }
-
-  public get width(): number {
-    if (!this._width) throw new Error('map width undefined');
-    return this._width;
-  }
-
-  public get height(): number {
-    if (!this._height) throw new Error('map height undefined');
-    return this._height;
-  }
-
-  public get totalWidth(): number {
-    if (!this._totalWidth) throw new Error('map width undefined');
-    return this._totalWidth;
-  }
-
-  public get totalHeight(): number {
-    if (!this._totalHeight) throw new Error('map height undefined');
-    return this._totalHeight;
-  }
-
-  public get splitQuantity(): number {
-    if (!this._splitQuantity) throw new Error('map split quantity undefined');
-    return this._splitQuantity;
-  }
-
-  private set tileBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
-    this._tileBuffer = bufferGrid;
-  }
-
-  private set tileValueBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
-    this._tileValueBuffer = bufferGrid;
-  }
-
-  private set nextTileBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
-    this._nextTileBuffer = bufferGrid;
-  }
-
-  private set nextTileValueBuffer(bufferGrid: Array<Array<ArrayBuffer | SharedArrayBuffer>>) {
-    this._nextTileValueBuffer = bufferGrid;
-  }
-
-  public set tileRgbaView(tileRgbaView: Array<Array<Uint8Array>>) {
-    this._tileRgbaView = tileRgbaView;
-  }
-
-  public set tileView(tileView: Array<Array<Uint32Array>>) {
-    this._tileView = tileView;
-  }
-
-  public set tileValueView(tileValueView: Array<Array<Float32Array>>) {
-    this._tileValueView = tileValueView;
-  }
-
-  public set nextTileView(nextTileView: Array<Array<Uint32Array>>) {
-    this._nextTileView = nextTileView;
-  }
-
-  public set nextTileValueView(nextTileValueView: Array<Array<Float32Array>>) {
-    this._nextTileValueView = nextTileValueView;
-  }
-
-  public set x(x: number) {
-    this._x = x;
-  }
-
-  public set y(y: number) {
-    this._y = y;
-  }
-
-  public set width(width: number) {
-    this._width = width;
-  }
-
-  public set height(height: number) {
-    this._height = height;
-  }
-
-  public set totalWidth(totalWidth: number) {
-    this._totalWidth = totalWidth;
-  }
-
-  public set totalHeight(totalHeight: number) {
-    this._totalHeight = totalHeight;
-  }
-
-  public set splitQuantity(splitQuantity: number) {
-    this._splitQuantity = splitQuantity;
+  public updateChunks(): void {
+    for (let i = 0; i < this.nextChunkView.byteLength; i++) {
+      this.chunkView[i] = this.nextChunkView[i] ? 1 : 0;
+      this.nextChunkView[i] = 0;
+    }
   }
 
   public getTile(x: number, y: number): number {
@@ -430,64 +284,48 @@ class Map {
 
   public setTile(x: number, y: number, value: number): void {
     this.tileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
+    this.setChunkDirty(x, y);
   }
 
-  public getTileValue(x: number, y: number): number {
-    return this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
-  }
-
-  public setTileValue(x: number, y: number, value: number): void {
-    this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
-  }
-
-  public plusTileValue(x: number, y: number, value: number): void {
-    this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] += value;
-  }
-
-  public minusTileValue(x: number, y: number, value: number): void {
-    this.tileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] -= value;
-  }
-
-  public getNextTile(x: number, y: number): number {
-    return this.nextTileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
-  }
-
-  public setNextTile(x: number, y: number, value: number): void {
-    this.nextTileView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
-  }
-
-  public getNextTileValue(x: number, y: number): number {
-    return this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)];
-  }
-
-  public setNextTileValue(x: number, y: number, value: number): void {
-    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] = value;
-  }
-
-  public plusNextTileValue(x: number, y: number, value: number): void {
-    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] += value;
-  }
-
-  public minusNextTileValue(x: number, y: number, value: number): void {
-    this.nextTileValueView[this.lookupY[y]][this.lookupX[x]][(y % this.height) * this.width + (x % this.width)] -= value;
-  }
-
-  public getTileRgba(x: number, y: number): [number, number, number, number] {
-    const index = ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
-    return [
-      this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 0],
-      this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 1],
-      this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 2],
-      this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 3],
+  public swapTile(x1: number, y1: number, x2: number, y2: number): void {
+    [
+      this.tileView[this.lookupY[y1]][this.lookupX[x1]][(y1 % this.height) * this.width + (x1 % this.width)],
+      this.tileView[this.lookupY[y2]][this.lookupX[x2]][(y2 % this.height) * this.width + (x2 % this.width)],
+      this.tilePropertiesView[this.lookupY[y1]][this.lookupX[x1]][((y1 % this.height) * this.width + (x1 % this.width)) * TILE_PROPERTIES_BYTES],
+      this.tilePropertiesView[this.lookupY[y2]][this.lookupX[x2]][((y2 % this.height) * this.width + (x2 % this.width)) * TILE_PROPERTIES_BYTES],
+      this.tilePropertiesView[this.lookupY[y1]][this.lookupX[x1]][((y1 % this.height) * this.width + (x1 % this.width)) * TILE_PROPERTIES_BYTES + 1],
+      this.tilePropertiesView[this.lookupY[y2]][this.lookupX[x2]][((y2 % this.height) * this.width + (x2 % this.width)) * TILE_PROPERTIES_BYTES + 1],
+    ] = [
+      this.tileView[this.lookupY[y2]][this.lookupX[x2]][(y2 % this.height) * this.width + (x2 % this.width)],
+      this.tileView[this.lookupY[y1]][this.lookupX[x1]][(y1 % this.height) * this.width + (x1 % this.width)],
+      this.tilePropertiesView[this.lookupY[y2]][this.lookupX[x2]][((y2 % this.height) * this.width + (x2 % this.width)) * TILE_PROPERTIES_BYTES],
+      this.tilePropertiesView[this.lookupY[y1]][this.lookupX[x1]][((y1 % this.height) * this.width + (x1 % this.width)) * TILE_PROPERTIES_BYTES],
+      this.tilePropertiesView[this.lookupY[y2]][this.lookupX[x2]][((y2 % this.height) * this.width + (x2 % this.width)) * TILE_PROPERTIES_BYTES + 1],
+      this.tilePropertiesView[this.lookupY[y1]][this.lookupX[x1]][((y1 % this.height) * this.width + (x1 % this.width)) * TILE_PROPERTIES_BYTES + 1],
     ];
+    this.setChunkDirty(x1, y1);
+    this.setChunkDirty(x2, y2);
   }
 
-  public setTileRgba(x: number, y: number, r?: number, g?: number, b?: number, a?: number): void {
+  public getTileProperties(x: number, y: number, index: number): number {
+    return this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + index];
+  }
+
+  public setTileProperties(x: number, y: number, index: number, value: number): void {
+    this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + index] = value;
+  }
+
+  public setTileRgba(x: number, y: number, r: number, g: number, b: number, a: number): void {
     const index = ((y % this.height) * this.width + (x % this.width)) * TILE_TYPE_BYTES;
     if (r !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 0] = r;
     if (g !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 1] = g;
     if (b !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 2] = b;
     if (a !== undefined) this.tileRgbaView[this.lookupY[y]][this.lookupX[x]][index + 3] = a;
+    this.setChunkDirty(x, y);
+  }
+
+  public compareTileDensity(type: BLOCK_TYPES, compareType: BLOCK_TYPES): boolean {
+    return BLOCK_WEIGHT[type] > BLOCK_WEIGHT[compareType];
   }
 }
 
