@@ -25,10 +25,6 @@ async function run(message: Message): Promise<void> {
       store.map.updateState(id, threadQuantity, 1);
       break;
     }
-    case WORKER_COMMAND.MAP_APPLY_STATE: {
-      store.map.applyState(id, threadQuantity, 1);
-      break;
-    }
     default: {
       throw new Error(`${command} is not defined`);
     }

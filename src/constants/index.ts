@@ -1,11 +1,10 @@
 import { IconNames } from 'rsuite/lib/Icon';
 
 const TILE_TYPE_BYTES = 4;
-const TILE_VALUE_BYTES = 4;
+const TILE_PROPERTIES_BYTES = 2;
 enum WORKER_COMMAND {
   MAP_INITIALIZE,
   MAP_UPDATE_STATE,
-  MAP_APPLY_STATE,
 }
 enum WORKER_CALLBACK_COMMAND {
   INITIALIZED,
@@ -52,6 +51,20 @@ enum BLOCK_TYPES {
   ACID,
   EMPTY,
 }
+
+type EnumDictionary<T extends string | symbol | number, U> = {
+  [K in T]: U;
+};
+
+const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
+  [BLOCK_TYPES.STONE]: 2,
+  [BLOCK_TYPES.DIRT]: 2,
+  [BLOCK_TYPES.SAND]: 2,
+  [BLOCK_TYPES.WATER]: 1,
+  [BLOCK_TYPES.LAVA]: 1,
+  [BLOCK_TYPES.ACID]: 1,
+  [BLOCK_TYPES.EMPTY]: 0,
+};
 
 const BLOCKS: { [key: string]: [number, number, number] } = {
   STONE: [65, 65, 67],
@@ -205,4 +218,15 @@ const NAVIGATIONS: Array<{
   },
 ];
 
-export { TILE_TYPE_BYTES, TILE_VALUE_BYTES, WORKER_COMMAND, WORKER_CALLBACK_COMMAND, BLOCKS, MENU_TYPES, NAVIGATIONS, BLOCK_TYPES, BLOCK_TYPE_VALUES };
+export {
+  TILE_TYPE_BYTES,
+  TILE_PROPERTIES_BYTES,
+  WORKER_COMMAND,
+  WORKER_CALLBACK_COMMAND,
+  BLOCKS,
+  MENU_TYPES,
+  NAVIGATIONS,
+  BLOCK_TYPES,
+  BLOCK_TYPE_VALUES,
+  BLOCK_WEIGHT,
+};
