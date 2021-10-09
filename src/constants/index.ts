@@ -76,6 +76,19 @@ const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
   [BLOCK_TYPES.EMPTY]: 0,
 };
 
+const BLOCK_PROPERTIES: EnumDictionary<BLOCK_TYPES, [number, number]> = {
+  [BLOCK_TYPES.IRON]: [0, 0],
+  [BLOCK_TYPES.OBSIDIAN]: [0, 0],
+  [BLOCK_TYPES.STONE]: [0, 0],
+  [BLOCK_TYPES.EMPTY]: [0, 0],
+  [BLOCK_TYPES.DIRT]: [0.05, 1],
+  [BLOCK_TYPES.PEBBLE]: [0.005, 1],
+  [BLOCK_TYPES.SAND]: [0.5, 1],
+  [BLOCK_TYPES.WATER]: [1, 8],
+  [BLOCK_TYPES.LAVA]: [1, 4],
+  [BLOCK_TYPES.ACID]: [1, 8],
+};
+
 const BLOCKS: { [key: string]: [number, number, number] } = {
   IRON: [190, 190, 180],
   OBSIDIAN: [20, 20, 40],
@@ -259,6 +272,7 @@ export {
   MENU_TYPES,
   NAVIGATIONS,
   BLOCK_TYPES,
+  BLOCK_PROPERTIES,
   BLOCK_TYPE_VALUES,
   BLOCK_WEIGHT,
 };
