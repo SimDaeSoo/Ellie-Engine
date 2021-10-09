@@ -35,8 +35,9 @@ class Map {
 
   public updateState(offset: number): void {
     const reverse = Math.random() < 0.5 ? true : false;
-    let beginX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * (this.id + 1)) - offset;
-    let endX = Math.floor((this.totalWidth / (this.threadQuantity - 1)) * this.id) - offset;
+    let beginX =
+      Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * (this.id + 1)) - (this.threadQuantity > 1 ? offset : 0);
+    let endX = Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * this.id) - (this.threadQuantity > 1 ? offset : 0);
     let x, tile, type, isMovable, isLiquid, biggerVector, vectorX, vectorY, absX, absY, targetX, targetY, tempX, tempY, collision, stateChanged, l, r, u, d;
     let lifeTime: number = 0;
 
