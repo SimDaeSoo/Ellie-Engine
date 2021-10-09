@@ -568,7 +568,7 @@ class Map {
   }
 
   public compareTileDensity(type: BLOCK_TYPES, compareType: BLOCK_TYPES): boolean {
-    return BLOCK_WEIGHT[type] > BLOCK_WEIGHT[compareType];
+    return compareType !== BLOCK_TYPES.LAVA && BLOCK_WEIGHT[type] > BLOCK_WEIGHT[compareType];
   }
 }
 
