@@ -22,7 +22,8 @@ async function run(message: Message): Promise<void> {
       break;
     }
     case WORKER_COMMAND.MAP_UPDATE_STATE: {
-      store.map.updateState(id, threadQuantity, 1);
+      const { offset } = data;
+      store.map.updateState(offset);
       break;
     }
     default: {
