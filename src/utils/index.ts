@@ -111,6 +111,11 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
+        case MENU_TYPES.PEBBLE: {
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.PEBBLE, Math.floor(32 + Math.random() * 223));
+          map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
+          break;
+        }
         case MENU_TYPES.WATER: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);

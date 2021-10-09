@@ -107,25 +107,25 @@ class Map {
             break;
           }
           case BLOCK_TYPES.ACID: {
-            if (lifeTime > 0 && (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND)) {
+            if (lifeTime > 0 && (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND || l === BLOCK_TYPES.PEBBLE)) {
               this.addingTileProperties(x - 1, y, 2, -2);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND)) {
+            if (lifeTime > 0 && (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND || r === BLOCK_TYPES.PEBBLE)) {
               this.addingTileProperties(x + 1, y, 2, -2);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND)) {
+            if (lifeTime > 0 && (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND || u === BLOCK_TYPES.PEBBLE)) {
               this.addingTileProperties(x, y - 1, 2, -2);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND)) {
+            if (lifeTime > 0 && (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND || d === BLOCK_TYPES.PEBBLE)) {
               this.addingTileProperties(x, y + 1, 2, -2);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
@@ -134,25 +134,37 @@ class Map {
             break;
           }
           case BLOCK_TYPES.LAVA: {
-            if (lifeTime > 0 && (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND || l === BLOCK_TYPES.IRON)) {
+            if (
+              lifeTime > 0 &&
+              (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND || l === BLOCK_TYPES.IRON || l === BLOCK_TYPES.PEBBLE)
+            ) {
               this.addingTileProperties(x - 1, y, 2, -4);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND || r === BLOCK_TYPES.IRON)) {
+            if (
+              lifeTime > 0 &&
+              (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND || r === BLOCK_TYPES.IRON || r === BLOCK_TYPES.PEBBLE)
+            ) {
               this.addingTileProperties(x + 1, y, 2, -4);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND || u === BLOCK_TYPES.IRON)) {
+            if (
+              lifeTime > 0 &&
+              (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND || u === BLOCK_TYPES.IRON || u === BLOCK_TYPES.PEBBLE)
+            ) {
               this.addingTileProperties(x, y - 1, 2, -4);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
               stateChanged = true;
             }
-            if (lifeTime > 0 && (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND || d === BLOCK_TYPES.IRON)) {
+            if (
+              lifeTime > 0 &&
+              (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND || d === BLOCK_TYPES.IRON || d === BLOCK_TYPES.PEBBLE)
+            ) {
               this.addingTileProperties(x, y + 1, 2, -4);
               this.addingTileProperties(x, y, 2, -1);
               lifeTime--;
@@ -449,6 +461,7 @@ class Map {
     if ((value & BLOCK_TYPE_VALUES.EMPTY) === 0) return BLOCK_TYPES.EMPTY;
     if ((value & BLOCK_TYPE_VALUES.IRON) === BLOCK_TYPE_VALUES.IRON) return BLOCK_TYPES.IRON;
     if ((value & BLOCK_TYPE_VALUES.DIRT) === BLOCK_TYPE_VALUES.DIRT) return BLOCK_TYPES.DIRT;
+    if ((value & BLOCK_TYPE_VALUES.PEBBLE) === BLOCK_TYPE_VALUES.PEBBLE) return BLOCK_TYPES.PEBBLE;
     if ((value & BLOCK_TYPE_VALUES.SAND) === BLOCK_TYPE_VALUES.SAND) return BLOCK_TYPES.SAND;
     if ((value & BLOCK_TYPE_VALUES.WATER) === BLOCK_TYPE_VALUES.WATER) return BLOCK_TYPES.WATER;
     if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
