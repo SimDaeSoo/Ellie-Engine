@@ -57,11 +57,11 @@ type EnumDictionary<T extends string | symbol | number, U> = {
 };
 
 const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
-  [BLOCK_TYPES.STONE]: 2,
-  [BLOCK_TYPES.DIRT]: 2,
-  [BLOCK_TYPES.SAND]: 2,
-  [BLOCK_TYPES.WATER]: 1,
-  [BLOCK_TYPES.LAVA]: 1,
+  [BLOCK_TYPES.STONE]: 6,
+  [BLOCK_TYPES.DIRT]: 5,
+  [BLOCK_TYPES.SAND]: 4,
+  [BLOCK_TYPES.WATER]: 2,
+  [BLOCK_TYPES.LAVA]: 3,
   [BLOCK_TYPES.ACID]: 1,
   [BLOCK_TYPES.EMPTY]: 0,
 };

@@ -10,7 +10,7 @@ class Map {
   public tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
   public tileView: Array<Array<Uint32Array>> = [];
   public tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
-  public tilePropertiesView: Array<Array<Uint8Array>> = [];
+  public tilePropertiesView: Array<Array<Int8Array>> = [];
   public chunkBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
   public chunkView: Uint8Array = new Uint8Array(this.chunkBuffer);
   public nextChunkBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
@@ -36,7 +36,7 @@ class Map {
   public updateState(): void {
     const beginX = Math.floor((this.totalWidth / this.threadQuantity) * (this.id + 1));
     const endX = Math.floor((this.totalWidth / this.threadQuantity) * this.id);
-    let tile, type;
+    let tile, type, isMovable, isLiquid, biggerVector, vectorX, vectorY, absX, absY, targetX, targetY, tempX, tempY, collision, isBoil;
 
     for (let y = this.totalHeight - 1; y >= 0; y--) {
       for (let x = beginX - 1; x >= endX; x--) {
@@ -47,19 +47,99 @@ class Map {
 
         tile = this.getTile(x, y);
         type = this.lookupTileType(tile);
+        isMovable = !(type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE);
+        isBoil = type === BLOCK_TYPES.LAVA || type === BLOCK_TYPES.ACID;
+        isLiquid = type === BLOCK_TYPES.WATER || isBoil;
 
-        if (type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE) continue;
+        if (!isMovable) continue;
 
-        // vectorX = this.getTileProperties(x, y, 0);
-        // vectorY = this.getTileProperties(x, y, 1) + 1;
+        vectorX = this.getTileProperties(x, y, 0);
+        vectorY = this.getTileProperties(x, y, 1);
+        absX = Math.abs(vectorX);
+        absY = Math.abs(vectorY);
+        biggerVector = absX > absY ? absX : absY;
+        targetX = x;
+        targetY = y;
+        collision = false;
 
-        if (y + 1 < this.totalHeight && this.compareTileDensity(type, this.lookupTileType(this.getTile(x, y + 1)))) {
-          this.swapTile(x, y, x, y + 1);
-        } else if (y + 1 < this.totalHeight && x - 1 >= 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(x - 1, y + 1)))) {
-          this.swapTile(x, y, x - 1, y + 1);
-        } else if (y + 1 < this.totalHeight && x + 1 < this.totalWidth && this.compareTileDensity(type, this.lookupTileType(this.getTile(x + 1, y + 1)))) {
-          this.swapTile(x, y, x + 1, y + 1);
+        for (let i = 1; i <= biggerVector; i++) {
+          tempX = x + Math.round((vectorX / biggerVector) * i);
+          tempY = y + Math.round((vectorY / biggerVector) * i);
+
+          if (tempX >= 0 && tempX < this.totalWidth && tempY >= 0 && tempY < this.totalHeight) {
+            if (this.compareTileDensity(type, this.lookupTileType(this.getTile(tempX, tempY)))) {
+              targetX = tempX;
+              targetY = tempY;
+            } else {
+              collision = true;
+              break;
+            }
+          } else {
+            collision = true;
+            break;
+          }
+        }
+
+        if (collision) {
+          if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
+            this.setTileProperties(x, y, 0, 0);
+          } else if (Math.random() < 0.5) {
+            if (
+              targetY < this.totalHeight - 1 &&
+              targetX < this.totalWidth - 1 &&
+              this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY + 1)))
+            ) {
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, 0);
+            } else if (
+              targetY < this.totalHeight - 1 &&
+              targetX > 0 &&
+              this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))
+            ) {
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, 0);
+            } else if (isLiquid && targetX < this.totalWidth - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))) {
+              this.setTileProperties(x, y, 0, Math.abs(vectorY * Math.random() * 10));
+              this.setTileProperties(x, y, 1, isBoil ? Math.round(Math.random() * -2) : 0);
+              targetX++;
+            } else if (isLiquid && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))) {
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY * Math.random() * 10));
+              this.setTileProperties(x, y, 1, isBoil ? Math.round(Math.random() * -2) : 0);
+              targetX--;
+            } else {
+              this.setTileProperties(x, y, 0, 0);
+              this.setTileProperties(x, y, 1, 0);
+            }
+          } else {
+            if (targetY < this.totalHeight - 1 && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))) {
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, 0);
+            } else if (
+              targetY < this.totalHeight - 1 &&
+              targetX < this.totalWidth - 1 &&
+              this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY + 1)))
+            ) {
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, 0);
+            } else if (isLiquid && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))) {
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY * Math.random() * 10));
+              this.setTileProperties(x, y, 1, isBoil ? Math.round(Math.random() * -2) : 0);
+              targetX--;
+            } else if (isLiquid && targetX < this.totalWidth - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))) {
+              this.setTileProperties(x, y, 0, Math.abs(vectorY * Math.random() * 10));
+              this.setTileProperties(x, y, 1, isBoil ? Math.round(Math.random() * -2) : 0);
+              targetX++;
+            } else {
+              this.setTileProperties(x, y, 0, 0);
+              this.setTileProperties(x, y, 1, 0);
+            }
+          }
         } else {
+          this.setTileProperties(x, y, 1, vectorY + 1);
+        }
+
+        if (targetX !== x || targetY !== y) {
+          this.swapTile(x, y, targetX, targetY);
         }
       }
     }
@@ -122,7 +202,7 @@ class Map {
         this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
 
         this.tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
-        this.tilePropertiesView[y].push(new Uint8Array(this.tilePropertiesBuffer[y][x]));
+        this.tilePropertiesView[y].push(new Int8Array(this.tilePropertiesBuffer[y][x]));
 
         for (let offsetX = 0; offsetX < width; offsetX++) {
           this.lookupX[x * width + offsetX] = x;
@@ -189,7 +269,7 @@ class Map {
         this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
 
         this.tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
-        this.tilePropertiesView[y].push(new Uint8Array(this.tilePropertiesBuffer[y][x]));
+        this.tilePropertiesView[y].push(new Int8Array(this.tilePropertiesBuffer[y][x]));
 
         for (let offsetX = 0; offsetX < width; offsetX++) {
           this.lookupX[x * width + offsetX] = x;
