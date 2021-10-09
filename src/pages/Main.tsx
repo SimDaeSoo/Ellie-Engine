@@ -56,7 +56,7 @@ const Main = ({
 
       setUpdater(async () => {
         if (!paused) {
-          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE);
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE, { offset: Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2) });
           map.updateChunks();
         }
 
