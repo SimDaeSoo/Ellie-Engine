@@ -8,7 +8,7 @@ import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
-let border = 4;
+let border = 12;
 
 const Main = ({
   setMouseEventCallback,
@@ -73,6 +73,10 @@ const Main = ({
           }
           case MENU_TYPES.PAUSE: {
             paused = true;
+            break;
+          }
+          case MENU_TYPES.PIXEL_1: {
+            border = 0;
             break;
           }
           case MENU_TYPES.PIXEL_3: {
@@ -152,7 +156,7 @@ const Main = ({
       });
     };
 
-    initialize(4);
+    initialize(3);
   }, [setMouseEventCallback, setUpdater, setMenuSelectCallback]);
 
   return <canvas id='WEB_GL_CANVAS' className='noselect' />;

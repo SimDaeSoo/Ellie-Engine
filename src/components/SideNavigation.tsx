@@ -29,7 +29,7 @@ const HeaderElement = ({ toggle, onClick }: { toggle: boolean; onClick: () => vo
 );
 
 const SideNavigation = ({ isWide }: { isWide: boolean }) => {
-  const [selectedMenus, setSelectedMenus] = useState(['Play', 'Dirt Block', '9px', '4x', '']);
+  const [selectedMenus, setSelectedMenus] = useState(['Play', 'Dirt Block', '25px', '3x', '']);
   const [toggle, setToggle] = useState(isWide ? false : true);
 
   const onSelectMenu = (i: number, name: string, type: MENU_TYPES) => {
