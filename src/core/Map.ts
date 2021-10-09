@@ -454,15 +454,15 @@ class Map {
     if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
     if ((value & BLOCK_TYPE_VALUES.OBSIDIAN) === BLOCK_TYPE_VALUES.OBSIDIAN) return BLOCK_TYPES.OBSIDIAN;
 
-    // return BLOCK_TYPES.EMPTY;
-    throw new Error(
-      `undefined tile type ${value} / 0b${value
-        .toString(2)
-        .padStart(32, '0')
-        .split('')
-        .map((v, i) => (i < 8 ? 0 : v))
-        .join('')}`
-    );
+    return BLOCK_TYPES.EMPTY;
+    // throw new Error(
+    //   `undefined tile type ${value} / 0b${value
+    //     .toString(2)
+    //     .padStart(32, '0')
+    //     .split('')
+    //     .map((v, i) => (i < 8 ? 0 : v))
+    //     .join('')}`
+    // );
   }
 
   public isChunkDirty(x: number, y: number): boolean {
