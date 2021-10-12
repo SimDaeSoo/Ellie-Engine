@@ -1,4 +1,4 @@
-import { BLOCKS, MENU_TYPES } from '../constants';
+import { BLOCKS, MENU_TYPES, BLOCK_TYPES } from '../constants';
 import Map from '../core/Map';
 
 let mouseEventCallback: (x: number, y: number) => void;
@@ -87,58 +87,58 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
 
       switch (menuType) {
         case MENU_TYPES.DIRT: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.DIRT, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 80);
           break;
         }
         case MENU_TYPES.STONE: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.STONE, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.STONE], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
           break;
         }
         case MENU_TYPES.OBSIDIAN: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 2, 120);
           break;
         }
         case MENU_TYPES.IRON: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.IRON, Math.floor(64 + Math.random() * 191));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.IRON], Math.floor(64 + Math.random() * 191));
           map.setTileProperties(x + offsetX, y + offsetY, 2, 120);
           break;
         }
         case MENU_TYPES.SAND: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.SAND, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.SAND], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
         case MENU_TYPES.PEBBLE: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.PEBBLE, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.WATER, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
           break;
         }
         case MENU_TYPES.LAVA: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.LAVA, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
         case MENU_TYPES.ACID: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.ACID, Math.floor(32 + Math.random() * 223));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(32 + Math.random() * 223));
           map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
           break;
         }
         case MENU_TYPES.ERASER: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS.EMPTY, 0);
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.EMPTY], 0);
           map.setTileProperties(x + offsetX, y + offsetY, 2, 0);
           break;
         }

@@ -1,4 +1,4 @@
-import { BLOCK_TYPES, BLOCK_TYPE_VALUES, BLOCK_WEIGHT, TILE_TYPE_BYTES, TILE_PROPERTIES_BYTES, BLOCKS, BLOCK_PROPERTIES } from '../constants';
+import { BLOCK_TYPES, BLOCK_TYPE_VALUES, BLOCK_WEIGHT, TILE_TYPE_BYTES, TILE_PROPERTIES_BYTES, BLOCKS } from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
@@ -78,29 +78,29 @@ class Map {
         switch (type) {
           case BLOCK_TYPES.WATER: {
             if (l === BLOCK_TYPES.LAVA) {
-              this.setTileRgba(x, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
-              this.setTileRgba(x - 1, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x - 1, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileProperties(x, y, 2, 120);
               this.setTileProperties(x - 1, y, 2, 120);
               stateChanged = true;
             }
             if (r === BLOCK_TYPES.LAVA) {
-              this.setTileRgba(x, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
-              this.setTileRgba(x + 1, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x + 1, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileProperties(x, y, 2, 120);
               this.setTileProperties(x + 1, y, 2, 120);
               stateChanged = true;
             }
             if (u === BLOCK_TYPES.LAVA) {
-              this.setTileRgba(x, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
-              this.setTileRgba(x, y - 1, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y - 1, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileProperties(x, y, 2, 120);
               this.setTileProperties(x, y - 1, 2, 120);
               stateChanged = true;
             }
             if (d === BLOCK_TYPES.LAVA) {
-              this.setTileRgba(x, y, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
-              this.setTileRgba(x, y + 1, ...BLOCKS.OBSIDIAN, Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
+              this.setTileRgba(x, y + 1, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileProperties(x, y, 2, 120);
               this.setTileProperties(x, y + 1, 2, 120);
               stateChanged = true;
@@ -194,6 +194,11 @@ class Map {
           tempX = x + Math.round((vectorX / biggerVector) * i);
           tempY = y + Math.round((vectorY / biggerVector) * i);
 
+          if (tempX < 0) tempX = 0;
+          if (tempY < 0) tempY = 0;
+          if (tempX > this.totalWidth - 1) tempX = this.totalWidth - 1;
+          if (tempY > this.totalHeight - 1) tempY = this.totalHeight - 1;
+
           if (tempX >= 0 && tempX < this.totalWidth && tempY >= 0 && tempY < this.totalHeight) {
             if (this.compareTileDensity(type, this.lookupTileType(this.getTile(tempX, tempY)))) {
               targetX = tempX;
@@ -212,80 +217,81 @@ class Map {
         if (collision) {
           if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
             this.setTileProperties(x, y, 0, 0);
-            this.setTileProperties(x, y, 1, 1);
-          } else if (Math.random() < 0.5) {
+            this.setTileProperties(x, y, 1, 0);
+          } else if (!reverse) {
             if (
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY + 1)))
             ) {
-              this.setTileProperties(x, y, 0, Math.abs(Math.random() < BLOCK_PROPERTIES[type][0] ? vectorY * BLOCK_PROPERTIES[type][1] : 0));
-              this.setTileProperties(x, y, 1, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, vectorY);
             } else if (
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))
             ) {
-              this.setTileProperties(x, y, 0, -Math.abs(Math.random() < BLOCK_PROPERTIES[type][0] ? vectorY * BLOCK_PROPERTIES[type][1] : 0));
-              this.setTileProperties(x, y, 1, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, vectorY);
             } else if (
               isLiquid &&
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, 2);
               this.setTileProperties(x, y, 1, 0);
-              targetX++;
             } else if (
               isLiquid &&
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, -BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, -2);
               this.setTileProperties(x, y, 1, 0);
-              targetX--;
             } else {
               this.setTileProperties(x, y, 0, 0);
               this.setTileProperties(x, y, 1, 0);
             }
           } else {
             if (targetY < this.totalHeight - 1 && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))) {
-              this.setTileProperties(x, y, 0, -Math.abs(Math.random() < BLOCK_PROPERTIES[type][0] ? vectorY * BLOCK_PROPERTIES[type][1] : 0));
-              this.setTileProperties(x, y, 1, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, vectorY);
             } else if (
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY + 1)))
             ) {
-              this.setTileProperties(x, y, 0, Math.abs(Math.random() < BLOCK_PROPERTIES[type][0] ? vectorY * BLOCK_PROPERTIES[type][1] : 0));
-              this.setTileProperties(x, y, 1, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
+              this.setTileProperties(x, y, 1, vectorY);
             } else if (
               isLiquid &&
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, -BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, -2);
               this.setTileProperties(x, y, 1, 0);
-              targetX--;
             } else if (
               isLiquid &&
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, BLOCK_PROPERTIES[type][1]);
+              this.setTileProperties(x, y, 0, 2);
               this.setTileProperties(x, y, 1, 0);
-              targetX++;
             } else {
               this.setTileProperties(x, y, 0, 0);
               this.setTileProperties(x, y, 1, 0);
             }
           }
         } else {
-          this.setTileProperties(x, y, 1, vectorY + 1);
+          if (vectorX > 0) {
+            this.setTileProperties(x, y, 0, vectorX - 2);
+          } else if (vectorX < 0) {
+            this.setTileProperties(x, y, 0, vectorX + 2);
+          }
+          this.setTileProperties(x, y, 1, vectorY + 2);
         }
 
         // Swap
@@ -459,16 +465,16 @@ class Map {
   }
 
   public lookupTileType(value: number): BLOCK_TYPES {
-    if ((value & BLOCK_TYPE_VALUES.EMPTY) === 0) return BLOCK_TYPES.EMPTY;
-    if ((value & BLOCK_TYPE_VALUES.IRON) === BLOCK_TYPE_VALUES.IRON) return BLOCK_TYPES.IRON;
-    if ((value & BLOCK_TYPE_VALUES.DIRT) === BLOCK_TYPE_VALUES.DIRT) return BLOCK_TYPES.DIRT;
-    if ((value & BLOCK_TYPE_VALUES.PEBBLE) === BLOCK_TYPE_VALUES.PEBBLE) return BLOCK_TYPES.PEBBLE;
-    if ((value & BLOCK_TYPE_VALUES.SAND) === BLOCK_TYPE_VALUES.SAND) return BLOCK_TYPES.SAND;
-    if ((value & BLOCK_TYPE_VALUES.WATER) === BLOCK_TYPE_VALUES.WATER) return BLOCK_TYPES.WATER;
-    if ((value & BLOCK_TYPE_VALUES.LAVA) === BLOCK_TYPE_VALUES.LAVA) return BLOCK_TYPES.LAVA;
-    if ((value & BLOCK_TYPE_VALUES.STONE) === BLOCK_TYPE_VALUES.STONE) return BLOCK_TYPES.STONE;
-    if ((value & BLOCK_TYPE_VALUES.ACID) === BLOCK_TYPE_VALUES.ACID) return BLOCK_TYPES.ACID;
-    if ((value & BLOCK_TYPE_VALUES.OBSIDIAN) === BLOCK_TYPE_VALUES.OBSIDIAN) return BLOCK_TYPES.OBSIDIAN;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.EMPTY]) === 0) return BLOCK_TYPES.EMPTY;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.IRON]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.IRON]) return BLOCK_TYPES.IRON;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.DIRT]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.DIRT]) return BLOCK_TYPES.DIRT;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.PEBBLE]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.PEBBLE]) return BLOCK_TYPES.PEBBLE;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.SAND]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.SAND]) return BLOCK_TYPES.SAND;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.WATER]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.WATER]) return BLOCK_TYPES.WATER;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.LAVA]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.LAVA]) return BLOCK_TYPES.LAVA;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.STONE]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.STONE]) return BLOCK_TYPES.STONE;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.ACID]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.ACID]) return BLOCK_TYPES.ACID;
+    if ((value & BLOCK_TYPE_VALUES[BLOCK_TYPES.OBSIDIAN]) === BLOCK_TYPE_VALUES[BLOCK_TYPES.OBSIDIAN]) return BLOCK_TYPES.OBSIDIAN;
 
     return BLOCK_TYPES.EMPTY;
     // throw new Error(
