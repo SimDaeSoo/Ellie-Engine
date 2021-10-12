@@ -239,7 +239,7 @@ class Map {
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, 2);
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
               this.setTileProperties(x, y, 1, 0);
             } else if (
               isLiquid &&
@@ -247,7 +247,7 @@ class Map {
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, -2);
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
               this.setTileProperties(x, y, 1, 0);
             } else {
               this.setTileProperties(x, y, 0, 0);
@@ -270,7 +270,7 @@ class Map {
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, -2);
+              this.setTileProperties(x, y, 0, -Math.abs(vectorY));
               this.setTileProperties(x, y, 1, 0);
             } else if (
               isLiquid &&
@@ -278,7 +278,7 @@ class Map {
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
-              this.setTileProperties(x, y, 0, 2);
+              this.setTileProperties(x, y, 0, Math.abs(vectorY));
               this.setTileProperties(x, y, 1, 0);
             } else {
               this.setTileProperties(x, y, 0, 0);
