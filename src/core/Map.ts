@@ -217,7 +217,7 @@ class Map {
         if (collision) {
           if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
             this.setTileProperties(x, y, 0, 0);
-            this.setTileProperties(x, y, 1, 0);
+            this.setTileProperties(x, y, 1, 2);
           } else if (!reverse) {
             if (
               targetY < this.totalHeight - 1 &&
@@ -251,7 +251,7 @@ class Map {
               this.setTileProperties(x, y, 1, 0);
             } else {
               this.setTileProperties(x, y, 0, 0);
-              this.setTileProperties(x, y, 1, 0);
+              this.setTileProperties(x, y, 1, 2);
             }
           } else {
             if (targetY < this.totalHeight - 1 && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))) {
@@ -282,7 +282,7 @@ class Map {
               this.setTileProperties(x, y, 1, 0);
             } else {
               this.setTileProperties(x, y, 0, 0);
-              this.setTileProperties(x, y, 1, 0);
+              this.setTileProperties(x, y, 1, 2);
             }
           }
         } else {
