@@ -216,6 +216,7 @@ class Map {
         // Update Vector
         if (collision) {
           if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
+            targetY++;
             this.setTileProperties(x, y, 0, 0);
             this.setTileProperties(x, y, 1, 2);
           } else if (!reverse) {
