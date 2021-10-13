@@ -54,9 +54,16 @@ const Main = ({
       renderer.setPixelsRenderer(program, width * zoom, height * zoom, splitQuantity);
       renderer.deleteProgram(program);
 
+      let reverse = false;
       setUpdater(async () => {
         if (!paused) {
-          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE, { offset: Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2) });
+          reverse = !reverse;
+
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE, {
+            offset: Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2),
+            reverse,
+          });
+
           map.updateChunks();
         }
 
