@@ -21,9 +21,9 @@ async function run(message: Message): Promise<void> {
       store.map.import(mapData);
       break;
     }
-    case WORKER_COMMAND.MAP_UPDATE_STATE: {
+    case WORKER_COMMAND.MAP_UPDATE: {
       const { offset, reverse } = data;
-      store.map.updateState(offset, reverse);
+      store.map.update(offset, reverse);
       break;
     }
     default: {

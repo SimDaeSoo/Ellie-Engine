@@ -1,4 +1,4 @@
-import { BLOCK_TYPES, BLOCK_TYPE_VALUES, BLOCK_WEIGHT, TILE_TYPE_BYTES, TILE_PROPERTIES_BYTES, BLOCKS, BLOCK_PROPERTIES } from '../constants';
+import { BLOCK_TYPES, BLOCK_TYPE_VALUES, BLOCK_WEIGHT, TILE_TYPE_BYTES, TILE_PROPERTIES_BYTES, BLOCKS, BLOCK_PROPERTIES, TILE_PROPERTY } from '../constants';
 import { isSharedArrayBufferSupport } from '../utils';
 
 class Map {
@@ -33,12 +33,11 @@ class Map {
     this.threadQuantity = threadQuantity;
   }
 
-  public updateState(offset: number): void {
-    const reverse = Math.random() < 0.5 ? true : false;
+  public update(offset: number, reverse: boolean): void {
     let beginX =
       Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * (this.id + 1)) - (this.threadQuantity > 1 ? offset : 0);
     let endX = Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * this.id) - (this.threadQuantity > 1 ? offset : 0);
-    let x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d;
+    let x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling;
     let lifeTime = 0;
 
     if (beginX > this.totalWidth) beginX = this.totalWidth;
@@ -57,12 +56,12 @@ class Map {
         isMovable = !(type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE || type === BLOCK_TYPES.OBSIDIAN || type === BLOCK_TYPES.IRON);
         if (!isMovable) continue;
 
-        lifeTime = this.getTileProperties(x, y, 2);
+        lifeTime = this.getTileProperties(x, y, TILE_PROPERTY.LIFE);
         if ((lifeTime <= 0 && type !== BLOCK_TYPES.EMPTY) || (lifeTime > 0 && type === BLOCK_TYPES.EMPTY)) {
+          this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+          this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 0);
+          this.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
           this.setTileRgba(x, y, 0, 0, 0, 0);
-          this.setTileProperties(x, y, 0, 0);
-          this.setTileProperties(x, y, 1, 0);
-          this.setTileProperties(x, y, 2, 0);
           continue;
         }
 
@@ -82,26 +81,26 @@ class Map {
             if (l === BLOCK_TYPES.LAVA) {
               this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileRgba(x - 1, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
-              this.setTileProperties(x, y, 2, 120);
-              this.setTileProperties(x - 1, y, 2, 120);
+              this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 120);
+              this.setTileProperties(x - 1, y, TILE_PROPERTY.LIFE, 120);
               stateChanged = true;
             } else if (r === BLOCK_TYPES.LAVA) {
               this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileRgba(x + 1, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
-              this.setTileProperties(x, y, 2, 120);
-              this.setTileProperties(x + 1, y, 2, 120);
+              this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 120);
+              this.setTileProperties(x + 1, y, TILE_PROPERTY.LIFE, 120);
               stateChanged = true;
             } else if (u === BLOCK_TYPES.LAVA) {
               this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileRgba(x, y - 1, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
-              this.setTileProperties(x, y, 2, 120);
-              this.setTileProperties(x, y - 1, 2, 120);
+              this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 120);
+              this.setTileProperties(x, y - 1, TILE_PROPERTY.LIFE, 120);
               stateChanged = true;
             } else if (d === BLOCK_TYPES.LAVA) {
               this.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
               this.setTileRgba(x, y + 1, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
-              this.setTileProperties(x, y, 2, 120);
-              this.setTileProperties(x, y + 1, 2, 120);
+              this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 120);
+              this.setTileProperties(x, y + 1, TILE_PROPERTY.LIFE, 120);
               stateChanged = true;
             }
             break;
@@ -113,23 +112,23 @@ class Map {
             d = y < this.totalHeight - 1 ? this.lookupTileType(this.getTile(x, y + 1)) : undefined;
 
             if (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND || l === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x - 1, y, 2, -2);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x - 1, y, TILE_PROPERTY.LIFE, -2);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND || r === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x + 1, y, 2, -2);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x + 1, y, TILE_PROPERTY.LIFE, -2);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND || u === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x, y - 1, 2, -2);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x, y - 1, TILE_PROPERTY.LIFE, -2);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND || d === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x, y + 1, 2, -2);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x, y + 1, TILE_PROPERTY.LIFE, -2);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             }
@@ -142,23 +141,23 @@ class Map {
             d = y < this.totalHeight - 1 ? this.lookupTileType(this.getTile(x, y + 1)) : undefined;
 
             if (l === BLOCK_TYPES.STONE || l === BLOCK_TYPES.DIRT || l === BLOCK_TYPES.SAND || l === BLOCK_TYPES.IRON || l === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x - 1, y, 2, -3);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x - 1, y, TILE_PROPERTY.LIFE, -3);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (r === BLOCK_TYPES.STONE || r === BLOCK_TYPES.DIRT || r === BLOCK_TYPES.SAND || r === BLOCK_TYPES.IRON || r === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x + 1, y, 2, -3);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x + 1, y, TILE_PROPERTY.LIFE, -3);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (u === BLOCK_TYPES.STONE || u === BLOCK_TYPES.DIRT || u === BLOCK_TYPES.SAND || u === BLOCK_TYPES.IRON || u === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x, y - 1, 2, -3);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x, y - 1, TILE_PROPERTY.LIFE, -3);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             } else if (d === BLOCK_TYPES.STONE || d === BLOCK_TYPES.DIRT || d === BLOCK_TYPES.SAND || d === BLOCK_TYPES.IRON || d === BLOCK_TYPES.PEBBLE) {
-              this.addingTileProperties(x, y + 1, 2, -3);
-              this.addingTileProperties(x, y, 2, -1);
+              this.addingTileProperties(x, y + 1, TILE_PROPERTY.LIFE, -3);
+              this.addingTileProperties(x, y, TILE_PROPERTY.LIFE, -1);
               lifeTime--;
               stateChanged = true;
             }
@@ -171,12 +170,22 @@ class Map {
         }
 
         // Move
-        this.addingTileProperties(x, y, 0, 1);
-        scala = this.getTileProperties(x, y, 0);
+        this.addingTileProperties(x, y, TILE_PROPERTY.SCALA, 2);
+        scala = this.getTileProperties(x, y, TILE_PROPERTY.SCALA);
+        stable = this.getTileProperties(x, y, TILE_PROPERTY.STABLE);
+        falling = false;
+
         for (let i = 0; i < scala + BLOCK_PROPERTIES[type][1]; i++) {
           if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
+            if (targetX < this.totalWidth - 1 && Math.random() < BLOCK_PROPERTIES[type][2]) {
+              this.setTileProperties(targetX + 1, targetY, TILE_PROPERTY.STABLE, 0);
+            }
+            if (targetX > 0 && Math.random() < BLOCK_PROPERTIES[type][2]) {
+              this.setTileProperties(targetX - 1, targetY, TILE_PROPERTY.STABLE, 0);
+            }
+            falling = true;
             targetY++;
-          } else if (!reverse) {
+          } else if (!stable && !reverse) {
             if (
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
@@ -184,6 +193,7 @@ class Map {
             ) {
               targetX++;
               targetY++;
+              falling = true;
             } else if (
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
@@ -191,28 +201,30 @@ class Map {
             ) {
               targetX--;
               targetY++;
+              falling = true;
             } else if (
-              isLiquid &&
+              (falling || isLiquid) &&
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
               targetX++;
             } else if (
-              isLiquid &&
+              (falling || isLiquid) &&
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
               targetX--;
             } else {
-              this.setTileProperties(x, y, 0, 0);
+              this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
               break;
             }
-          } else {
+          } else if (!stable) {
             if (targetY < this.totalHeight - 1 && targetX > 0 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY + 1)))) {
               targetX--;
               targetY++;
+              falling = true;
             } else if (
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
@@ -220,36 +232,43 @@ class Map {
             ) {
               targetX++;
               targetY++;
+              falling = true;
             } else if (
-              isLiquid &&
+              (falling || isLiquid) &&
               targetY < this.totalHeight - 1 &&
               targetX > 0 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX - 1, targetY)))
             ) {
               targetX--;
             } else if (
-              isLiquid &&
+              (falling || isLiquid) &&
               targetY < this.totalHeight - 1 &&
               targetX < this.totalWidth - 1 &&
               this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX + 1, targetY)))
             ) {
               targetX++;
             } else {
-              this.setTileProperties(x, y, 0, 0);
+              this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
               break;
             }
+          } else {
+            this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            break;
           }
         }
 
         // Swap
         if (targetX !== x || targetY !== y) {
+          this.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
           this.swapTile(x, y, targetX, targetY);
+        } else if (!isLiquid && targetX === x && targetY === y) {
+          this.setTileProperties(x, y, TILE_PROPERTY.STABLE, 1);
         }
       }
     }
   }
 
-  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 64): void {
+  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 16): void {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -503,12 +522,12 @@ class Map {
     return this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + index];
   }
 
-  public setTileProperties(x: number, y: number, index: number, value: number): void {
-    this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + index] = value;
+  public setTileProperties(x: number, y: number, property: TILE_PROPERTY, value: number): void {
+    this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + property] = value;
   }
 
-  public addingTileProperties(x: number, y: number, index: number, value: number): void {
-    this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + index] += value;
+  public addingTileProperties(x: number, y: number, property: TILE_PROPERTY, value: number): void {
+    this.tilePropertiesView[this.lookupY[y]][this.lookupX[x]][((y % this.height) * this.width + (x % this.width)) * TILE_PROPERTIES_BYTES + property] += value;
   }
 
   public setTileRgba(x: number, y: number, r: number, g: number, b: number, a: number): void {
