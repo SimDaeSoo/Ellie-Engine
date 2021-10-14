@@ -3,6 +3,12 @@ import { IconNames } from 'rsuite/lib/Icon';
 const TILE_TYPE_BYTES = 4;
 const TILE_PROPERTIES_BYTES = 3;
 
+enum TILE_PROPERTY {
+  SCALA = 0,
+  LIFE = 1,
+  STABLE = 2,
+}
+
 enum BLOCK_TYPES {
   IRON,
   PEBBLE,
@@ -34,17 +40,17 @@ const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
 };
 
 // BLOCK HP, LIQUID SPEED, ...ETC
-const BLOCK_PROPERTIES: EnumDictionary<BLOCK_TYPES, [number, number]> = {
-  [BLOCK_TYPES.IRON]: [120, 0],
-  [BLOCK_TYPES.OBSIDIAN]: [120, 0],
-  [BLOCK_TYPES.STONE]: [100, 0],
-  [BLOCK_TYPES.PEBBLE]: [100, 0],
-  [BLOCK_TYPES.DIRT]: [80, 0],
-  [BLOCK_TYPES.SAND]: [60, 0],
-  [BLOCK_TYPES.WATER]: [100, 2],
-  [BLOCK_TYPES.LAVA]: [60, 0],
-  [BLOCK_TYPES.ACID]: [60, 1],
-  [BLOCK_TYPES.EMPTY]: [0, 0],
+const BLOCK_PROPERTIES: EnumDictionary<BLOCK_TYPES, [number, number, number]> = {
+  [BLOCK_TYPES.IRON]: [120, 0, 0],
+  [BLOCK_TYPES.OBSIDIAN]: [120, 0, 0],
+  [BLOCK_TYPES.STONE]: [100, 0, 0],
+  [BLOCK_TYPES.PEBBLE]: [100, 0, 0.02],
+  [BLOCK_TYPES.DIRT]: [80, 0, 0.2],
+  [BLOCK_TYPES.SAND]: [60, 0, 1],
+  [BLOCK_TYPES.WATER]: [100, 2, 0],
+  [BLOCK_TYPES.LAVA]: [60, 0, 0],
+  [BLOCK_TYPES.ACID]: [60, 1, 0],
+  [BLOCK_TYPES.EMPTY]: [0, 0, 0],
 };
 
 const BLOCKS: EnumDictionary<BLOCK_TYPES, [number, number, number]> = {
@@ -75,7 +81,7 @@ const BLOCK_TYPE_VALUES: EnumDictionary<BLOCK_TYPES, number> = {
 
 enum WORKER_COMMAND {
   MAP_INITIALIZE,
-  MAP_UPDATE_STATE,
+  MAP_UPDATE,
 }
 enum WORKER_CALLBACK_COMMAND {
   INITIALIZED,
@@ -115,6 +121,7 @@ enum MENU_TYPES {
   ZOOM_6,
   ZOOM_7,
   ZOOM_8,
+  ZOOM_9,
 }
 
 const NAVIGATIONS: Array<{
@@ -128,14 +135,8 @@ const NAVIGATIONS: Array<{
     name: 'Engine',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
-      {
-        name: 'Play',
-        type: MENU_TYPES.PLAY,
-      },
-      {
-        name: 'Pause',
-        type: MENU_TYPES.PAUSE,
-      },
+      { name: 'Play', type: MENU_TYPES.PLAY },
+      { name: 'Pause', type: MENU_TYPES.PAUSE },
     ],
   },
   {
@@ -143,46 +144,16 @@ const NAVIGATIONS: Array<{
     name: 'Block Drawing',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
-      {
-        name: 'Stone Block',
-        type: MENU_TYPES.STONE,
-      },
-      {
-        name: 'Iron Block',
-        type: MENU_TYPES.IRON,
-      },
-      {
-        name: 'Obsidian Block',
-        type: MENU_TYPES.OBSIDIAN,
-      },
-      {
-        name: 'Pebble Block',
-        type: MENU_TYPES.PEBBLE,
-      },
-      {
-        name: 'Dirt Block',
-        type: MENU_TYPES.DIRT,
-      },
-      {
-        name: 'Sand Block',
-        type: MENU_TYPES.SAND,
-      },
-      {
-        name: 'Water Block',
-        type: MENU_TYPES.WATER,
-      },
-      {
-        name: 'Lava Block',
-        type: MENU_TYPES.LAVA,
-      },
-      {
-        name: 'Acid Block',
-        type: MENU_TYPES.ACID,
-      },
-      {
-        name: 'Erase',
-        type: MENU_TYPES.ERASER,
-      },
+      { name: 'Stone Block', type: MENU_TYPES.STONE },
+      { name: 'Iron Block', type: MENU_TYPES.IRON },
+      { name: 'Obsidian Block', type: MENU_TYPES.OBSIDIAN },
+      { name: 'Pebble Block', type: MENU_TYPES.PEBBLE },
+      { name: 'Dirt Block', type: MENU_TYPES.DIRT },
+      { name: 'Sand Block', type: MENU_TYPES.SAND },
+      { name: 'Water Block', type: MENU_TYPES.WATER },
+      { name: 'Lava Block', type: MENU_TYPES.LAVA },
+      { name: 'Acid Block', type: MENU_TYPES.ACID },
+      { name: 'Erase', type: MENU_TYPES.ERASER },
     ],
   },
   {
@@ -190,38 +161,14 @@ const NAVIGATIONS: Array<{
     name: 'Border Setting',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
-      {
-        name: '1px',
-        type: MENU_TYPES.PIXEL_1,
-      },
-      {
-        name: '3px',
-        type: MENU_TYPES.PIXEL_3,
-      },
-      {
-        name: '9px',
-        type: MENU_TYPES.PIXEL_9,
-      },
-      {
-        name: '15px',
-        type: MENU_TYPES.PIXEL_15,
-      },
-      {
-        name: '25px',
-        type: MENU_TYPES.PIXEL_25,
-      },
-      {
-        name: '40px',
-        type: MENU_TYPES.PIXEL_40,
-      },
-      {
-        name: '60px',
-        type: MENU_TYPES.PIXEL_60,
-      },
-      {
-        name: '100px',
-        type: MENU_TYPES.PIXEL_100,
-      },
+      { name: '1px', type: MENU_TYPES.PIXEL_1 },
+      { name: '3px', type: MENU_TYPES.PIXEL_3 },
+      { name: '9px', type: MENU_TYPES.PIXEL_9 },
+      { name: '15px', type: MENU_TYPES.PIXEL_15 },
+      { name: '25px', type: MENU_TYPES.PIXEL_25 },
+      { name: '40px', type: MENU_TYPES.PIXEL_40 },
+      { name: '60px', type: MENU_TYPES.PIXEL_60 },
+      { name: '100px', type: MENU_TYPES.PIXEL_100 },
     ],
   },
   {
@@ -229,38 +176,15 @@ const NAVIGATIONS: Array<{
     name: 'Zoom',
     type: MENU_TYPES.EMPTY,
     subNavigations: [
-      {
-        name: '1x',
-        type: MENU_TYPES.ZOOM_1,
-      },
-      {
-        name: '2x',
-        type: MENU_TYPES.ZOOM_2,
-      },
-      {
-        name: '3x',
-        type: MENU_TYPES.ZOOM_3,
-      },
-      {
-        name: '4x',
-        type: MENU_TYPES.ZOOM_4,
-      },
-      {
-        name: '5x',
-        type: MENU_TYPES.ZOOM_5,
-      },
-      {
-        name: '6x',
-        type: MENU_TYPES.ZOOM_6,
-      },
-      {
-        name: '7x',
-        type: MENU_TYPES.ZOOM_7,
-      },
-      {
-        name: '8x',
-        type: MENU_TYPES.ZOOM_8,
-      },
+      { name: '1x', type: MENU_TYPES.ZOOM_1 },
+      { name: '2x', type: MENU_TYPES.ZOOM_2 },
+      { name: '3x', type: MENU_TYPES.ZOOM_3 },
+      { name: '4x', type: MENU_TYPES.ZOOM_4 },
+      { name: '5x', type: MENU_TYPES.ZOOM_5 },
+      { name: '6x', type: MENU_TYPES.ZOOM_6 },
+      { name: '7x', type: MENU_TYPES.ZOOM_7 },
+      { name: '8x', type: MENU_TYPES.ZOOM_8 },
+      { name: '9x', type: MENU_TYPES.ZOOM_9 },
     ],
   },
 ];
@@ -277,4 +201,5 @@ export {
   BLOCK_PROPERTIES,
   BLOCK_TYPE_VALUES,
   BLOCK_WEIGHT,
+  TILE_PROPERTY,
 };

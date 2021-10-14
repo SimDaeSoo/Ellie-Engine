@@ -1,4 +1,4 @@
-import { BLOCKS, MENU_TYPES, BLOCK_TYPES } from '../constants';
+import { BLOCKS, MENU_TYPES, BLOCK_TYPES, TILE_PROPERTY } from '../constants';
 import Map from '../core/Map';
 
 let mouseEventCallback: (x: number, y: number) => void;
@@ -88,58 +88,72 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
       switch (menuType) {
         case MENU_TYPES.DIRT: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 80);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 80);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.STONE: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.STONE], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.OBSIDIAN: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 120);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 120);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.IRON: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.IRON], Math.floor(64 + Math.random() * 191));
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 120);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 120);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.SAND: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.SAND], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.PEBBLE: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.WATER: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.LAVA: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.ACID: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(32 + Math.random() * 223));
-          map.setTileProperties(x + offsetX, y + offsetY, 1, 1);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.ERASER: {
           map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.EMPTY], 0);
-          map.setTileProperties(x + offsetX, y + offsetY, 2, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
+          map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         default: {

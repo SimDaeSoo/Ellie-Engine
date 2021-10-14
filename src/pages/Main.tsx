@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
@@ -19,6 +19,7 @@ const Main = ({
   setMenuSelectCallback: (callback: (type: MENU_TYPES) => void) => void;
   setUpdater: (callback: () => void) => void;
 }) => {
+  const [resolution, setResolution] = useState({ width: 0, height: 0 });
   useEffect(() => {
     const initialize = async (zoom: number) => {
       // Container Settings
@@ -28,12 +29,15 @@ const Main = ({
 
       // Each Map Block Resolution
       const splitQuantity = 1;
-      const width = Math.round(innerWidth / splitQuantity / zoom);
-      const height = Math.round(innerHeight / splitQuantity / zoom);
+      const width = Math.ceil(innerWidth / splitQuantity / zoom);
+      const height = Math.ceil(innerHeight / splitQuantity / zoom);
 
       // Create Map
       const map = new Map(0, 1);
       map.create(0, 0, width, height, splitQuantity);
+
+      // Test
+      setResolution({ height: map.totalHeight, width: map.totalWidth });
 
       // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
@@ -59,7 +63,7 @@ const Main = ({
         if (!paused) {
           reverse = !reverse;
 
-          await threadController.run(WORKER_COMMAND.MAP_UPDATE_STATE, {
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE, {
             offset: Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2),
             reverse,
           });
@@ -146,6 +150,10 @@ const Main = ({
             initialize(8);
             break;
           }
+          case MENU_TYPES.ZOOM_9: {
+            initialize(9);
+            break;
+          }
           default: {
             menuType = type;
           }
@@ -166,7 +174,33 @@ const Main = ({
     initialize(3);
   }, [setMouseEventCallback, setUpdater, setMenuSelectCallback]);
 
-  return <canvas id='WEB_GL_CANVAS' className='noselect' />;
+  return (
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          top: '72px',
+          color: '#FFFFFF',
+          width: '100%',
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            padding: '1px 4px',
+            borderRadius: '4px',
+            marginBottom: '2px',
+            display: 'inline-block',
+          }}
+        >
+          {resolution.width} x {resolution.height} ({resolution.width * resolution.height} tiles)
+          <br />[ {window?.navigator?.hardwareConcurrency || 1} threads ]
+        </div>
+      </div>
+      <canvas id='WEB_GL_CANVAS' className='noselect' />
+    </>
+  );
 };
 
 export default Main;
