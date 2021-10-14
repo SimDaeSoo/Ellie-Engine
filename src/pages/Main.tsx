@@ -19,7 +19,7 @@ const Main = ({
   setMenuSelectCallback: (callback: (type: MENU_TYPES) => void) => void;
   setUpdater: (callback: () => void) => void;
 }) => {
-  const [resolution, setResolution] = useState({ width: 0, height: 0 });
+  const [resolution, setResolution] = useState({ width: 0, height: 0, canvasWidth: 0 });
   useEffect(() => {
     const initialize = async (zoom: number) => {
       // Container Settings
@@ -37,7 +37,7 @@ const Main = ({
       map.create(0, 0, width, height, splitQuantity);
 
       // Test
-      setResolution({ height: map.totalHeight, width: map.totalWidth });
+      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
 
       // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
@@ -181,7 +181,7 @@ const Main = ({
           position: 'absolute',
           top: '72px',
           color: '#FFFFFF',
-          width: '100%',
+          width: resolution.canvasWidth,
           textAlign: 'center',
         }}
       >
