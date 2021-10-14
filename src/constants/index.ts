@@ -35,7 +35,7 @@ const BLOCK_WEIGHT: EnumDictionary<BLOCK_TYPES, number> = {
   [BLOCK_TYPES.SAND]: 3,
   [BLOCK_TYPES.WATER]: 2,
   [BLOCK_TYPES.LAVA]: 2,
-  [BLOCK_TYPES.ACID]: 1,
+  [BLOCK_TYPES.ACID]: 2,
   [BLOCK_TYPES.EMPTY]: 0,
 };
 
