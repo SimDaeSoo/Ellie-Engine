@@ -33,17 +33,19 @@ class Map {
     this.threadQuantity = threadQuantity;
   }
 
-  public update(offset: number, reverse: boolean): void {
+  public update(offset: number, reverse: boolean, sequence: number, maxSequence: number): void {
     let beginX =
       Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * (this.id + 1)) - (this.threadQuantity > 1 ? offset : 0);
     let endX = Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * this.id) - (this.threadQuantity > 1 ? offset : 0);
+    let beginY = Math.ceil((this.totalHeight / maxSequence) * (maxSequence - sequence)) - 1;
+    let endY = Math.ceil((this.totalHeight / maxSequence) * (maxSequence - sequence - 1));
     let x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling;
     let lifeTime = 0;
 
     if (beginX > this.totalWidth) beginX = this.totalWidth;
     if (endX < 0) endX = 0;
 
-    for (let y = this.totalHeight - 1; y >= 0; y--) {
+    for (let y = beginY; y >= endY; y--) {
       for (let _x = beginX - 1; _x >= endX; _x--) {
         x = reverse ? endX + (beginX - _x - 1) : _x;
         if (!this.isChunkDirty(x, y)) {
