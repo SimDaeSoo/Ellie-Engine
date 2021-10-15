@@ -58,22 +58,30 @@ const Main = ({
       renderer.setPixelsRenderer(program, width * zoom, height * zoom, splitQuantity);
       renderer.deleteProgram(program);
 
+      const maxSequence = 2;
+      let sequence = 0;
       let reverse = false;
+      let offset = 0;
+
       setUpdater(async () => {
         if (!paused) {
-          reverse = !reverse;
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse, sequence, maxSequence });
 
-          await threadController.run(WORKER_COMMAND.MAP_UPDATE, {
-            offset: Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2),
-            reverse,
-          });
+          if (++sequence % maxSequence === 0) {
+            reverse = !reverse;
+            offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
+            sequence = 0;
+            map.updateChunks();
 
-          map.updateChunks();
+            // Render
+            renderer.clear(0, 0, 0, 0);
+            renderer.pixelsRendering(map.tileRgbaView, width, height);
+          }
+        } else {
+          // Render
+          renderer.clear(0, 0, 0, 0);
+          renderer.pixelsRendering(map.tileRgbaView, width, height);
         }
-
-        // Render
-        renderer.clear(0, 0, 0, 0);
-        renderer.pixelsRendering(map.tileRgbaView, width, height);
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {
@@ -184,6 +192,7 @@ const Main = ({
           width: resolution.canvasWidth,
           textAlign: 'center',
         }}
+        className='noselect'
       >
         <div
           style={{
