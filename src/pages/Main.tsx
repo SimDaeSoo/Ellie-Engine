@@ -3,7 +3,7 @@ import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
-import { fragmentShaderGLSL, vertexShaderGLSL } from '../shaders/PixelShader';
+import * as PixelShader from '../shaders/PixelShader';
 import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
@@ -49,8 +49,8 @@ const Main = ({
 
       // Set Renderer
       const renderer = new Renderer('WEB_GL_CANVAS', innerWidth, innerHeight);
-      const vertexShader = renderer.createVertexShader(vertexShaderGLSL);
-      const fragmentShader = renderer.createFragmentShader(fragmentShaderGLSL);
+      const vertexShader = renderer.createVertexShader(PixelShader.vertexShaderGLSL);
+      const fragmentShader = renderer.createFragmentShader(PixelShader.fragmentShaderGLSL);
       const program = renderer.createProgram(vertexShader, fragmentShader);
 
       renderer.setViewport(0, 0, width * splitQuantity * zoom, height * splitQuantity * zoom);
