@@ -200,8 +200,15 @@ class Map {
         }
 
         // Move
-        this.addingTileProperties(x, y, TILE_PROPERTY.SCALA, 2);
         scala = this.getTileProperties(x, y, TILE_PROPERTY.SCALA);
+        if (scala >= 0 && scala <= 198) {
+          this.addingTileProperties(x, y, TILE_PROPERTY.SCALA, 2);
+          scala += 2;
+        } else if (scala < 0) {
+          this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+          scala = 0;
+        }
+
         stable = this.getTileProperties(x, y, TILE_PROPERTY.STABLE);
         falling = false;
 
