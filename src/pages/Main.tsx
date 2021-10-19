@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
+import * as PIXI from 'pixi.js';
 import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
-import * as PixelShader from '../shaders/PixelShader';
 import { fillTile } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
@@ -22,41 +22,43 @@ const Main = ({
   const [resolution, setResolution] = useState({ width: 0, height: 0, canvasWidth: 0 });
   useEffect(() => {
     const initialize = async (zoom: number) => {
-      // Container Settings
       const container = document.getElementById('content') as HTMLElement;
       const innerWidth = container.getBoundingClientRect().width;
       const innerHeight = container.getBoundingClientRect().height;
-
-      // Each Map Block Resolution
-      const splitQuantity = 1;
+      const splitQuantity = 8;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
-
-      // Create Map
-      const map = new Map(0, 1);
-      map.create(0, 0, width, height, splitQuantity);
-
-      // Test
-      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
-
-      // Set Multi Thread Controller
       const threadQuantity = window.navigator.hardwareConcurrency;
       const threadController = new MultiThread(threadQuantity);
+      const map = new Map(0, 1);
+      const renderer = new Renderer('render-canvas', innerWidth, innerHeight, window.devicePixelRatio);
+
+      map.create(0, 0, width, height, splitQuantity);
+      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
+
+      const textures: Array<Array<PIXI.Texture>> = [];
+
+      for (let y = 0; y < map.tileRgbaView.length; y++) {
+        textures.push([]);
+
+        for (let x = 0; x < map.tileRgbaView[y].length; x++) {
+          const texture = PIXI.Texture.fromBuffer(map.tileRgbaView[y][x], width, height);
+          const sprite = new PIXI.Sprite(texture);
+
+          sprite.x = width * x * zoom;
+          sprite.y = height * y * zoom;
+          sprite.width = width * zoom;
+          sprite.height = height * zoom;
+
+          renderer.app.stage.addChild(sprite);
+          textures[y].push(texture);
+        }
+      }
+
       await threadController.initialize();
       threadController.run(WORKER_COMMAND.MAP_INITIALIZE, {
         map: map.export(),
       });
-
-      // Set Renderer
-      const renderer = new Renderer('WEB_GL_CANVAS', innerWidth, innerHeight);
-      const vertexShader = renderer.createVertexShader(PixelShader.vertexShaderGLSL);
-      const fragmentShader = renderer.createFragmentShader(PixelShader.fragmentShaderGLSL);
-      const program = renderer.createProgram(vertexShader, fragmentShader);
-
-      renderer.setViewport(0, 0, width * splitQuantity * zoom, height * splitQuantity * zoom);
-      renderer.useProgram(program);
-      renderer.setPixelsRenderer(program, width * zoom, height * zoom, splitQuantity);
-      renderer.deleteProgram(program);
 
       const maxSequence = 2;
       let sequence = 0;
@@ -71,17 +73,28 @@ const Main = ({
             reverse = !reverse;
             offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
             sequence = 0;
-            map.updateChunks();
 
-            // Render
-            renderer.clear(0, 0, 0, 0);
-            renderer.pixelsRendering(map.tileRgbaView, width, height);
+            for (let y = 0; y < splitQuantity; y++) {
+              for (let x = 0; x < splitQuantity; x++) {
+                if (map.isDirtyTextureChunk(x, y)) {
+                  textures[y][x].update();
+                }
+              }
+            }
+
+            map.updateChunks();
+            renderer.render();
           }
         } else {
-          // Render
-          renderer.clear(0, 0, 0, 0);
-          renderer.pixelsRendering(map.tileRgbaView, width, height);
+          for (let y = 0; y < splitQuantity; y++) {
+            for (let x = 0; x < splitQuantity; x++) {
+              if (map.isDirtyTextureChunk(x, y)) {
+                textures[y][x].update();
+              }
+            }
+          }
         }
+        renderer.render();
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {
@@ -179,7 +192,7 @@ const Main = ({
       });
     };
 
-    initialize(3);
+    initialize(2);
   }, [setMouseEventCallback, setUpdater, setMenuSelectCallback]);
 
   return (
@@ -207,7 +220,7 @@ const Main = ({
           <br />[ {window?.navigator?.hardwareConcurrency || 1} threads ]
         </div>
       </div>
-      <canvas id='WEB_GL_CANVAS' className='noselect' />
+      <canvas id='render-canvas' className='noselect' />
     </>
   );
 };
