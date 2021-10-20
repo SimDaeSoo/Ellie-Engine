@@ -6,8 +6,8 @@ class Map {
   public threadQuantity: number;
   public chunkSize: number = 0;
 
-  public tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
   public tileRgbaView: Array<Array<Uint8Array>> = [];
+  public tileBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
   public tileView: Array<Array<Uint32Array>> = [];
   public tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>> = [];
   public tilePropertiesView: Array<Array<Int8Array>> = [];
@@ -15,8 +15,6 @@ class Map {
   public chunkView: Uint8Array = new Uint8Array(this.chunkBuffer);
   public nextChunkBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
   public nextChunkView: Uint8Array = new Uint8Array(this.nextChunkBuffer);
-  public splitedChunkDirtyBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
-  public splitedChunkDirtyView: Uint8Array = new Uint8Array(this.splitedChunkDirtyBuffer);
 
   public width: number = 0;
   public height: number = 0;
@@ -57,8 +55,10 @@ class Map {
 
         tile = this.getTile(x, y);
         type = this.lookupTileType(tile);
-        lifeTime = this.getTileProperties(x, y, TILE_PROPERTY.LIFE);
+        isMovable = !(type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE || type === BLOCK_TYPES.OBSIDIAN || type === BLOCK_TYPES.IRON);
+        if (!isMovable) continue;
 
+        lifeTime = this.getTileProperties(x, y, TILE_PROPERTY.LIFE);
         if ((lifeTime <= 0 && type !== BLOCK_TYPES.EMPTY) || (lifeTime > 0 && type === BLOCK_TYPES.EMPTY)) {
           this.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
           this.setTileProperties(x, y, TILE_PROPERTY.LIFE, 0);
@@ -66,9 +66,6 @@ class Map {
           this.setTileRgba(x, y, 0, 0, 0, 0);
           continue;
         }
-
-        isMovable = !(type === BLOCK_TYPES.EMPTY || type === BLOCK_TYPES.STONE || type === BLOCK_TYPES.OBSIDIAN || type === BLOCK_TYPES.IRON);
-        if (!isMovable) continue;
 
         targetX = x;
         targetY = y;
@@ -339,15 +336,12 @@ class Map {
     if (sharedArrayBufferSupported) {
       this.chunkBuffer = new SharedArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
       this.nextChunkBuffer = new SharedArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
-      this.splitedChunkDirtyBuffer = new SharedArrayBuffer(this.splitQuantity * this.splitQuantity);
     } else {
       this.chunkBuffer = new ArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
       this.nextChunkBuffer = new ArrayBuffer(Math.ceil(this.totalWidth / chunkSize) * Math.ceil(this.totalHeight / chunkSize));
-      this.splitedChunkDirtyBuffer = new ArrayBuffer(this.splitQuantity * this.splitQuantity);
     }
     this.chunkView = new Uint8Array(this.chunkBuffer);
     this.nextChunkView = new Uint8Array(this.nextChunkBuffer);
-    this.splitedChunkDirtyView = new Uint8Array(this.splitedChunkDirtyBuffer);
 
     for (let y = 0; y < this.splitQuantity; y++) {
       this.tileRgbaView.push([]);
@@ -387,14 +381,13 @@ class Map {
     chunkBuffer: ArrayBuffer | SharedArrayBuffer;
     nextChunkBuffer: ArrayBuffer | SharedArrayBuffer;
     chunkSize: number;
-    splitedChunkDirtyBuffer: ArrayBuffer | SharedArrayBuffer;
     x: number;
     y: number;
     width: number;
     height: number;
     splitQuantity: number;
   }): void {
-    const { tileBuffer, tilePropertiesBuffer, chunkBuffer, nextChunkBuffer, chunkSize, splitedChunkDirtyBuffer, x, y, width, height, splitQuantity } = data;
+    const { tileBuffer, tilePropertiesBuffer, chunkBuffer, nextChunkBuffer, chunkSize, x, y, width, height, splitQuantity } = data;
 
     this.tileRgbaView = [];
     this.chunkBuffer = chunkBuffer;
@@ -403,7 +396,6 @@ class Map {
     this.tileView = [];
     this.tilePropertiesBuffer = tilePropertiesBuffer;
     this.tilePropertiesView = [];
-    this.splitedChunkDirtyBuffer = splitedChunkDirtyBuffer;
 
     this.width = width;
     this.height = height;
@@ -419,7 +411,6 @@ class Map {
     this.chunkLookupY = new Array(this.totalHeight);
     this.chunkView = new Uint8Array(this.chunkBuffer);
     this.nextChunkView = new Uint8Array(this.nextChunkBuffer);
-    this.splitedChunkDirtyView = new Uint8Array(this.splitedChunkDirtyBuffer);
 
     for (let x = 0; x < this.totalWidth; x++) {
       this.chunkLookupX[x] = Math.floor(x / this.chunkSize);
@@ -455,7 +446,6 @@ class Map {
     tilePropertiesBuffer: Array<Array<ArrayBuffer | SharedArrayBuffer>>;
     chunkBuffer: ArrayBuffer | SharedArrayBuffer;
     nextChunkBuffer: ArrayBuffer | SharedArrayBuffer;
-    splitedChunkDirtyBuffer: ArrayBuffer | SharedArrayBuffer;
     x: number;
     y: number;
     width: number;
@@ -468,7 +458,6 @@ class Map {
       tilePropertiesBuffer: this.tilePropertiesBuffer,
       chunkBuffer: this.chunkBuffer,
       nextChunkBuffer: this.nextChunkBuffer,
-      splitedChunkDirtyBuffer: this.splitedChunkDirtyBuffer,
       x: this.x,
       y: this.y,
       width: this.width,
@@ -501,10 +490,6 @@ class Map {
     // );
   }
 
-  public isDirtyTextureChunk(x: number, y: number): boolean {
-    return !!this.splitedChunkDirtyView[y * this.splitQuantity + x];
-  }
-
   public isChunkDirty(x: number, y: number): boolean {
     return !!this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x]];
   }
@@ -528,19 +513,12 @@ class Map {
     }
     this.chunkView[this.chunkLookupY[y] + this.chunkLookupX[x]] = 1;
     this.nextChunkView[this.chunkLookupY[y] + this.chunkLookupX[x]] = 1;
-
-    this.splitedChunkDirtyView[Math.floor(y / this.height) * this.splitQuantity + Math.floor(x / this.width)] = 1;
   }
 
   public updateChunks(): void {
     for (let i = 0; i < this.nextChunkView.byteLength; i++) {
       this.chunkView[i] = this.nextChunkView[i] ? 1 : 0;
       this.nextChunkView[i] = 0;
-    }
-    for (let y = 0; y < this.splitQuantity; y++) {
-      for (let x = 0; x < this.splitQuantity; x++) {
-        this.splitedChunkDirtyView[y * this.splitQuantity + x] = 0;
-      }
     }
   }
 
