@@ -28,7 +28,7 @@ const Main = ({
       const innerHeight = container.getBoundingClientRect().height;
 
       // Each Map Block Resolution
-      const splitQuantity = 1;
+      const splitQuantity = 8;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
 
