@@ -311,7 +311,7 @@ class Map {
     }
   }
 
-  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 8): void {
+  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 16): void {
     this.x = x;
     this.y = y;
     this.width = width;
