@@ -108,8 +108,8 @@ const Main = ({
               }
             }
 
-            map.updateChunks();
             renderer.render();
+            map.updateChunks();
           }
         } else {
           for (let y = 0; y < splitQuantity; y++) {
@@ -119,8 +119,8 @@ const Main = ({
               }
             }
           }
+          renderer.render();
         }
-        renderer.render();
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {

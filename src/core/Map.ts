@@ -311,7 +311,7 @@ class Map {
     }
   }
 
-  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 16): void {
+  public create(x: number, y: number, width: number, height: number, splitQuantity: number = 1, chunkSize: number = 8): void {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -326,9 +326,9 @@ class Map {
     this.chunkLookupY = new Array(this.totalHeight);
     this.splitedChunkLookupX = new Array(this.totalWidth);
     this.splitedChunkLookupY = new Array(this.totalHeight);
-    this.tileRgbaView = [];
     this.tileBuffer = [];
     this.tileView = [];
+    this.tileRgbaView = [];
     this.tilePropertiesBuffer = [];
     this.tilePropertiesView = [];
 
@@ -357,10 +357,9 @@ class Map {
     this.splitedChunkDirtyView = new Uint8Array(this.splitedChunkDirtyBuffer);
 
     for (let y = 0; y < this.splitQuantity; y++) {
-      this.tileRgbaView.push([]);
-
       this.tileBuffer.push([]);
       this.tileView.push([]);
+      this.tileRgbaView.push([]);
       this.tilePropertiesBuffer.push([]);
       this.tilePropertiesView.push([]);
 
@@ -403,11 +402,11 @@ class Map {
   }): void {
     const { tileBuffer, tilePropertiesBuffer, chunkBuffer, nextChunkBuffer, chunkSize, splitedChunkDirtyBuffer, x, y, width, height, splitQuantity } = data;
 
+    this.tileBuffer = tileBuffer;
+    this.tileView = [];
     this.tileRgbaView = [];
     this.chunkBuffer = chunkBuffer;
     this.nextChunkBuffer = nextChunkBuffer;
-    this.tileBuffer = tileBuffer;
-    this.tileView = [];
     this.tilePropertiesBuffer = tilePropertiesBuffer;
     this.tilePropertiesView = [];
     this.splitedChunkDirtyBuffer = splitedChunkDirtyBuffer;
@@ -446,9 +445,8 @@ class Map {
       this.tilePropertiesView.push([]);
 
       for (let x = 0; x < this.splitQuantity; x++) {
-        this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
-
         this.tileView[y].push(new Uint32Array(this.tileBuffer[y][x]));
+        this.tileRgbaView[y].push(new Uint8Array(this.tileBuffer[y][x]));
         this.tilePropertiesView[y].push(new Int8Array(this.tilePropertiesBuffer[y][x]));
 
         for (let offsetX = 0; offsetX < width; offsetX++) {
