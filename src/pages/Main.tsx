@@ -25,66 +25,66 @@ const Main = ({
       const container = document.getElementById('content') as HTMLElement;
       const innerWidth = container.getBoundingClientRect().width;
       const innerHeight = container.getBoundingClientRect().height;
-      const splitQuantity = 8;
+      const splitQuantity = 12;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
       const threadQuantity = window.navigator.hardwareConcurrency;
       const threadController = new MultiThread(threadQuantity);
       const map = new Map(0, 1);
-      // const renderer = new Renderer('render-canvas', innerWidth, innerHeight, window.devicePixelRatio);
+      const renderer = new Renderer('render-canvas', innerWidth, innerHeight, window.devicePixelRatio);
 
       map.create(0, 0, width, height, splitQuantity);
       setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
 
-      for (let y = 0; y < map.totalHeight; y++) {
-        for (let x = 0; x < map.totalWidth; x++) {
-          if (y > Math.floor((map.totalHeight / 5) * 4)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor(map.totalHeight / 5) * 1) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          }
-        }
-      }
-
-      // const textures: Array<Array<PIXI.Texture>> = [];
-
-      // for (let y = 0; y < map.tileRgbaView.length; y++) {
-      //   textures.push([]);
-
-      //   for (let x = 0; x < map.tileRgbaView[y].length; x++) {
-      //     const texture = PIXI.Texture.fromBuffer(map.tileRgbaView[y][x], width, height);
-      //     const sprite = new PIXI.Sprite(texture);
-
-      //     sprite.x = width * x * zoom;
-      //     sprite.y = height * y * zoom;
-      //     sprite.width = width * zoom;
-      //     sprite.height = height * zoom;
-
-      //     renderer.app.stage.addChild(sprite);
-      //     textures[y].push(texture);
+      // for (let y = 0; y < map.totalHeight; y++) {
+      //   for (let x = 0; x < map.totalWidth; x++) {
+      //     if (y > Math.floor((map.totalHeight / 5) * 4)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor(map.totalHeight / 5) * 1) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     }
       //   }
       // }
+
+      const textures: Array<Array<PIXI.Texture>> = [];
+
+      for (let y = 0; y < map.tileRgbaView.length; y++) {
+        textures.push([]);
+
+        for (let x = 0; x < map.tileRgbaView[y].length; x++) {
+          const texture = PIXI.Texture.fromBuffer(map.tileRgbaView[y][x], width, height);
+          const sprite = new PIXI.Sprite(texture);
+
+          sprite.x = width * x * zoom;
+          sprite.y = height * y * zoom;
+          sprite.width = width * zoom;
+          sprite.height = height * zoom;
+
+          renderer.app.stage.addChild(sprite);
+          textures[y].push(texture);
+        }
+      }
 
       await threadController.initialize();
       threadController.run(WORKER_COMMAND.MAP_INITIALIZE, {
@@ -105,26 +105,26 @@ const Main = ({
             offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
             sequence = 0;
 
-            // for (let y = 0; y < splitQuantity; y++) {
-            //   for (let x = 0; x < splitQuantity; x++) {
-            //     if (map.isDirtyTextureChunk(x, y)) {
-            //       textures[y][x].update();
-            //     }
-            //   }
-            // }
+            for (let y = 0; y < splitQuantity; y++) {
+              for (let x = 0; x < splitQuantity; x++) {
+                if (map.isDirtyTextureChunk(x, y)) {
+                  textures[y][x].update();
+                }
+              }
+            }
 
-            // renderer.render();
+            renderer.render();
             map.updateChunks();
           }
         } else {
-          // for (let y = 0; y < splitQuantity; y++) {
-          //   for (let x = 0; x < splitQuantity; x++) {
-          //     if (map.isDirtyTextureChunk(x, y)) {
-          //       textures[y][x].update();
-          //     }
-          //   }
-          // }
-          // renderer.render();
+          for (let y = 0; y < splitQuantity; y++) {
+            for (let x = 0; x < splitQuantity; x++) {
+              if (map.isDirtyTextureChunk(x, y)) {
+                textures[y][x].update();
+              }
+            }
+          }
+          renderer.render();
         }
       });
 
