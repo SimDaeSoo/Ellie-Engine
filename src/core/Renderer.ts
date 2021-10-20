@@ -21,7 +21,7 @@ class Renderer {
       antialias: false,
       forceCanvas: false,
       preserveDrawingBuffer: false,
-      clearBeforeRender: false,
+      clearBeforeRender: true,
       useContextAlpha: false,
       backgroundAlpha: 1,
       autoDensity: true,
