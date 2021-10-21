@@ -4,7 +4,7 @@ import { BLOCKS, BLOCK_TYPES, MENU_TYPES, TILE_PROPERTY, WORKER_COMMAND } from '
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
-import { fillTile } from '../utils';
+import { fillTile, shffle } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
@@ -28,44 +28,45 @@ const Main = ({
       const splitQuantity = 12;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
-      const threadQuantity = window.navigator.hardwareConcurrency;
+      // TODO : Physical CPU Quantity 로 바꾸기.
+      const threadQuantity = window.navigator.hardwareConcurrency || 1;
       const threadController = new MultiThread(threadQuantity);
-      const map = new Map(0, 1);
+      const map = new Map(0, threadQuantity);
       const renderer = new Renderer('render-canvas', innerWidth, innerHeight, window.devicePixelRatio);
 
       map.create(0, 0, width, height, splitQuantity);
       setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
 
-      // for (let y = 0; y < map.totalHeight; y++) {
-      //   for (let x = 0; x < map.totalWidth; x++) {
-      //     if (y > Math.floor((map.totalHeight / 5) * 4)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor(map.totalHeight / 5) * 1) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     }
-      //   }
-      // }
+      for (let y = 0; y < map.totalHeight; y++) {
+        for (let x = 0; x < map.totalWidth; x++) {
+          if (y > Math.floor((map.totalHeight / 5) * 4)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor(map.totalHeight / 5) * 1) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          }
+        }
+      }
 
       const textures: Array<Array<PIXI.Texture>> = [];
 
@@ -91,19 +92,19 @@ const Main = ({
         map: map.export(),
       });
 
-      const maxSequence = 2;
-      let sequence = 0;
       let reverse = false;
       let offset = 0;
+      let ids = new Array(threadQuantity).fill(1).map((_v, i) => i);
 
       setUpdater(async () => {
         if (!paused) {
-          await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse, sequence, maxSequence });
+          await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse });
 
-          if (++sequence % maxSequence === 0) {
+          if (map.updated) {
+            await threadController.run(WORKER_COMMAND.MAP_ID_SHFFLE, { ids: shffle(ids) });
+
             reverse = !reverse;
             offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
-            sequence = 0;
 
             for (let y = 0; y < splitQuantity; y++) {
               for (let x = 0; x < splitQuantity; x++) {
@@ -114,7 +115,7 @@ const Main = ({
             }
 
             renderer.render();
-            map.updateChunks();
+            map.clean();
           }
         } else {
           for (let y = 0; y < splitQuantity; y++) {
@@ -125,6 +126,7 @@ const Main = ({
             }
           }
           renderer.render();
+          map.clean();
         }
       });
 

@@ -172,4 +172,15 @@ const isSharedArrayBufferSupport = () => {
   }
 };
 
-export { setController, setMouseEventCallback, setUpdater, updater, setMenuSelectCallback, menuSelectCallback, fillTile, isSharedArrayBufferSupport };
+function shffle<T>(values: Array<T>): Array<T> {
+  const _values: Array<T> = [...values];
+  const newValues: Array<T> = [];
+
+  while (_values.length) {
+    newValues.push(..._values.splice(Math.floor(Math.random() * _values.length), 1));
+  }
+
+  return newValues;
+}
+
+export { setController, setMouseEventCallback, setUpdater, updater, setMenuSelectCallback, menuSelectCallback, fillTile, isSharedArrayBufferSupport, shffle };

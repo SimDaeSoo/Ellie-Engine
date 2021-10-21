@@ -22,8 +22,13 @@ async function run(message: Message): Promise<void> {
       break;
     }
     case WORKER_COMMAND.MAP_UPDATE: {
-      const { offset, reverse, sequence, maxSequence } = data;
-      store.map.update(offset, reverse, sequence, maxSequence);
+      const { offset, reverse } = data;
+      store.map.update(offset, reverse);
+      break;
+    }
+    case WORKER_COMMAND.MAP_ID_SHFFLE: {
+      const { ids } = data;
+      store.map.id = ids[id];
       break;
     }
     default: {
