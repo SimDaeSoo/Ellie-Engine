@@ -41,7 +41,7 @@ class Map {
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
-    this.simulator = this.simulateGenerator(5, 3000);
+    this.simulator = this.simulateGenerator(14, 3000);
   }
 
   private *simulateGenerator(limitDuration: number, accumulateLimit: number) {
