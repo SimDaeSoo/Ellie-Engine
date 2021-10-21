@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
-import { BLOCKS, BLOCK_TYPES, MENU_TYPES, TILE_PROPERTY, WORKER_COMMAND } from '../constants';
+import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
