@@ -41,7 +41,7 @@ class Map {
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
-    this.simulator = this.simulateGenerator(5, 15000);
+    this.simulator = this.simulateGenerator(5, 3000);
   }
 
   private *simulateGenerator(limitDuration: number, accumulateLimit: number) {
@@ -85,12 +85,14 @@ class Map {
             accumulate = 0;
             if (Date.now() - begin >= limitDuration) begin = yield;
           }
+
           x = this.reverse ? ex + (sx - _x - 1) : _x;
           if (!this.isChunkDirty(x, y)) {
             x -= x % this.chunkSize;
             continue;
           }
 
+          accumulate++;
           tile = this.getTile(x, y);
           type = this.lookupTileType(tile);
           if (type === BLOCK_TYPES.EMPTY) continue;
@@ -255,6 +257,7 @@ class Map {
           stable = this.getTileProperties(x, y, TILE_PROPERTY.STABLE);
           falling = false;
 
+          accumulate += (scala + BLOCK_PROPERTIES[type][1]) / 10;
           for (let i = 0; i < scala + BLOCK_PROPERTIES[type][1]; i++) {
             if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
               if (targetX < this.totalWidth - 1 && Math.random() < BLOCK_PROPERTIES[type][2]) {
@@ -345,7 +348,7 @@ class Map {
             this.setTileProperties(x, y, TILE_PROPERTY.STABLE, 1);
           }
 
-          accumulate += 4;
+          accumulate += 2;
         }
       }
       yield true;
