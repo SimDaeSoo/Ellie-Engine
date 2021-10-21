@@ -41,8 +41,7 @@ class Map {
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
-    // CPU Thread 가 찐이냐에 따라 달리 넣어야함.
-    this.simulator = this.simulateGenerator(6, 15000);
+    this.simulator = this.simulateGenerator(5, 15000);
   }
 
   private *simulateGenerator(limitDuration: number, accumulateLimit: number) {

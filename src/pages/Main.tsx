@@ -4,7 +4,7 @@ import { BLOCKS, BLOCK_TYPES, MENU_TYPES, TILE_PROPERTY, WORKER_COMMAND } from '
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
-import { fillTile } from '../utils';
+import { fillTile, shffle } from '../utils';
 
 let menuType = MENU_TYPES.DIRT;
 let paused = false;
@@ -27,8 +27,7 @@ const Main = ({
       const innerHeight = container.getBoundingClientRect().height;
       const splitQuantity = 12;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
-      const height = Math.ceil(innerHeight / splitQuantity / zoom)
-      // CPU Thread 가 찐이냐에 따라 달리 넣어야함.;
+      const height = Math.ceil(innerHeight / splitQuantity / zoom);
       const threadQuantity = window.navigator.hardwareConcurrency;
       const threadController = new MultiThread(threadQuantity);
       const map = new Map(0, threadQuantity);
@@ -94,12 +93,15 @@ const Main = ({
 
       let reverse = false;
       let offset = 0;
+      let ids = new Array(threadQuantity).fill(1).map((_v, i) => i);
 
       setUpdater(async () => {
         if (!paused) {
           await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse });
 
           if (map.updated) {
+            await threadController.run(WORKER_COMMAND.MAP_ID_SHFFLE, { ids: shffle(ids) });
+
             reverse = !reverse;
             offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
 

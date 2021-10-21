@@ -26,6 +26,11 @@ async function run(message: Message): Promise<void> {
       store.map.update(offset, reverse);
       break;
     }
+    case WORKER_COMMAND.MAP_ID_SHFFLE: {
+      const { ids } = data;
+      store.map.id = ids[id];
+      break;
+    }
     default: {
       throw new Error(`${command} is not defined`);
     }
