@@ -28,6 +28,7 @@ const Main = ({
       const splitQuantity = 12;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
+      // TODO : Physical CPU Quantity 로 바꾸기.
       const threadQuantity = window.navigator.hardwareConcurrency || 1;
       const threadController = new MultiThread(threadQuantity);
       const map = new Map(0, threadQuantity);
@@ -36,36 +37,36 @@ const Main = ({
       map.create(0, 0, width, height, splitQuantity);
       setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
 
-      for (let y = 0; y < map.totalHeight; y++) {
-        for (let x = 0; x < map.totalWidth; x++) {
-          if (y > Math.floor((map.totalHeight / 5) * 4)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else if (y > Math.floor(map.totalHeight / 5) * 1) {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          } else {
-            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
-            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-          }
-        }
-      }
+      // for (let y = 0; y < map.totalHeight; y++) {
+      //   for (let x = 0; x < map.totalWidth; x++) {
+      //     if (y > Math.floor((map.totalHeight / 5) * 4)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else if (y > Math.floor(map.totalHeight / 5) * 1) {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     } else {
+      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      //     }
+      //   }
+      // }
 
       const textures: Array<Array<PIXI.Texture>> = [];
 
