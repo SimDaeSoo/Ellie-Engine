@@ -19,6 +19,8 @@ class Map {
   public splitedChunkDirtyView: Uint8Array = new Uint8Array(this.splitedChunkDirtyBuffer);
   public threadStatusBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
   public threadStatusView: Uint8Array = new Uint8Array(this.threadStatusBuffer);
+  public breakingFlagBuffer: ArrayBuffer | SharedArrayBuffer = isSharedArrayBufferSupport() ? new SharedArrayBuffer(1) : new ArrayBuffer(1);
+  public breakingFlagView: Uint8Array = new Uint8Array(this.breakingFlagBuffer);
 
   public reverse: boolean = false;
   public offset: number = 0;
@@ -41,36 +43,13 @@ class Map {
   constructor(id: number, threadQuantity: number) {
     this.id = id;
     this.threadQuantity = threadQuantity;
-    this.simulator = this.simulateGenerator(14, 3000);
+    this.simulator = this.simulateGenerator();
   }
 
-  private *simulateGenerator(limitDuration: number, accumulateLimit: number) {
-    let begin: number,
-      accumulate,
-      sx,
-      ex,
-      lifeTime,
-      x,
-      y,
-      _x,
-      tile,
-      type,
-      isMovable,
-      isLiquid,
-      scala,
-      targetX,
-      targetY,
-      stateChanged,
-      l,
-      r,
-      u,
-      d,
-      stable,
-      falling;
+  private *simulateGenerator() {
+    let sx, ex, lifeTime, x, y, _x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling;
 
     while (true) {
-      begin = Date.now();
-      accumulate = 0;
       sx =
         Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * (this.id + 1)) - (this.threadQuantity > 1 ? this.offset : 0);
       ex = Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * this.id) - (this.threadQuantity > 1 ? this.offset : 0);
@@ -81,9 +60,8 @@ class Map {
 
       for (y = this.totalHeight; y >= 0; y--) {
         for (_x = sx - 1; _x >= ex; _x--) {
-          if (++accumulate >= accumulateLimit) {
-            accumulate = 0;
-            if (Date.now() - begin >= limitDuration) begin = yield;
+          if (this.breakingFlagView[0]) {
+            yield false;
           }
 
           x = this.reverse ? ex + (sx - _x - 1) : _x;
@@ -92,7 +70,6 @@ class Map {
             continue;
           }
 
-          accumulate++;
           tile = this.getTile(x, y);
           type = this.lookupTileType(tile);
           if (type === BLOCK_TYPES.EMPTY) continue;
@@ -237,8 +214,6 @@ class Map {
             }
           }
 
-          accumulate += 2;
-
           if (stateChanged) {
             this.setChunkDirty(x, y);
             continue;
@@ -257,7 +232,6 @@ class Map {
           stable = this.getTileProperties(x, y, TILE_PROPERTY.STABLE);
           falling = false;
 
-          accumulate += (scala + BLOCK_PROPERTIES[type][1]) / 10;
           for (let i = 0; i < scala + BLOCK_PROPERTIES[type][1]; i++) {
             if (targetY < this.totalHeight - 1 && this.compareTileDensity(type, this.lookupTileType(this.getTile(targetX, targetY + 1)))) {
               if (targetX < this.totalWidth - 1 && Math.random() < BLOCK_PROPERTIES[type][2]) {
@@ -347,8 +321,6 @@ class Map {
           } else if (!isLiquid && targetX === x && targetY === y) {
             this.setTileProperties(x, y, TILE_PROPERTY.STABLE, 1);
           }
-
-          accumulate += 2;
         }
       }
       yield true;
@@ -360,7 +332,7 @@ class Map {
     this.reverse = reverse;
 
     if (!this.threadStatusView[this.id]) {
-      this.threadStatusView[this.id] = this.simulator.next(Date.now()).value ? 1 : 0;
+      this.threadStatusView[this.id] = this.simulator.next().value ? 1 : 0;
     }
   }
 
@@ -451,6 +423,7 @@ class Map {
     threadStatusBuffer: ArrayBuffer | SharedArrayBuffer;
     chunkSize: number;
     splitedChunkDirtyBuffer: ArrayBuffer | SharedArrayBuffer;
+    breakingFlagBuffer: ArrayBuffer | SharedArrayBuffer;
     x: number;
     y: number;
     width: number;
@@ -465,6 +438,7 @@ class Map {
       chunkSize,
       splitedChunkDirtyBuffer,
       threadStatusBuffer,
+      breakingFlagBuffer,
       x,
       y,
       width,
@@ -481,6 +455,7 @@ class Map {
     this.tilePropertiesView = [];
     this.splitedChunkDirtyBuffer = splitedChunkDirtyBuffer;
     this.threadStatusBuffer = threadStatusBuffer;
+    this.breakingFlagBuffer = breakingFlagBuffer;
 
     this.width = width;
     this.height = height;
@@ -500,6 +475,7 @@ class Map {
     this.nextChunkView = new Uint8Array(this.nextChunkBuffer);
     this.splitedChunkDirtyView = new Uint8Array(this.splitedChunkDirtyBuffer);
     this.threadStatusView = new Uint8Array(this.threadStatusBuffer);
+    this.breakingFlagView = new Uint8Array(this.breakingFlagBuffer);
 
     for (let x = 0; x < this.totalWidth; x++) {
       this.chunkLookupX[x] = Math.floor(x / this.chunkSize);
@@ -538,6 +514,7 @@ class Map {
     nextChunkBuffer: ArrayBuffer | SharedArrayBuffer;
     splitedChunkDirtyBuffer: ArrayBuffer | SharedArrayBuffer;
     threadStatusBuffer: ArrayBuffer | SharedArrayBuffer;
+    breakingFlagBuffer: ArrayBuffer | SharedArrayBuffer;
     x: number;
     y: number;
     width: number;
@@ -552,6 +529,7 @@ class Map {
       nextChunkBuffer: this.nextChunkBuffer,
       splitedChunkDirtyBuffer: this.splitedChunkDirtyBuffer,
       threadStatusBuffer: this.threadStatusBuffer,
+      breakingFlagBuffer: this.breakingFlagBuffer,
       x: this.x,
       y: this.y,
       width: this.width,
