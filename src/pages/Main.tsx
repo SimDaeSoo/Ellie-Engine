@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
+// BLOCKS, BLOCK_TYPES, TILE_PROPERTY, 
 import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
@@ -28,7 +29,6 @@ const Main = ({
       const splitQuantity = 12;
       const width = Math.ceil(innerWidth / splitQuantity / zoom);
       const height = Math.ceil(innerHeight / splitQuantity / zoom);
-      // TODO : Physical CPU Quantity 로 바꾸기.
       const threadQuantity = window.navigator.hardwareConcurrency || 1;
       const threadController = new MultiThread(threadQuantity);
       const map = new Map(0, threadQuantity);
@@ -98,6 +98,8 @@ const Main = ({
 
       setUpdater(async () => {
         if (!paused) {
+          map.breakingFlagView[0] = 0;
+          setTimeout(() => (map.breakingFlagView[0] = 1), 14);
           await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse });
 
           if (map.updated) {
