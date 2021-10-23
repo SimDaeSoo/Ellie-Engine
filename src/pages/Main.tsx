@@ -67,7 +67,6 @@ const Main = ({
 
           if (map.updated) {
             await threadController.run(WORKER_COMMAND.MAP_ID_SHFFLE, { ids: shffle(ids) });
-
             reverse = !reverse;
             offset = Math.floor((Math.random() * (map.totalWidth / (threadQuantity - 1))) / 2);
 
