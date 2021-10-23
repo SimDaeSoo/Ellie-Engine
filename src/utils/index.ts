@@ -87,63 +87,63 @@ const fillTile = (map: Map, x: number, y: number, length: number, menuType: MENU
 
       switch (menuType) {
         case MENU_TYPES.DIRT: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 80);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.STONE: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.STONE], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.STONE], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.OBSIDIAN: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.OBSIDIAN], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 120);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.IRON: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.IRON], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.IRON], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 120);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.SAND: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.SAND], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.SAND], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.PEBBLE: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.WATER: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 100);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.LAVA: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
           break;
         }
         case MENU_TYPES.ACID: {
-          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+          map.setTileRgba(x + offsetX, y + offsetY, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(223 + Math.random() * 32));
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.LIFE, 60);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.SCALA, 0);
           map.setTileProperties(x + offsetX, y + offsetY, TILE_PROPERTY.STABLE, 0);
@@ -187,27 +187,27 @@ function fillAllTiles(map: Map): void {
   for (let y = 0; y < map.totalHeight; y++) {
     for (let x = 0; x < map.totalWidth; x++) {
       if (y > Math.floor((map.totalHeight / 5) * 4)) {
-        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(223 + Math.random() * 32));
         map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
         map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
         map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
       } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
-        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(223 + Math.random() * 32));
         map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
         map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
         map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
       } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
-        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(223 + Math.random() * 32));
         map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
         map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
         map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
       } else if (y > Math.floor(map.totalHeight / 5) * 1) {
-        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(223 + Math.random() * 32));
         map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
         map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
         map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
       } else {
-        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(223 + Math.random() * 32));
         map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
         map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
         map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
