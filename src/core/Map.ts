@@ -47,26 +47,54 @@ class Map {
   }
 
   private *simulateGenerator() {
-    let sx, ex, lifeTime, x, y, _x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling;
+    const splitedWidth = this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0));
+    let sx, ex, sy, ey, lifeTime, x, y, _x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling, verticalDirty;
 
     while (true) {
-      sx =
-        Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * (this.id + 1)) - (this.threadQuantity > 1 ? this.offset : 0);
-      ex = Math.floor((this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0))) * this.id) - (this.threadQuantity > 1 ? this.offset : 0);
+      sx = Math.floor(splitedWidth * (this.id + 1)) - (this.threadQuantity > 1 ? this.offset : 0) - 1;
+      ex = Math.floor(splitedWidth * this.id) - (this.threadQuantity > 1 ? this.offset : 0);
+      sy = 0;
+      ey = 0;
       lifeTime = 0;
 
-      if (sx > this.totalWidth) sx = this.totalWidth;
+      if (sx >= this.totalWidth - 1) sx = this.totalWidth - 1;
       if (ex < 0) ex = 0;
 
-      for (y = this.totalHeight; y >= 0; y--) {
-        for (_x = sx - 1; _x >= ex; _x--) {
-          if (this.breakingFlagView[0]) {
-            yield false;
+      for (y = this.totalHeight - 1; y > -this.chunkSize; y -= this.chunkSize) {
+        if (y < 0) y = 0;
+        for (_x = sx; _x > ex - this.chunkSize; _x -= this.chunkSize) {
+          if (_x < ex) _x = ex;
+          if (this.isChunkDirty(_x, y)) {
+            if (!sy) sy = y + this.chunkSize;
+            ey = y - this.chunkSize;
+            break;
           }
+        }
+      }
 
-          x = this.reverse ? ex + (sx - _x - 1) : _x;
+      sy = sy > this.totalHeight - 1 ? this.totalHeight - 1 : sy;
+      ey = ey < 0 ? 0 : ey;
+
+      for (y = sy; y >= ey; y--) {
+        verticalDirty = false;
+        for (_x = sx; _x > ex - this.chunkSize; _x -= this.chunkSize) {
+          if (_x < ex) _x = ex;
+          if (this.isChunkDirty(_x, y)) {
+            verticalDirty = true;
+            break;
+          }
+        }
+        if (!verticalDirty) {
+          y -= y % this.chunkSize;
+          continue;
+        }
+
+        for (_x = sx; _x >= ex; _x--) {
+          if (this.isBreakLoop) yield false;
+
+          x = this.reverse ? ex + sx - _x : _x;
           if (!this.isChunkDirty(x, y)) {
-            x -= x % this.chunkSize;
+            _x -= this.reverse ? this.chunkSize - (x % this.chunkSize) - 1 : _x % this.chunkSize;
             continue;
           }
 
@@ -323,6 +351,7 @@ class Map {
           }
         }
       }
+
       yield true;
     }
   }
@@ -564,6 +593,14 @@ class Map {
     //     .map((v, i) => (i < 8 ? 0 : v))
     //     .join('')}`
     // );
+  }
+
+  public get isBreakLoop(): boolean {
+    return !!this.breakingFlagView[0];
+  }
+
+  public set isBreakLoop(value: boolean) {
+    this.breakingFlagView[0] = value ? 1 : 0;
   }
 
   public isDirtyTextureChunk(x: number, y: number): boolean {

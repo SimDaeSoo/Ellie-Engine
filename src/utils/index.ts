@@ -183,4 +183,57 @@ function shffle<T>(values: Array<T>): Array<T> {
   return newValues;
 }
 
-export { setController, setMouseEventCallback, setUpdater, updater, setMenuSelectCallback, menuSelectCallback, fillTile, isSharedArrayBufferSupport, shffle };
+function fillAllTiles(map: Map): void {
+  for (let y = 0; y < map.totalHeight; y++) {
+    for (let x = 0; x < map.totalWidth; x++) {
+      if (y > Math.floor((map.totalHeight / 5) * 4)) {
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+        map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+        map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+        map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+        map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+        map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+        map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+        map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
+        map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+        map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      } else if (y > Math.floor(map.totalHeight / 5) * 1) {
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+        map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+        map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+        map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      } else {
+        map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+        map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+        map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+        map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+      }
+    }
+  }
+}
+
+function sleep(dt: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, dt);
+  });
+}
+
+export {
+  setController,
+  setMouseEventCallback,
+  setUpdater,
+  updater,
+  setMenuSelectCallback,
+  menuSelectCallback,
+  fillTile,
+  isSharedArrayBufferSupport,
+  shffle,
+  fillAllTiles,
+  sleep,
+};
