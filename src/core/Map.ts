@@ -60,9 +60,7 @@ class Map {
 
       for (y = this.totalHeight; y >= 0; y--) {
         for (_x = sx - 1; _x >= ex; _x--) {
-          if (this.breakingFlagView[0]) {
-            yield false;
-          }
+          if (this.isBreakLoop) yield false;
 
           x = this.reverse ? ex + (sx - _x - 1) : _x;
           if (!this.isChunkDirty(x, y)) {
@@ -323,6 +321,7 @@ class Map {
           }
         }
       }
+
       yield true;
     }
   }
@@ -564,6 +563,14 @@ class Map {
     //     .map((v, i) => (i < 8 ? 0 : v))
     //     .join('')}`
     // );
+  }
+
+  public get isBreakLoop(): boolean {
+    return !!this.breakingFlagView[0];
+  }
+
+  public set isBreakLoop(value: boolean) {
+    this.breakingFlagView[0] = value ? 1 : 0;
   }
 
   public isDirtyTextureChunk(x: number, y: number): boolean {

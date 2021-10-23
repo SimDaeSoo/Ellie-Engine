@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
-// BLOCKS, BLOCK_TYPES, TILE_PROPERTY, 
 import { MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
@@ -24,51 +23,19 @@ const Main = ({
   useEffect(() => {
     const initialize = async (zoom: number) => {
       const container = document.getElementById('content') as HTMLElement;
-      const innerWidth = container.getBoundingClientRect().width;
-      const innerHeight = container.getBoundingClientRect().height;
+      const [innerWidth, innerHeight] = [container.getBoundingClientRect().width, container.getBoundingClientRect().height];
       const splitQuantity = 12;
-      const width = Math.ceil(innerWidth / splitQuantity / zoom);
-      const height = Math.ceil(innerHeight / splitQuantity / zoom);
+      const [width, height] = [Math.ceil(innerWidth / splitQuantity / zoom), Math.ceil(innerHeight / splitQuantity / zoom)];
       const threadQuantity = window.navigator.hardwareConcurrency || 1;
       const threadController = new MultiThread(threadQuantity);
       const map = new Map(0, threadQuantity);
       const renderer = new Renderer('render-canvas', innerWidth, innerHeight, window.devicePixelRatio);
+      const textures: Array<Array<PIXI.Texture>> = [];
+      let reverse = false;
+      let offset = 0;
+      let ids = new Array(threadQuantity).fill(1).map((_v, i) => i);
 
       map.create(0, 0, width, height, splitQuantity);
-      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
-
-      // for (let y = 0; y < map.totalHeight; y++) {
-      //   for (let x = 0; x < map.totalWidth; x++) {
-      //     if (y > Math.floor((map.totalHeight / 5) * 4)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else if (y > Math.floor(map.totalHeight / 5) * 1) {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     } else {
-      //       map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
-      //       map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
-      //       map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
-      //     }
-      //   }
-      // }
-
-      const textures: Array<Array<PIXI.Texture>> = [];
 
       for (let y = 0; y < map.tileRgbaView.length; y++) {
         textures.push([]);
@@ -92,14 +59,10 @@ const Main = ({
         map: map.export(),
       });
 
-      let reverse = false;
-      let offset = 0;
-      let ids = new Array(threadQuantity).fill(1).map((_v, i) => i);
-
       setUpdater(async () => {
         if (!paused) {
-          map.breakingFlagView[0] = 0;
-          setTimeout(() => (map.breakingFlagView[0] = 1), 14);
+          map.isBreakLoop = false;
+          setTimeout(() => (map.isBreakLoop = true), 12);
           await threadController.run(WORKER_COMMAND.MAP_UPDATE, { offset, reverse });
 
           if (map.updated) {
@@ -115,21 +78,11 @@ const Main = ({
                 }
               }
             }
-
-            renderer.render();
             map.clean();
           }
-        } else {
-          for (let y = 0; y < splitQuantity; y++) {
-            for (let x = 0; x < splitQuantity; x++) {
-              if (map.isDirtyTextureChunk(x, y)) {
-                textures[y][x].update();
-              }
-            }
-          }
-          renderer.render();
-          map.clean();
         }
+
+        renderer.render();
       });
 
       setMenuSelectCallback((type: MENU_TYPES) => {
@@ -225,6 +178,8 @@ const Main = ({
 
         fillTile(map, x, y, border, menuType);
       });
+
+      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
     };
 
     initialize(2);

@@ -23,7 +23,7 @@ async function run(message: Message): Promise<void> {
     }
     case WORKER_COMMAND.MAP_UPDATE: {
       const { offset, reverse } = data;
-      if (!store.map.breakingFlagView[0]) store.map.update(offset, reverse);
+      if (!store.map.isBreakLoop) store.map.update(offset, reverse);
       break;
     }
     case WORKER_COMMAND.MAP_ID_SHFFLE: {
