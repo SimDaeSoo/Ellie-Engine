@@ -47,24 +47,21 @@ class Map {
   }
 
   private *simulateGenerator() {
-    const splitedWidth = this.totalWidth / (this.threadQuantity - (this.threadQuantity > 1 ? 1 : 0));
+    const splitedWidth = this.totalWidth / this.threadQuantity;
     let sx, ex, sy, ey, lifeTime, x, y, _x, tile, type, isMovable, isLiquid, scala, targetX, targetY, stateChanged, l, r, u, d, stable, falling, verticalDirty;
 
     while (true) {
-      sx = Math.floor(splitedWidth * (this.id + 1)) - (this.threadQuantity > 1 ? this.offset : 0) - 1;
-      ex = Math.floor(splitedWidth * this.id) - (this.threadQuantity > 1 ? this.offset : 0);
+      sx = Math.floor(splitedWidth * (this.id + 1)) + this.offset - 1;
+      ex = Math.floor(splitedWidth * this.id) + this.offset;
       sy = 0;
       ey = 0;
       lifeTime = 0;
-
-      if (sx >= this.totalWidth - 1) sx = this.totalWidth - 1;
-      if (ex < 0) ex = 0;
 
       for (y = this.totalHeight - 1; y > -this.chunkSize; y -= this.chunkSize) {
         if (y < 0) y = 0;
         for (_x = sx; _x > ex - this.chunkSize; _x -= this.chunkSize) {
           if (_x < ex) _x = ex;
-          if (this.isChunkDirty(_x, y)) {
+          if (this.isChunkDirty(_x % this.totalWidth, y)) {
             if (!sy) sy = y + this.chunkSize;
             ey = y - this.chunkSize;
             break;
@@ -79,7 +76,7 @@ class Map {
         verticalDirty = false;
         for (_x = sx; _x > ex - this.chunkSize; _x -= this.chunkSize) {
           if (_x < ex) _x = ex;
-          if (this.isChunkDirty(_x, y)) {
+          if (this.isChunkDirty(_x % this.totalWidth, y)) {
             verticalDirty = true;
             break;
           }
@@ -91,10 +88,15 @@ class Map {
 
         for (_x = sx; _x >= ex; _x--) {
           if (this.isBreakLoop) yield false;
-
-          x = this.reverse ? ex + sx - _x : _x;
+          x = (this.reverse ? ex + sx - _x : _x) % this.totalWidth;
           if (!this.isChunkDirty(x, y)) {
-            _x -= this.reverse ? this.chunkSize - (x % this.chunkSize) - 1 : _x % this.chunkSize;
+            if (this.reverse && x > this.totalWidth - this.chunkSize - 1) {
+              _x -= this.totalWidth - x - 1;
+            } else if (!this.reverse && x < this.chunkSize) {
+              _x -= x;
+            } else {
+              _x -= this.reverse ? this.chunkSize - (x % this.chunkSize) - 1 : x % this.chunkSize;
+            }
             continue;
           }
 
