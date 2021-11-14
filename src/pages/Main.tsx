@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
-import { MENU_TYPES, WORKER_COMMAND } from '../constants';
+import { BLOCKS, BLOCK_TYPES, TILE_PROPERTY, MENU_TYPES, WORKER_COMMAND } from '../constants';
 import Map from '../core/Map';
 import MultiThread from '../core/MultiThread';
 import Renderer from '../core/Renderer';
@@ -36,6 +36,38 @@ const Main = ({
       let ids = new Array(threadQuantity).fill(1).map((_v, i) => i);
 
       map.create(0, 0, width, height, splitQuantity);
+      setResolution({ height: map.totalHeight, width: map.totalWidth, canvasWidth: innerWidth });
+
+      for (let y = 0; y < map.totalHeight; y++) {
+        for (let x = 0; x < map.totalWidth; x++) {
+          if (y > Math.floor((map.totalHeight / 5) * 4)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.PEBBLE], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor((map.totalHeight / 5) * 3)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.LAVA], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor((map.totalHeight / 5) * 2)) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.DIRT], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 80);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else if (y > Math.floor(map.totalHeight / 5) * 1) {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.WATER], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 100);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          } else {
+            map.setTileRgba(x, y, ...BLOCKS[BLOCK_TYPES.ACID], Math.floor(171 + Math.random() * 84));
+            map.setTileProperties(x, y, TILE_PROPERTY.LIFE, 60);
+            map.setTileProperties(x, y, TILE_PROPERTY.SCALA, 0);
+            map.setTileProperties(x, y, TILE_PROPERTY.STABLE, 0);
+          }
+        }
+      }
 
       for (let y = 0; y < map.tileRgbaView.length; y++) {
         textures.push([]);
